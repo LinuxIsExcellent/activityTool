@@ -7,7 +7,7 @@ void IOManager::sig_handler(int sig)
     /*保留原来的errno，在函数最后恢复，以保证函数的可重入性*/
     int save_errno = errno;
     int msg = sig;
-    // send(m_pipefd[1], (char*)&msg, 1, 0);/*将信号值写入管道，以通知主循环*/
+    send(s_pipefd[1], (char*)&msg, 1, 0);/*将信号值写入管道，以通知主循环*/
     errno = save_errno;
 }
 
@@ -45,11 +45,11 @@ void IOManager::InitIOManager()
     m_epollFd = epoll_create(5);
     assert(m_epollFd != -1);
 
-    int ret = socketpair(PF_UNIX, SOCK_STREAM, 0, m_pipefd);
+    int ret = socketpair(PF_UNIX, SOCK_STREAM, 0, s_pipefd);
     assert(ret != -1);
 
-    setnonblocking(m_pipefd[1]);
-    addfd(m_epollFd, m_pipefd[0]);
+    setnonblocking(s_pipefd[1]);
+    addfd(m_epollFd, s_pipefd[0]);
 
     /*设置一些信号的处理函数*/
     addsig(SIGHUP);
@@ -81,6 +81,26 @@ void IOManager::AddListeningFd(const char* ip, int port)
     addfd(m_epollFd,m_listenFd);
 }
 
+void IOManager::OnClientDisconnect(int sockfd, Client* client)
+{
+    epoll_ctl(m_epollFd, EPOLL_CTL_DEL, sockfd, NULL);
+    if (client)
+    {
+        client->OnDisconnect();
+    }
+}
+
+// 退出事件循环，释放资源，断开所有客户端链接
+void IOManager::Exit()
+{
+    std::map<int, Client*>::iterator it;
+
+    for (it = m_mClients.begin(); it != m_mClients.end(); ++it)
+    {
+        OnClientDisconnect(it->first, it->second);
+    }
+}
+
 void IOManager::Loop()
 {
     loop = true;
@@ -99,24 +119,76 @@ void IOManager::Loop()
                     &client_address, &client_addrlength);
                 addfd(m_epollFd, connfd);
 
-                Client* client = new Client(client_address, connfd);
+                Client* client = new Client();
                 if (client)
                 {
                     m_mClients.insert(pair <int,Client*> (connfd, client));
+                    client->OnConnect(client_address, connfd);
+                    cout << "new client is connect" << endl;
                 }
             }
             // 信号事件
-            else if (sockfd == m_pipefd[0] && (m_events[i].events&EPOLLIN))
+            else if (sockfd == s_pipefd[0] && (m_events[i].events&EPOLLIN))
             {
+                int sig;
+                char signals[1024];
+                int ret = recv(s_pipefd[0], signals, sizeof(signals),0);
 
+                if (ret == -1)
+                {
+                    continue;
+                }
+                else if(ret == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    for (int i = 0; i < ret; ++i)
+                    {
+                        switch(signals[i])
+                        {
+                            case SIGCHLD:
+                            case SIGHUP:
+                            {
+                                continue;
+                            }
+                            case SIGTERM:
+                            case SIGINT:
+                            {
+                                loop = false;
+                            }
+                        }
+                    }
+                }
             }
             // IO事件
             else if (m_events[i].events&EPOLLIN)
             {
                 char buf[TCP_PACKET_MAX];
                 int ret = recv(sockfd, buf, TCP_PACKET_MAX - 1, 0);
-                cout << "client msg: " << buf << endl;
+                if (ret <= 0)
+                {
+                    std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
+                    if (it != m_mClients.end())
+                    {
+                        OnClientDisconnect(sockfd, it->second);
+                    }
+                }
+                else if (ret > 0)
+                {
+                    cout << "client msg: " << "size = " << ret << "content = " << buf << endl;
+                }
             }
         }
+    }
+
+    if (loop == false)
+    {
+        close(m_listenFd);
+        close(m_epollFd);
+        close(s_pipefd[0]);
+        close(s_pipefd[1]);
+        Exit();
     }
 }
