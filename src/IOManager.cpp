@@ -73,6 +73,7 @@ void IOManager::AddListeningFd(const char* ip, int port)
     if(ret == -1)
     {
         cout << "errno is" << errno << endl;
+        assert(m_listenFd >= 0);
         return;
     }
 
@@ -125,6 +126,7 @@ void IOManager::Loop()
                     m_mClients.insert(pair <int,Client*> (connfd, client));
                     client->OnConnect(client_address, connfd);
                     cout << "new client is connect" << endl;
+                    send(connfd, "hello", 5, 0);
                 }
             }
             // 信号事件

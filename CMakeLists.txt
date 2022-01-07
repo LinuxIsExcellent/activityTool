@@ -93,3 +93,5 @@ add_executable(observer ${CPP_LIST} ${PROTO_HDRS} ${PROTO_SRCS})
 target_link_libraries(observer ${PROTOBUF_LIBRARIES})
 #链接lua静态库
 target_link_libraries(observer lua)
+
+message("cmake done")
