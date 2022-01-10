@@ -20,7 +20,7 @@ public:
 
     void LoadConfig(lua_State* L, string fileName);
 
-    const char* getListeningIp()
+    string getListeningIp()
     {
         return m_ListeningIp;
     }
@@ -30,28 +30,35 @@ public:
     	return m_ListeningPort;
     }
 
-    const char* getConfigPath()
+    string getConfigPath()
     {
         return m_ConfigPath;
     }
 
-    const char* getTempConfigPath()
+    string getTempConfigPath()
     {
         return m_TempConfigPath;
     }
 
-    const char* getListeningProcessPath()
+    string getListeningProcessPath()
     {
         return m_ListeningProcessPath;
+    }
+
+    std::vector<string>& GetListenLuaFileList()
+    {
+        return m_listenLuaFileList;
     }
 private:
     static GlobalConfig* m_instance;
 
-    const char* m_ListeningIp;   //监听的ip
+    string m_ListeningIp;   //监听的ip
     int m_ListeningPort;   //监听的端口
 
-    const char* m_ConfigPath;   //配置文件路径
-    const char* m_TempConfigPath;   //中间件文件路径
-    const char* m_ListeningProcessPath; //监听的进程id文件产生的路径
+    string m_ConfigPath;   //配置文件路径
+    string m_TempConfigPath;   //中间件文件路径
+    string m_ListeningProcessPath; //监听的进程id文件产生的路径
     // char* m_ConfigPath;  //可监听的进程id文件的名字
+
+    std::vector<string> m_listenLuaFileList;    //监听的所有lua文件列表
 };

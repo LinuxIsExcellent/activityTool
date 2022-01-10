@@ -1,0 +1,2 @@
+2022-01-09 12:30:43:611 [INFO]: [rollingFile] myLogger init
+2022-01-09 12:30:43:611 [ERROR]: [rollingFile] hello log4cpp ## /root/workspace/activityTool/src/main.cpp:main:23 ## 

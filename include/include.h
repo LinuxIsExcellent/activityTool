@@ -5,8 +5,19 @@
 #include <unistd.h>
 #include <iostream>
 #include <stringbuffer.h>
-#include <msg.pb.h>
+
+#include <log4cpp/Category.hh>
+#include <log4cpp/FileAppender.hh>
+#include <log4cpp/BasicLayout.hh>
+#include <log4cpp/PropertyConfigurator.hh>
+
 #include <enum.h>
+#include <Log.h>
+#include <globalConfig.h>
+#include <msg.pb.h>
+#include <LuaConfigManager.h>
+#include <LuaDataContainer.h>
+
 
 #include <sys/types.h>
 #include <sys/socket.h>

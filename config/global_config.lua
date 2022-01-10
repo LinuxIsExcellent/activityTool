@@ -6,6 +6,13 @@ server_port = 23543
 -- 配置文件路径
 config_path = "/root/workspace/dev_ph/script/config"
 
+-- 所有的配置文件(没有包含就不会读取)
+config_file_path =
+{
+	"day_login.lua",
+	-- "time_slot_login.lua",
+}
+
 -- 中间件文件路径
 temp_config_path = "/root/workspace/test/act_manager/temp_config"
 

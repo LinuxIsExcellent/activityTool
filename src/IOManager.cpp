@@ -58,12 +58,12 @@ void IOManager::InitIOManager()
     addsig(SIGINT);
 }
 
-void IOManager::AddListeningFd(const char* ip, int port)
+void IOManager::AddListeningFd(string ip, int port)
 {
     struct sockaddr_in address;
     bzero(&address, sizeof(address));
     address.sin_family = AF_INET;
-    inet_pton(AF_INET, ip, &address.sin_addr);
+    inet_pton(AF_INET, ip.c_str(), &address.sin_addr);
     address.sin_port = htons(port);
 
     m_listenFd = socket(PF_INET, SOCK_STREAM, 0);

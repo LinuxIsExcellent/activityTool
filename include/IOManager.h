@@ -38,7 +38,7 @@ public:
     void InitIOManager();
 
     // 增加网络端口监听
-    void AddListeningFd(const char* ip, int port);
+    void AddListeningFd(string ip, int port);
 
     // 事件循环
     void Loop();

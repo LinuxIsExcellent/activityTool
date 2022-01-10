@@ -49,7 +49,8 @@ target_include_directories(lua PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-E")
 
 #添加编译选项
-add_compile_options(-std=c++11)
+#add_compile_options(-std=c++11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -llog4cpp -pthread")
 
 #设置protobuf的文件路径
 set(Protobuf_PREFIX_PATH
