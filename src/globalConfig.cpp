@@ -7,7 +7,8 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     int ret = luaL_dofile(L, fileName.c_str());
     if (ret)
     {
-        cout << "load file error" << endl;
+        string error = lua_tostring(L,-1);
+        LOG_ERROR("load lua file error : " + error);
         return;
     }
 
@@ -26,7 +27,7 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     lua_getglobal(L, "config_file_path");
     if (!lua_istable(L, -1))
     {
-        cout << "没有任何需要监听的lua文件列表" << endl;
+        LOG_ERROR("没有任何需要监听的lua文件列表");
         return;
     }
 

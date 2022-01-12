@@ -35,7 +35,7 @@ enum DATA_TYPE
 message row_data
 {
 	int32 column_count							= 1;	//多少列
-	repeated string value_datas 				= 2;	//每个单元格的数据
+	string value_datas 							= 2;	//每个单元格的数据
 }
 
 //levels :
@@ -46,6 +46,7 @@ message field_squence
 {
 	repeated int32 levels						= 1;	//深度队列（如果为空，就是最外层的字段顺序）
 	repeated string field						= 2;	//字段顺序
+	repeated string filed_types 				= 3;	//字段的类型
 }
 
 //一张表的数据(仅仅只是二维程度的展开，如果有多维，则更深维度的表直接转换成string类型的数据)

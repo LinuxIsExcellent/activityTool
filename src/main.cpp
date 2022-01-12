@@ -20,7 +20,6 @@ int main()
         return 0;
     }
 
-    LOG_ERROR("hello log4cpp");
     //加载全局配置表
     GlobalConfig::GetInstance()->LoadConfig(L, "../config/global_config.lua");
 

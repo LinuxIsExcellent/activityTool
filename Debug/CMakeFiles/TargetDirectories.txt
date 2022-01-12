@@ -1,0 +1,2 @@
+/root/workspace/activityTool/Debug/CMakeFiles/lua.dir
+/root/workspace/activityTool/Debug/CMakeFiles/observer.dir

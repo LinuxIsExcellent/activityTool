@@ -32,7 +32,7 @@ void Log::init()
     }
 
     _mCate = &log4cpp::Category::getInstance("rollingFile");
-    _mCate->info("myLogger init");
+    // _mCate->info("myLogger init");
 }
 
 void Log::error(string& msg)
@@ -57,7 +57,7 @@ void Log::destroy()
 {
     if(_mLogger)
     {
-        _mLogger->_mCate->info("Mylog destroyed");
+        // _mLogger->_mCate->info("Mylog destroyed");
         _mLogger->_mCate->shutdown();
 
         delete _mLogger;

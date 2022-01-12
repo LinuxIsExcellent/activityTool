@@ -11,13 +11,15 @@ LuaDataContainer::~LuaDataContainer()
 	// free data
 }
 
+
+
 // 把lua栈中的栈顶元素解析成lua格式的字符串
 string LuaDataContainer::ParseLuaTableToString(lua_State *L)
 {
 	string sValueTable = "{";
     if (!lua_type(L, -1) == LUA_TTABLE)
     {
-        cout << "is not a string" << endl;
+        LOG_ERROR("is not a string");
         return "";
     }
 
@@ -89,27 +91,32 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     int ret = luaL_dofile(L, m_LuaFilePath.c_str());
     if (ret)
     {
-        cout << "load file error" << endl;
+        string error = lua_tostring(L,-1);
+        LOG_ERROR(error);
         return false;
     }
     else
     {
-    	cout << "load file success : " << m_LuaFilePath << endl;
+        LOG_INFO("load lua file success : " + m_LuaFilePath);
     }
 
     string sLuaTableName = "dataconfig_" + m_LuaFileName;
-    test_2::table_info table;
 
     lua_getglobal(L, sLuaTableName.c_str());
     if (!lua_istable(L, -1))
     {
+        LOG_ERROR("file data is not a table : " + m_LuaFilePath);
     	cout << "is not a table, "<< sLuaTableName << endl;
     	return false;
     }
-    cout << "lua table = " << sLuaTableName << endl;
+
+    _table.set_table_name(m_LuaFileName);
 
     //置空栈顶
     lua_pushnil(L);
+
+    int nRow = 0;
+    int nColumn = 0;
 
     // 默认读的是二维表
     while(lua_next(L, -2))
@@ -120,6 +127,8 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     	if (lua_type(L, -1) == LUA_TTABLE)
         {
         	lua_pushnil(L);
+
+            int nColumn_ = 0;
         	while(lua_next(L, -2))
     		{
     			string sKey = lua_tostring(L, -2);
@@ -149,11 +158,22 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     			}
 
     			lua_pop(L, 1);
+                nColumn_ += 1;
     		}
+
+            nColumn = nColumn_ > nColumn ? nColumn_ : nColumn;
         }
 
     	lua_pop(L, 1);
+        nRow += 1;
     }
 
-    return false;
+    _table.set_row_count(nRow);
+    _table.set_column_count(nColumn);
+
+    std::string protoStr;
+    google::protobuf::TextFormat::PrintToString(_table, &protoStr);
+    LOG_INFO(protoStr);
+
+    return true;
 }

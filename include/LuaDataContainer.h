@@ -15,4 +15,6 @@ public:
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
+
+    test_2::table_info _table;  //对应的protobuf的数据(把lua表的数据直接存入protobuf里面)
 };

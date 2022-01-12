@@ -17,6 +17,7 @@
 #include <msg.pb.h>
 #include <LuaConfigManager.h>
 #include <LuaDataContainer.h>
+#include <google/protobuf/text_format.h>
 
 
 #include <sys/types.h>

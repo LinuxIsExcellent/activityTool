@@ -23,8 +23,12 @@ private:
     log4cpp::Category* _mCate;
 };
 
-#define postfix(msg) (string(msg).append(" ## "))\
+#define postfix(msg) (string("["))\
     .append(__FILE__).append(":").append(__func__)\
-    .append(":").append(to_string(__LINE__)).append(" ## ")
+    .append(":").append(to_string(__LINE__)).append("] ").append(msg)
 
 
+#define LOG_ERROR(msg) Log::logger->error(postfix(msg))
+#define LOG_WARN(msg) Log::logger->warn(postfix(msg))
+#define LOG_INFO(msg) Log::logger->info(postfix(msg))
+#define LOG_DEBUG(msg) Log::logger->debug(postfix(msg))

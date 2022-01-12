@@ -72,8 +72,7 @@ void IOManager::AddListeningFd(string ip, int port)
     int ret = bind(m_listenFd, (struct sockaddr*)&address, sizeof(address));
     if(ret == -1)
     {
-        cout << "errno is" << errno << endl;
-        assert(m_listenFd >= 0);
+        LOG_ERROR("绑定监听的服务器ip和端口失败 :" + ip + ", " + std::to_string(port));
         return;
     }
 

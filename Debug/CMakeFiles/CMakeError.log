@@ -1,0 +1,53 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec2659720427/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec2659720427.dir/build.make CMakeFiles/cmTryCompileExec2659720427.dir/build
+gmake[1]: Entering directory `/root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2659720427.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec2659720427.dir/CheckSymbolExists.c.o   -c /root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTryCompileExec2659720427
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2659720427.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec2659720427.dir/CheckSymbolExists.c.o  -o cmTryCompileExec2659720427 -rdynamic 
+CMakeFiles/cmTryCompileExec2659720427.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
+collect2: 错误：ld 返回 1
+gmake[1]: Leaving directory `/root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp'
+gmake[1]: *** [cmTryCompileExec2659720427] 错误 1
+gmake: *** [cmTryCompileExec2659720427/fast] 错误 2
+
+File /root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/gmake "cmTryCompileExec824636947/fast"
+/usr/bin/gmake -f CMakeFiles/cmTryCompileExec824636947.dir/build.make CMakeFiles/cmTryCompileExec824636947.dir/build
+gmake[1]: Entering directory `/root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec824636947.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec824636947.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec824636947
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec824636947.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec824636947.dir/CheckFunctionExists.c.o  -o cmTryCompileExec824636947 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: 错误：ld 返回 1
+gmake[1]: Leaving directory `/root/workspace/activityTool/Debug/CMakeFiles/CMakeTmp'
+gmake[1]: *** [cmTryCompileExec824636947] 错误 1
+gmake: *** [cmTryCompileExec824636947/fast] 错误 2
+
+
