@@ -11,7 +11,13 @@ LuaDataContainer::~LuaDataContainer()
 	// free data
 }
 
-
+string LuaDataContainer::GetStrData()
+{
+    string output;
+    _table.SerializeToString(&output);
+    
+    return output;
+}
 
 // 把lua栈中的栈顶元素解析成lua格式的字符串
 string LuaDataContainer::ParseLuaTableToString(lua_State *L)
@@ -119,10 +125,15 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     int nColumn = 0;
 
     // 默认读的是二维表
+    // 目前只支持二维表，所以第一层key的读取用int
+    test_2::row_data* row_lists;
     while(lua_next(L, -2))
     {
     	int nKey = lua_tonumber(L, -2);
     	cout << nKey << endl;
+
+        row_lists = _table.add_row_lists();
+        row_lists->set_key(std::to_string(nKey));
 
     	if (lua_type(L, -1) == LUA_TTABLE)
         {
@@ -132,30 +143,38 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
         	while(lua_next(L, -2))
     		{
     			string sKey = lua_tostring(L, -2);
+                string sValue;
     			cout << "sKey = " << sKey << endl;
 
+                test_2::pair_value* pairValue = row_lists->add_pair();
     			// 如果key值是一个table
     			if (lua_type(L, -1) == LUA_TTABLE)
     			{
     				// ParseLuaTableToString(L);
-    				cout << "table value = " << ParseLuaTableToString(L) << endl;
+    				sValue = ParseLuaTableToString(L);
     			}
     			else if (lua_type(L, -1) == LUA_TSTRING)
     			{
-    				cout << "sValue = " << lua_tostring(L, -1) << endl;
+    				sValue = lua_tostring(L, -1);
     			}
     			else if (lua_type(L, -1) == LUA_TBOOLEAN)
     			{
-    				cout << "sValue = " << lua_toboolean(L, -1) << endl;
+    				sValue = std::to_string(lua_toboolean(L, -1));
     			}
     			else if (lua_type(L, -1) == LUA_TNIL)
     			{
-    				cout << "sValue = " << lua_tointeger(L, -1) << endl;
+    				sValue = std::to_string(lua_tointeger(L, -1));
     			}
     			else if (lua_type(L, -1) == LUA_TNUMBER)
     			{
-    				cout << "sValue = " << lua_tonumber(L, -1) << endl;
+                    char str[64];
+                    sprintf(str, "%g", lua_tonumber(L, -1));
+
+                    sValue = str;
     			}
+
+                pairValue->set_key(sKey);
+                pairValue->set_value(sValue);
 
     			lua_pop(L, 1);
                 nColumn_ += 1;
@@ -174,6 +193,10 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     std::string protoStr;
     google::protobuf::TextFormat::PrintToString(_table, &protoStr);
     LOG_INFO(protoStr);
+
+    string output;
+    _table.SerializeToString(&output);
+    LOG_ERROR(output);
 
     return true;
 }

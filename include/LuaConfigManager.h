@@ -26,6 +26,8 @@ public:
 
     // 释放资源
     void FreeData();
+
+    string GetLuaDataByName(string name);
 private:
     static LuaConfigManager* m_instance;
 

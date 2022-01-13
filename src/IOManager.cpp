@@ -124,8 +124,10 @@ void IOManager::Loop()
                 {
                     m_mClients.insert(pair <int,Client*> (connfd, client));
                     client->OnConnect(client_address, connfd);
-                    cout << "new client is connect" << endl;
-                    send(connfd, "hello", 5, 0);
+
+                    string testData = LuaConfigManager::GetInstance()->GetLuaDataByName("day_login");
+
+                    client->SendData(1, 1, testData);
                 }
             }
             // 信号事件
@@ -190,6 +192,8 @@ void IOManager::Loop()
         close(m_epollFd);
         close(s_pipefd[0]);
         close(s_pipefd[1]);
+
+        LOG_INFO("网络循环退出，关闭所有的网络链接");
         Exit();
     }
 }

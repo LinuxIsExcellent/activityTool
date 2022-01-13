@@ -2,24 +2,11 @@ syntax = "proto3";
 
 package test_2;
 
-message usr_login 
+message net_packet
 {
-    string usrname = 1;
-    string usrpasswd = 2;
-}
-
-message usr_info 
-{
-    int32 classrome = 1;
-    string studentID = 2;
-}
-
-message student 
-{
-    int32 STAMP = 1;
-    usr_login usrLogin = 2;
-    usr_info usrInfo = 3;
-    repeated int32 array = 4;
+	int32 system									= 1;	//系统号
+	int32 cmd										= 2;	//协议号
+	string data										= 3;	//二进制数据
 }
 
 enum DATA_TYPE
@@ -31,11 +18,17 @@ enum DATA_TYPE
 	L_FUNCTION 										= 4;	//字符串类型的function
 }
 
+message pair_value
+{
+	string key									= 1;	//键值
+	string value								= 2;	//数值
+}
+
 //一行的数据
 message row_data
 {
-	int32 column_count							= 1;	//多少列
-	string value_datas 							= 2;	//每个单元格的数据
+	string key 							= 1;	//当前行的key
+	repeated pair_value pair 				= 2;	//列数据列表
 }
 
 //levels :

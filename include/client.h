@@ -11,6 +11,8 @@ public:
 	void OnConnect(struct sockaddr_in & address, int fd);
 
 	void OnDisconnect();
+
+	void SendData(int16_t nSystem, int16_t nCmd, string data);
 private:
 	struct sockaddr_in m_client_address;	//客户端链接信息
 	int m_fd;	//客户端的文件描述符
