@@ -144,7 +144,7 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     		{
     			string sKey = lua_tostring(L, -2);
                 string sValue;
-    			cout << "sKey = " << sKey << endl;
+    			// cout << "sKey = " << sKey << endl;
 
                 test_2::pair_value* pairValue = row_lists->add_pair();
     			// 如果key值是一个table
@@ -180,7 +180,7 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
                 nColumn_ += 1;
     		}
 
-            nColumn = nColumn_ > nColumn ? nColumn_ : nColumn;
+            nColumn = MAX(nColumn_, nColumn);
         }
 
     	lua_pop(L, 1);

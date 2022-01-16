@@ -7,15 +7,14 @@ Client::Client()
 
 void Client::SendData(int16_t nSystem, int16_t nCmd, string data)
 {
-	test_2::net_packet packet;
-	packet.set_system(nSystem);
-	packet.set_cmd(nCmd);
-	packet.set_data("asdassdas");
+	// 先计算出包体的总长度
+	// 因为packet类增加字符串的时候会增加2字节的长度和1字节的结束字符
+	// 所以除了nSystem和nCmd之外需要多增加3字节的数据长度
+	int nDataLength = sizeof(nSystem) + sizeof(nCmd) + 3 + data.length();
+	Packet packet;
+	packet << nDataLength << nSystem << nCmd << data.c_str();
 
-	string output;
-    packet.SerializeToString(&output);
-
-	// send(m_fd, output.c_str(), output.length(), 0);
+	send(m_fd, packet.getDataBegin(), packet.getLength(), 0);
 }
 
 void Client::OnConnect(struct sockaddr_in & address, int fd)
