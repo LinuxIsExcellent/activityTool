@@ -28,6 +28,11 @@ public:
     void FreeData();
 
     string GetLuaDataByName(string name);
+
+    std::map<string, LuaDataContainer*>* GetTableDataMap()
+    {
+        return &m_mDataMap;
+    }
 private:
     static LuaConfigManager* m_instance;
 

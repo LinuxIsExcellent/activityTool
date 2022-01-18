@@ -19,7 +19,7 @@ private:
     void addsig(int sig);
 
     // 客户端断开链接
-    void OnClientDisconnect(int sockfd, Client* client);
+    void OnClientDisconnect(int sockfd);
     // 退出事件循环
     void Exit();
 public:

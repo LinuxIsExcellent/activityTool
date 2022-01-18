@@ -81,12 +81,14 @@ void IOManager::AddListeningFd(string ip, int port)
     addfd(m_epollFd,m_listenFd);
 }
 
-void IOManager::OnClientDisconnect(int sockfd, Client* client)
+void IOManager::OnClientDisconnect(int sockfd)
 {
     epoll_ctl(m_epollFd, EPOLL_CTL_DEL, sockfd, NULL);
-    if (client)
+
+    std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
+    if (it != m_mClients.end() )
     {
-        client->OnDisconnect();
+        it->second->OnDisconnect();
     }
 }
 
@@ -97,7 +99,10 @@ void IOManager::Exit()
 
     for (it = m_mClients.begin(); it != m_mClients.end(); ++it)
     {
-        OnClientDisconnect(it->first, it->second);
+        // 在epoll中删除掉监听的文件描述符
+        epoll_ctl(m_epollFd, EPOLL_CTL_DEL, it->first, NULL);
+        // 客户端断开链接
+        it->second->OnDisconnect();
     }
 }
 
@@ -124,10 +129,6 @@ void IOManager::Loop()
                 {
                     m_mClients.insert(pair <int,Client*> (connfd, client));
                     client->OnConnect(client_address, connfd);
-
-                    string testData = LuaConfigManager::GetInstance()->GetLuaDataByName("day_login");
-
-                    client->SendData(1, 1, testData);
                 }
             }
             // 信号事件
@@ -168,19 +169,20 @@ void IOManager::Loop()
             // IO事件
             else if (m_events[i].events&EPOLLIN)
             {
+                // 多了一层数据拷贝，空间照成浪费
                 char buf[TCP_PACKET_MAX];
                 int ret = recv(sockfd, buf, TCP_PACKET_MAX - 1, 0);
                 if (ret <= 0)
                 {
-                    std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
-                    if (it != m_mClients.end())
-                    {
-                        OnClientDisconnect(sockfd, it->second);
-                    }
+                    OnClientDisconnect(sockfd);
                 }
                 else if (ret > 0)
                 {
-                    cout << "client msg: " << "size = " << ret << "content = " << buf << endl;
+                    std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
+                    if (it != m_mClients.end() )
+                    {
+                        it->second->OnRecvMsg(buf, ret);
+                    }
                 }
             }
         }
