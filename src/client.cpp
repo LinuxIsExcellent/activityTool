@@ -12,7 +12,7 @@ Client::~Client()
 	m_recvBuffer = nullptr;
 }
 
-void Client::OnRecvMsg(char* buffer, int16_t nLength)
+void Client::OnRecvMsg(char* buffer, uint16_t nLength)
 {
 	if(m_nBufferDataSize <= 0)
 	{
@@ -22,7 +22,7 @@ void Client::OnRecvMsg(char* buffer, int16_t nLength)
 	}
 	else if (m_nBufferDataSize <= TCP_PACKET_MAX)
 	{
-		int16_t nAvaliableSize = TCP_PACKET_MAX - m_nBufferDataSize;
+		uint16_t nAvaliableSize = TCP_PACKET_MAX - m_nBufferDataSize;
 		nLength = MIN(nLength, nAvaliableSize);
 
 		memcpy(m_recvBuffer + m_nBufferDataSize, buffer, nLength);
@@ -45,7 +45,7 @@ void Client::OnRecvMsg(char* buffer, int16_t nLength)
 		OnNetMsgProcess(packet);
 
 		// 使用了的缓冲区大小
-		int16_t nUseSize = packetLength + 4;
+		uint16_t nUseSize = packetLength + 4;
 		// 把缓冲区的剩余数据移到最前面
 		memcpy(m_recvBuffer, m_recvBuffer + nUseSize, TCP_PACKET_MAX - nUseSize);
 		// 重新设置缓冲区的字节大小
@@ -53,7 +53,7 @@ void Client::OnRecvMsg(char* buffer, int16_t nLength)
 	}
 }
 
-void Client::SendData(int16_t nSystem, int16_t nCmd, string data)
+void Client::SendData(uint16_t nSystem, uint16_t nCmd, string data)
 {
 	// 先计算出包体的总长度
 	// 因为packet类增加字符串的时候会增加2字节的长度和1字节的结束字符
@@ -67,24 +67,26 @@ void Client::SendData(int16_t nSystem, int16_t nCmd, string data)
 
 void Client::OnNetMsgProcess(Packet &packet)
 {
-	int16_t nSystem, nCmd;
-	packet >> nSystem >> nCmd;
-	
-	std::string dataStr(packet.getDataBegin() + 4, packet.getLength() - 4);
-	if (nSystem == 0)
-	{
-		if (nCmd == test_2::client_msg::REQUEST_LOGIN)
-		{
-			OnSendFileTreeInfoToClient();
-		}
-		else if (nCmd == test_2::client_msg::REQUSET_LUA_TABLE_INFO)
-		{
-			test_2::client_lua_table_data_quest quest;
-			quest.ParseFromArray(packet.getDataBegin() + 4, packet.getLength() - 4);
+	uint16_t nSystem, nCmd;
+    const char* strData;
+
+    packet >> nSystem >> nCmd >> strData;
+    LOG_INFO("客户端请求协议: " + std::to_string(nSystem) + " " + std::to_string(nCmd));
+
+    if (nSystem == 0)
+    {
+        if (nCmd == test_2::client_msg::REQUEST_LOGIN)
+        {
+        	OnSendFileTreeInfoToClient();
+        }
+        else if (nCmd == test_2::client_msg::REQUSET_LUA_TABLE_INFO)
+        {
+        	test_2::client_lua_table_data_quest quest;
+			quest.ParseFromString(strData);
 
 			OnSendLuaTableDataToClient(quest.file_name());
-		}
-	}
+        }
+    }
 }
 
 void Client::OnConnect(struct sockaddr_in & address, int fd)
@@ -103,9 +105,6 @@ void Client::OnConnect(struct sockaddr_in & address, int fd)
 // 断开链接
 void Client::OnDisconnect()
 {
-	// 释放文件描述符
-	close(m_fd);
-
 	LOG_INFO("客户端断开链接： ip = " + std::string(ip) + ", port = " + std::to_string(m_nPort));
 }
 
@@ -123,17 +122,18 @@ void Client::OnSendFileTreeInfoToClient()
 	{
 		test_2::server_send_file_tree_notify notify;
 
-		map<string, LuaDataContainer*>::iterator iter;
-		for (; iter != mLuaTableDatas->end(); ++iter)
+		for (map<string, LuaDataContainer*>::iterator iter = mLuaTableDatas->begin(); iter != mLuaTableDatas->end(); ++iter)
 		{
 			std::string* fileName = notify.add_lua_file_names();
-
-			*fileName = iter->first;
+			if(fileName)
+			{
+				LOG_INFO("file name1 = " /*+ iter->first*/);
+				*fileName = iter->first;
+			}
 		}
 
 		string output;
     	notify.SerializeToString(&output);
-
     	SendData(0, test_2::server_msg::SEND_FILE_TREE_INFO, output);
 	}
 }

@@ -10,7 +10,7 @@ config_path = "/root/workspace/dev_ph/script/config"
 config_file_path =
 {
 	"day_login.lua",
-	-- "time_slot_login.lua",
+	"time_slot_login.lua",
 }
 
 -- 中间件文件路径

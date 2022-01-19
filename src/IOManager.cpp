@@ -68,7 +68,13 @@ void IOManager::AddListeningFd(string ip, int port)
 
     m_listenFd = socket(PF_INET, SOCK_STREAM, 0);
     assert(m_listenFd >= 0);
- 
+    
+    // 设置监听的socket可以重用
+    // 因为如果服务器退出的时候，断开所有的tcp连接，这时候客户端那边还没有返回四次挥手的确认断开ack，服务器直接关闭的话，会导致产生TIME_OUT状态的tcp连接
+    // 一旦有TIME_OUT状态的连接存在，服务器重启是无法监听这个地址的
+    const int on = 1;
+    setsockopt(m_listenFd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+
     int ret = bind(m_listenFd, (struct sockaddr*)&address, sizeof(address));
     if(ret == -1)
     {
@@ -89,6 +95,8 @@ void IOManager::OnClientDisconnect(int sockfd)
     if (it != m_mClients.end() )
     {
         it->second->OnDisconnect();
+        close(sockfd);
+        m_mClients.erase(it);
     }
 }
 
@@ -103,7 +111,10 @@ void IOManager::Exit()
         epoll_ctl(m_epollFd, EPOLL_CTL_DEL, it->first, NULL);
         // 客户端断开链接
         it->second->OnDisconnect();
+        close(it->first);  
     }
+
+    m_mClients.clear();
 }
 
 void IOManager::Loop()
@@ -174,6 +185,7 @@ void IOManager::Loop()
                 int ret = recv(sockfd, buf, TCP_PACKET_MAX - 1, 0);
                 if (ret <= 0)
                 {
+                    LOG_INFO("收到客户端的关闭");
                     OnClientDisconnect(sockfd);
                 }
                 else if (ret > 0)
