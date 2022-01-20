@@ -94,7 +94,10 @@ void IOManager::OnClientDisconnect(int sockfd)
     std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
     if (it != m_mClients.end() )
     {
-        it->second->OnDisconnect();
+        Client* client = it->second;
+        client->OnDisconnect();
+        delete client;
+
         close(sockfd);
         m_mClients.erase(it);
     }
@@ -140,6 +143,8 @@ void IOManager::Loop()
                 {
                     m_mClients.insert(pair <int,Client*> (connfd, client));
                     client->OnConnect(client_address, connfd);
+
+                    // client->OnSendFileTreeInfoToClient();
                 }
             }
             // 信号事件
@@ -180,20 +185,34 @@ void IOManager::Loop()
             // IO事件
             else if (m_events[i].events&EPOLLIN)
             {
-                // 多了一层数据拷贝，空间照成浪费
-                char buf[TCP_PACKET_MAX];
-                int ret = recv(sockfd, buf, TCP_PACKET_MAX - 1, 0);
-                if (ret <= 0)
+                char buf[TCP_BUFFER_SIZE];
+                while(1)
                 {
-                    LOG_INFO("收到客户端的关闭");
-                    OnClientDisconnect(sockfd);
-                }
-                else if (ret > 0)
-                {
-                    std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
-                    if (it != m_mClients.end() )
+                    memset(buf, '\0', TCP_BUFFER_SIZE);
+                    int ret = recv(sockfd, buf, TCP_BUFFER_SIZE - 1, 0);
+                    LOG_INFO("ret = " + std::to_string(ret));
+                    if (ret < 0)
                     {
-                        it->second->OnRecvMsg(buf, ret);
+                        if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
+                        {
+                            break;
+                        }
+                        OnClientDisconnect(sockfd);
+                        break;
+                    }
+                    else if (ret == 0)
+                    {
+                        LOG_INFO("客户端主动断开连接");
+                        OnClientDisconnect(sockfd);
+                        break;
+                    }
+                    else
+                    {
+                        std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
+                        if (it != m_mClients.end() )
+                        {
+                            it->second->OnRecvMsg(buf, ret);
+                        }
                     }
                 }
             }

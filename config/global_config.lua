@@ -11,6 +11,8 @@ config_file_path =
 {
 	"day_login.lua",
 	"time_slot_login.lua",
+	"item.lua",
+	"province.lua",
 }
 
 -- 中间件文件路径

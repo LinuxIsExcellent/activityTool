@@ -130,8 +130,7 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     while(lua_next(L, -2))
     {
     	int nKey = lua_tonumber(L, -2);
-    	cout << nKey << endl;
-
+        
         row_lists = _table.add_row_lists();
         row_lists->set_key(std::to_string(nKey));
 
@@ -190,13 +189,13 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     _table.set_row_count(nRow);
     _table.set_column_count(nColumn);
 
-    std::string protoStr;
-    google::protobuf::TextFormat::PrintToString(_table, &protoStr);
-    LOG_INFO(protoStr);
+    // std::string protoStr;
+    // google::protobuf::TextFormat::PrintToString(_table, &protoStr);
+    // LOG_INFO(protoStr);
 
-    string output;
-    _table.SerializeToString(&output);
-    LOG_ERROR(output);
+    // string output;
+    // _table.SerializeToString(&output);
+    // LOG_ERROR(output);
 
     return true;
 }

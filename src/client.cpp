@@ -2,17 +2,22 @@
 
 Client::Client()
 {
-	m_recvBuffer = (char*) malloc(TCP_PACKET_MAX);
+	m_recvBuffer = (char*) malloc(RECV_BUFFER_SIZE);
 	m_nBufferDataSize = 0;
 }
 
 Client::~Client()
 {
+	LOG_INFO("客户端析构");
+
+	std::cout << "大小 = " << RECV_BUFFER_SIZE << std::endl;
+
 	free(m_recvBuffer);
 	m_recvBuffer = nullptr;
+
 }
 
-void Client::OnRecvMsg(char* buffer, uint16_t nLength)
+void Client::OnRecvMsg(char* buffer, uint nLength)
 {
 	if(m_nBufferDataSize <= 0)
 	{
@@ -20,9 +25,9 @@ void Client::OnRecvMsg(char* buffer, uint16_t nLength)
 		memcpy(m_recvBuffer, buffer, nLength);
 		m_nBufferDataSize = nLength;
 	}
-	else if (m_nBufferDataSize <= TCP_PACKET_MAX)
+	else if (m_nBufferDataSize <= RECV_BUFFER_SIZE)
 	{
-		uint16_t nAvaliableSize = TCP_PACKET_MAX - m_nBufferDataSize;
+		uint nAvaliableSize = RECV_BUFFER_SIZE - m_nBufferDataSize;
 		nLength = MIN(nLength, nAvaliableSize);
 
 		memcpy(m_recvBuffer + m_nBufferDataSize, buffer, nLength);
@@ -39,26 +44,28 @@ void Client::OnRecvMsg(char* buffer, uint16_t nLength)
 
 	int packetLength = *(int*)m_recvBuffer;
 	// 如果缓冲区的字节数量大于等于包头的大小, 则解析一个完整的数据包
-	if (packetLength < TCP_PACKET_MAX && m_nBufferDataSize - 4 >= packetLength)
+	if (packetLength < RECV_BUFFER_SIZE && m_nBufferDataSize - 4 >= packetLength)
 	{
 		Packet packet(m_recvBuffer + 4, packetLength);
 		OnNetMsgProcess(packet);
 
 		// 使用了的缓冲区大小
-		uint16_t nUseSize = packetLength + 4;
+		uint nUseSize = packetLength + 4;
 		// 把缓冲区的剩余数据移到最前面
-		memcpy(m_recvBuffer, m_recvBuffer + nUseSize, TCP_PACKET_MAX - nUseSize);
+		memcpy(m_recvBuffer, m_recvBuffer + nUseSize, RECV_BUFFER_SIZE - nUseSize);
 		// 重新设置缓冲区的字节大小
 		m_nBufferDataSize = m_nBufferDataSize - nUseSize;
 	}
 }
 
-void Client::SendData(uint16_t nSystem, uint16_t nCmd, string data)
+void Client::SendData(uint16_t nSystem, uint16_t nCmd, string& data)
 {
 	// 先计算出包体的总长度
 	// 因为packet类增加字符串的时候会增加2字节的长度和1字节的结束字符
 	// 所以除了nSystem和nCmd之外需要多增加3字节的数据长度
-	int nDataLength = sizeof(nSystem) + sizeof(nCmd) + 3 + data.length();
+
+	LOG_INFO("发送数据包: nSystem = " + std::to_string(nSystem) + ", nCmd = " + std::to_string(nCmd) + ", length = " + std::to_string(data.length()));
+	uint nDataLength = sizeof(nSystem) + sizeof(nCmd) + 3 + data.length();
 	Packet packet;
 	packet << nDataLength << nSystem << nCmd << data.c_str();
 
@@ -124,10 +131,9 @@ void Client::OnSendFileTreeInfoToClient()
 
 		for (map<string, LuaDataContainer*>::iterator iter = mLuaTableDatas->begin(); iter != mLuaTableDatas->end(); ++iter)
 		{
-			std::string* fileName = notify.add_lua_file_names();
+			std::string* fileName = notify.add_lua_table_file_names();
 			if(fileName)
 			{
-				LOG_INFO("file name1 = " /*+ iter->first*/);
 				*fileName = iter->first;
 			}
 		}
