@@ -37,7 +37,7 @@ string LuaDataContainer::ParseLuaTableToString(lua_State *L)
 
         if (lua_type(L, -2) == LUA_TNUMBER || lua_type(L, -2) == LUA_TNIL)
         {
-            sKey = std::to_string(lua_tointeger(L, -2));
+            sKey = "[" + std::to_string(lua_tointeger(L, -2)) + "]";
         }
         else if (lua_type(L, -2) == LUA_TSTRING)
         {

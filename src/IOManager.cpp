@@ -25,7 +25,7 @@ void IOManager::addfd(int epollfd, int fd)
     event.data.fd=fd;
     event.events = EPOLLIN | EPOLLET;
     epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event);
-    setnonblocking(fd);
+    // setnonblocking(fd);
 }
 
 /*设置信号的处理函数*/
@@ -197,7 +197,8 @@ void IOManager::Loop()
                         {
                             break;
                         }
-                        OnClientDisconnect(sockfd);
+                        LOG_INFO("断开断开断开断开断开断开");
+                        // OnClientDisconnect(sockfd);
                         break;
                     }
                     else if (ret == 0)

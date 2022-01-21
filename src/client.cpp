@@ -69,7 +69,12 @@ void Client::SendData(uint16_t nSystem, uint16_t nCmd, string& data)
 	Packet packet;
 	packet << nDataLength << nSystem << nCmd << data.c_str();
 
+	// 如果该文件描述符是非阻塞模式的话，send函数会根据内核缓冲区的可用空间把数据拷贝到内核，并且直接返回，返回值为已经拷贝了的字节数
+	// 所以最好设置成阻塞模式，这样能保证需要发送的数据全部拷贝到内核缓冲区，并且通过tcp发送到客户端
+	// TODO：可以使用非阻塞模式的socket，但是这样需要在应用层进行比较多的处理，显而易见的解决方案是：如果只拷贝一部分到内核缓冲区，需要继续循环调用send函数
 	send(m_fd, packet.getDataBegin(), packet.getLength(), 0);
+
+	// LOG_INFO("nSendCount = " + std::to_string(nSendCount));
 }
 
 void Client::OnNetMsgProcess(Packet &packet)
