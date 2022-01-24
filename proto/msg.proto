@@ -13,7 +13,7 @@ message net_packet
 enum client_msg
 {
 	REQUEST_LOGIN									= 0;	//客户端请求登陆
-	REQUSET_LUA_TABLE_INFO							= 1;	//请求二维表文件数据
+	REQUSET_LUA_TABLE_DATA							= 1;	//请求二维表文件数据
 }
 
 //服务器消息协议
@@ -76,16 +76,16 @@ message row_data
 //levels :
 //如果为空的话，证明这个squence代表的是最外层的字段顺序。
 //如果levels为{[n]},则代表的是第n个字段为table的表的顺序
-//如果levels为{[n],[n]},则代表的是第n个字段为table的表的第m个字段为table的表的顺序(就证明这个表就是多层结构了)
+//如果levels为{[n],[m]},则代表的是第n个字段为table的表的第m个字段为table的表的顺序(就证明这个表就是多层结构了)
 message field_squence
 {
 	repeated int32 levels						= 1;	//深度队列（如果为空，就是最外层的字段顺序）
-	repeated string field						= 2;	//字段顺序
+	repeated string fields						= 2;	//字段顺序
 	repeated string filed_types 				= 3;	//字段的类型
 }
 
 //一张表的数据(仅仅只是二维程度的展开，如果有多维，则更深维度的表直接转换成string类型的数据)
-message table_info
+message table_data
 {
 	string  table_name 							= 1;	//表名
 	int32	row_count 							= 2;	//多少行
@@ -94,4 +94,11 @@ message table_info
 	repeated string filed_types 				= 5;	//字段的类型(跟字段名一一对应)
 	repeated field_squence filed_sequences 		= 6;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序)
 	repeated row_data row_lists 				= 7;	//行数据列表
+}
+
+//一张二维表的其它信息(对应的是server里面的LuaTableInfoContainer类读取的lua文件结构)
+message table_info
+{
+	string  table_name 							= 1;	//表名
+	repeated field_squence filed_sequences 		= 2;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序)
 }

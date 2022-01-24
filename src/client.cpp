@@ -91,7 +91,7 @@ void Client::OnNetMsgProcess(Packet &packet)
         {
         	OnSendFileTreeInfoToClient();
         }
-        else if (nCmd == test_2::client_msg::REQUSET_LUA_TABLE_INFO)
+        else if (nCmd == test_2::client_msg::REQUSET_LUA_TABLE_DATA)
         {
         	test_2::client_lua_table_data_quest quest;
 			quest.ParseFromString(strData);

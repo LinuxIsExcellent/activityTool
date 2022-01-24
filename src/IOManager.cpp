@@ -106,9 +106,7 @@ void IOManager::OnClientDisconnect(int sockfd)
 // 退出事件循环，释放资源，断开所有客户端链接
 void IOManager::Exit()
 {
-    std::map<int, Client*>::iterator it;
-
-    for (it = m_mClients.begin(); it != m_mClients.end(); ++it)
+    for (auto it = m_mClients.begin(); it != m_mClients.end(); ++it)
     {
         // 在epoll中删除掉监听的文件描述符
         epoll_ctl(m_epollFd, EPOLL_CTL_DEL, it->first, NULL);

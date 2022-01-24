@@ -3,6 +3,7 @@
 #include <map>
 
 class LuaDataContainer;
+class LuaTableInfoContainer;
 
 // LuaDataContainer类管理器
 class LuaConfigManager
@@ -24,6 +25,9 @@ public:
     // 加载所有的lua配置
     void LoadAllLuaConfigData(lua_State *L);
 
+    // 加载所有文件的中间配置
+    void LoadAllLuaTempConfigData(lua_State *L);
+
     // 释放资源
     void FreeData();
 
@@ -37,4 +41,6 @@ private:
     static LuaConfigManager* m_instance;
 
     std::map<string, LuaDataContainer*> m_mDataMap;
+
+    std::map<string, LuaTableInfoContainer*> m_mTableInfoMap;
 };

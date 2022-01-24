@@ -26,6 +26,9 @@ int main()
     //加载所有lua配置数据
     LuaConfigManager::GetInstance()->LoadAllLuaConfigData(L);
 
+    //加载中间所有配置的中间文件
+    LuaConfigManager::GetInstance()->LoadAllLuaTempConfigData(L);
+
     // 初始化IO管理器
     IOManager::GetInstance()->InitIOManager();
     // 监听ip和端口

@@ -15,8 +15,8 @@ config_file_path =
 	"province.lua",
 }
 
--- 中间件文件路径
-temp_config_path = "/root/workspace/test/act_manager/temp_config"
+-- 中间件文件路径,根据在客户端操作表格自动生成的表的信息（字段顺序，字段标注，活动的字段组合...）
+temp_config_path = "/root/workspace/dev_ph/script/config_info"
 
 -- 监听的进程id文件产生的路径
 listening_process_path = "/root/workspace/dev_ph/script/config"

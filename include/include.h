@@ -20,6 +20,7 @@
 #include <Packet.h>
 #include <LuaConfigManager.h>
 #include <LuaDataContainer.h>
+#include <LuaTableInfoContainer.h>
 
 
 #include <sys/types.h>
