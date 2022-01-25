@@ -37,6 +37,11 @@ public:
     {
         return &m_mDataMap;
     }
+
+    std::map<string, LuaTableInfoContainer*>* GetTableInfoMap()
+    {
+        return &m_mTableInfoMap;
+    }
 private:
     static LuaConfigManager* m_instance;
 

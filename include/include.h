@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <stringbuffer.h>
+#include <fstream>
 
 #include <log4cpp/Category.hh>
 #include <log4cpp/FileAppender.hh>

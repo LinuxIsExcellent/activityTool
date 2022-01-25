@@ -11,50 +11,6 @@ LuaDataContainer::~LuaDataContainer()
 	// free data
 }
 
-string LuaDataContainer::GetProtoDataStr()
-{
-    test_2::table_data table_data_proto;
-    table_data_proto.set_table_name(m_LuaFileName);
-    table_data_proto.set_row_count(m_table_data.nRow);
-    table_data_proto.set_column_count(m_table_data.nColumn);
-
-    for (int16_t i = 0; i < m_table_data.dataList.size(); ++i)
-    {
-        test_2::row_data* row_lists = table_data_proto.add_row_lists();
-        if(row_lists)
-        {
-            ROWDATA rowData = m_table_data.dataList[i];
-            row_lists->set_key(std::to_string(rowData.id));
-
-            for (int16_t j = 0; j < rowData.dataList.size(); ++ j)
-            {
-                test_2::pair_value* pairValue = row_lists->add_pair();
-                if (pairValue)
-                {
-                    VALUEPAIR pairData = rowData.dataList[j];
-
-                    pairValue->set_key(pairData.sField);
-                    pairValue->set_value(pairData.sValue);
-                }
-            }
-        }
-    }
-    
-    for (int i = 0; i < m_vFeildStrs.size(); ++i)
-    {
-        std::string* feildName = table_data_proto.add_filed_names();
-        if(feildName)
-        {
-            *feildName = m_vFeildStrs[i];
-        }
-        table_data_proto.add_filed_types(m_vFeildTypes[i]);
-    }
-
-    string output;
-    table_data_proto.SerializeToString(&output);
-    return output;
-}
-
 // 把lua栈中的栈顶元素解析成lua格式的字符串
 string LuaDataContainer::ParseLuaTableToString(lua_State *L)
 {
@@ -142,20 +98,20 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
         LOG_INFO("load lua file success : " + m_LuaFilePath);
     }
 
-    string sLuaTableName = "dataconfig_" + m_LuaFileName;
+    string sGlobalLuaTableName = "dataconfig_" + m_LuaFileName;
 
-    lua_getglobal(L, sLuaTableName.c_str());
+    lua_getglobal(L, sGlobalLuaTableName.c_str());
     if (!lua_istable(L, -1))
     {
         LOG_ERROR("file data is not a table : " + m_LuaFilePath);
-    	cout << "is not a table, "<< sLuaTableName << endl;
+    	cout << "is not a table, "<< sGlobalLuaTableName << endl;
     	return false;
     }
 
     m_table_data.sTableName = m_LuaFileName;
 
     std::map<string, int> mFeildStrs;
-    m_vFeildTypes.clear();
+    m_mFeildTypes.clear();
     //置空栈顶
     lua_pushnil(L);
 
@@ -220,7 +176,7 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
                     mFeildStrs.insert(pair<string, int> (sKey, mFeildStrs.size() + 1));
 
                     m_vFeildStrs.push_back(sKey);
-                    m_vFeildTypes.push_back(test_2::DATA_TYPE(nValueType));
+                    m_mFeildTypes.insert(pair<string, int> (sKey, int(nValueType)));
                 }
 
                 row_data.dataList.push_back(pair_value);
@@ -239,8 +195,148 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
         nRow += 1;
     }
 
+    // 根据中间文件的外围数据，把字段重新排序一次
+    std::map<string, LuaTableInfoContainer*>* mTableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
+    if (mTableInfoMap)
+    {
+        auto iter = mTableInfoMap->find(m_LuaFileName);
+        if (iter != mTableInfoMap->end())
+        {   
+            std::map<string, int> mFieldSquence;
+            std::vector<FIELDSQUENCE> vFieldSquences = iter->second->GetFieldQquenceData();
+            for (int i = 0; i < vFieldSquences.size(); ++i)
+            {
+                FIELDSQUENCE squence = vFieldSquences[i];
+                if(squence.vNLevels.size() == 0)
+                {
+                    for (int j = 0; j < squence.vSFieldSquences.size(); ++j)
+                    {
+                        mFieldSquence.insert(pair<string, int> (squence.vSFieldSquences[j], j));
+                    }
+                }
+            }
+
+            sort(m_vFeildStrs.begin(), m_vFeildStrs.end(), [mFieldSquence](const string& a, const string& b)
+            {
+                auto iterA = mFieldSquence.find(a);
+                auto iterB = mFieldSquence.find(b);
+                int nFactorA = 9999;
+                int nFactorB = 9999;
+
+                if (iterA != mFieldSquence.end())
+                {
+                    nFactorA = iterA->second;
+                }
+
+                if (iterB != mFieldSquence.end())
+                {
+                    nFactorB = iterB->second;
+                }
+
+
+                return nFactorA < nFactorB;
+            });
+        }
+    }
+
     m_table_data.nRow = nRow;
     m_table_data.nColumn = nColumn;
 
+    DumpTableDataToConfigFile();
     return true;
+}
+
+bool FieldSort(VALUEPAIR a, VALUEPAIR b)
+{
+    return false;
+}
+
+void LuaDataContainer::DumpTableDataToConfigFile()
+{
+    ofstream ofs;
+    //3.打开文件，如果没有，会在同级目录下自动创建该文件
+    ofs.open("file.lua", ios::out);//采取追加的方式写入文件
+    
+    string sGlobalLuaTableName = "dataconfig_" + m_LuaFileName;
+    string sLocalLuaTableName = "local_dataconfig_" + m_LuaFileName;
+    //4.写入文件
+    ofs << sGlobalLuaTableName << " = " << "{}" << endl;
+    ofs << endl;
+    ofs << "local " << sLocalLuaTableName << " = " << sGlobalLuaTableName << endl;
+    ofs << endl;
+
+    for (int i = 0; i < m_table_data.dataList.size(); ++i)
+    {
+        ROWDATA rowData = m_table_data.dataList[i];
+
+        sort(rowData.dataList.begin(), rowData.dataList.end(), [this](VALUEPAIR a, VALUEPAIR b)
+        {
+            int nFactorA = 9999;
+            int nFactorB = 9999;
+            for (int i = 0; i < this->m_vFeildStrs.size(); ++i)
+            {
+                if (this->m_vFeildStrs[i] == a.sField)
+                {
+                    nFactorA = i;
+                }
+
+                if (this->m_vFeildStrs[i] == b.sField)
+                {
+                    nFactorB = i;
+                }
+            }
+
+            return nFactorA < nFactorB;
+        });
+
+        ofs << sLocalLuaTableName << "[" << rowData.id << "]" << " = { ";
+        for (int j = 0; j < rowData.dataList.size(); ++j)
+        {
+            VALUEPAIR pair = rowData.dataList[j];
+
+            ofs << pair.sField << " = ";
+
+            if (m_mFeildTypes.find(pair.sField) != m_mFeildTypes.end())
+            {
+                switch(m_mFeildTypes.find(pair.sField)->second)
+                {
+                    case LUA_TSTRING:
+                    {
+                        ofs << "\"" << pair.sValue << "\"";
+                        break;
+                    }
+                    case LUA_TBOOLEAN:
+                    {
+                        if(pair.sValue == "0")
+                        {
+                            ofs << "false";
+                        }
+                        else
+                        {
+                            ofs << "true";
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        ofs << pair.sValue;
+                        break;
+                    }
+                }
+            }
+
+            if (j != rowData.dataList.size() - 1)
+            {
+                 ofs << ", ";
+            }
+        }
+
+
+        ofs << " }" << endl;
+    }
+
+    ofs << endl;
+    ofs << "return " << sGlobalLuaTableName << endl;
+    //5.关闭流
+    ofs.close();
 }

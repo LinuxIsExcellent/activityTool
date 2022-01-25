@@ -24,6 +24,12 @@ public:
 
     // 获取数据
     string GetStrData();
+
+    // 获取字段顺序队列数据
+    std::vector<FIELDSQUENCE>& GetFieldQquenceData()
+    {
+        return m_vFieldSquences;
+    }
 private:
 
 private:

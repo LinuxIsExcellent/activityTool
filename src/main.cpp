@@ -23,11 +23,11 @@ int main()
     //加载全局配置表
     GlobalConfig::GetInstance()->LoadConfig(L, "../config/global_config.lua");
 
-    //加载所有lua配置数据
-    LuaConfigManager::GetInstance()->LoadAllLuaConfigData(L);
-
     //加载中间所有配置的中间文件
     LuaConfigManager::GetInstance()->LoadAllLuaTempConfigData(L);
+
+    //加载所有lua配置数据
+    LuaConfigManager::GetInstance()->LoadAllLuaConfigData(L);
 
     // 初始化IO管理器
     IOManager::GetInstance()->InitIOManager();
