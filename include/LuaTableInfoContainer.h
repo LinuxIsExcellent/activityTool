@@ -1,13 +1,6 @@
 #pragma once
 #include "include.h"
 
-typedef struct fieldSquence
-{
-    std::vector<uint16_t> vNLevels;         //深度队列
-    std::vector<std::string> vSFieldSquences;       //对应的字段顺序
-}FIELDSQUENCE;
-
-
 // Lua文件的非数据的信息类
 // 根据在客户端操作表格自动生成的表的信息（字段顺序，字段标注，活动的字段组合...）
 class LuaTableInfoContainer

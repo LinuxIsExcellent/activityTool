@@ -23,6 +23,7 @@ string LuaDataContainer::ParseLuaTableToString(lua_State *L)
 
     lua_pushnil(L);
     bool has_field = false;
+    // LOG_INFO("lua_rawlen - " + std::to_string(lua_rawlen(L, -2)));
     while(lua_next(L, -2))
     {
         string sKey = "";
@@ -33,7 +34,15 @@ string LuaDataContainer::ParseLuaTableToString(lua_State *L)
         }
         else if (lua_type(L, -2) == LUA_TSTRING)
         {
-            sKey = lua_tostring(L, -2);
+            string strKey = lua_tostring(L, -2);
+            if (ISDIGIT(strKey))
+            {
+                sKey = std::string("[\"") + lua_tostring(L, -2) + std::string("\"]");
+            }
+            else
+            {
+                sKey = lua_tostring(L, -2);
+            }
         }
 
         sValueTable = sValueTable + sKey + " = ";
@@ -45,7 +54,7 @@ string LuaDataContainer::ParseLuaTableToString(lua_State *L)
         }
         else if (lua_type(L, -1) == LUA_TSTRING)
         {
-            sValueTable = sValueTable + lua_tostring(L, -1);
+            sValueTable = sValueTable + std::string("\"") + lua_tostring(L, -1) + std::string("\"");
             // cout << "sValue = " << lua_tostring(L, -1) << endl;
         }
         else if (lua_type(L, -1) == LUA_TBOOLEAN)
@@ -338,7 +347,7 @@ void LuaDataContainer::DumpTableDataToConfigFile()
                     {
                         if (pair.sValue == "")
                         {
-                            ofs << "{}";
+                            ofs << "nil";
                         }
                         else
                         {

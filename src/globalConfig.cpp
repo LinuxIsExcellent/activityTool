@@ -22,6 +22,8 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     m_ListeningIp = lua_tostring(L, -1);
     lua_getglobal(L, "server_port");
     m_ListeningPort = lua_tonumber(L, -1);
+    lua_getglobal(L, "script_operate_path");
+    m_sShellPath = lua_tostring(L, -1);
 
     // Lua文件列表
     lua_getglobal(L, "config_file_path");
@@ -39,5 +41,23 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
 
         m_listenLuaFileList.push_back(strFile);
         lua_pop(L, 1);
+    }
+
+    // 可执行的shell脚本列表
+    lua_getglobal(L, "shell_config");
+    m_vShellConfig.clear();
+    if (lua_istable(L, -1))
+    {
+        lua_pushnil(L);
+        while(lua_next(L, -2))
+        {
+            VALUEPAIR pair;
+            pair.sField = lua_tostring(L, -2);
+            pair.sValue = lua_tostring(L, -1);
+
+            m_vShellConfig.push_back(pair);
+
+            lua_pop(L, 1);
+        }   
     }
 }

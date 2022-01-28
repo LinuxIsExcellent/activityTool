@@ -90,6 +90,7 @@ void Client::OnNetMsgProcess(Packet &packet)
         if (nCmd == test_2::client_msg::REQUEST_LOGIN)
         {
         	OnSendFileTreeInfoToClient();
+        	OnSendShellConfigToClient();
         }
         else if (nCmd == test_2::client_msg::REQUSET_LUA_TABLE_DATA)
         {
@@ -104,6 +105,13 @@ void Client::OnNetMsgProcess(Packet &packet)
 			quest.ParseFromString(strData);
 
 			OnClientQuestSaveTableData(quest);
+        }
+        else if (nCmd == test_2::client_msg::REQUSET_SHELL_OPTIONS)
+        {
+        	test_2::client_shell_option_quest quest;
+			quest.ParseFromString(strData);
+
+			RequesetExceShellOps(quest.option());
         }
     }
 }
@@ -127,6 +135,64 @@ void Client::OnDisconnect()
 	LOG_INFO("客户端断开链接： ip = " + std::string(ip) + ", port = " + std::to_string(m_nPort));
 }
 
+void Client::RequesetExceShellOps(string option)
+{
+	const std::vector<VALUEPAIR>& vShellConfig = GlobalConfig::GetInstance()->GetShellConfig();
+
+	const string& sShellPath = GlobalConfig::GetInstance()->GetShellPath();
+
+	string shell_value;
+	for (int i = 0; i < vShellConfig.size(); ++i)
+	{
+		if (vShellConfig[i].sField == option)
+		{
+			shell_value = vShellConfig[i].sValue;
+		}
+	}
+
+	if (shell_value.empty()) return;
+
+	shell_value = sShellPath + "/" +  shell_value;
+
+	char line[2048];
+
+	FILE* fp;
+
+	LOG_INFO("请求执行shell 指令： " + shell_value);
+	if ((fp = popen(shell_value.c_str(), "r")) == NULL)
+	{
+		LOG_ERROR("执行shell指令错误 : " + option);
+		return;
+	}
+
+	while(fgets(line, sizeof(line) - 1, fp) != NULL)
+	{
+		test_2::send_shell_option_print_notify notify;
+
+		notify.set_line(string(line));
+		notify.set_flag(0);
+
+		string output;
+    	notify.SerializeToString(&output);
+
+		SendData(0, test_2::server_msg::SEND_OPTION_SHELL_PRINT, output);
+		LOG_INFO(string(line));
+	}
+
+	test_2::send_shell_option_print_notify notify;
+
+	notify.set_line("脚本执行结束");
+	notify.set_flag(1);
+
+	string output;
+    notify.SerializeToString(&output);
+
+	SendData(0, test_2::server_msg::SEND_OPTION_SHELL_PRINT, output);
+
+	LOG_INFO("shell 指令执行完毕");
+	pclose(fp);
+}
+
 void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest)
 {
 	std::map<string, LuaDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
@@ -144,7 +210,6 @@ void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& 
 		SendData(0, test_2::server_msg::SEND_LUA_TABLE_DATA, testData);
 	}
 }
-
 
 void Client::OnSendLuaTableDataToClient(std::string sFile)
 {
@@ -172,5 +237,28 @@ void Client::OnSendFileTreeInfoToClient()
 		string output;
     	notify.SerializeToString(&output);
     	SendData(0, test_2::server_msg::SEND_FILE_TREE_INFO, output);
+	}
+}
+
+void Client::OnSendShellConfigToClient()
+{
+	const std::vector<VALUEPAIR>& vShellConfig = GlobalConfig::GetInstance()->GetShellConfig();
+
+	if (vShellConfig.size() > 0)
+	{
+		test_2::server_send_shell_config_notify notify;
+
+		for (int i = 0; i < vShellConfig.size(); ++i)
+		{
+			std::string* fileName = notify.add_shell_ops();
+			if(fileName)
+			{
+				*fileName = vShellConfig[i].sField;
+			}
+		}
+
+		string output;
+    	notify.SerializeToString(&output);
+    	SendData(0, test_2::server_msg::SEND_SHELL_CONFIG, output);
 	}
 }

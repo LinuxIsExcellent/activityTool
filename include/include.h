@@ -8,22 +8,6 @@
 #include <stringbuffer.h>
 #include <fstream>
 
-#include <log4cpp/Category.hh>
-#include <log4cpp/FileAppender.hh>
-#include <log4cpp/BasicLayout.hh>
-#include <log4cpp/PropertyConfigurator.hh>
-#include <google/protobuf/text_format.h>
-
-#include <enum.h>
-#include <Log.h>
-#include <globalConfig.h>
-#include <msg.pb.h>
-#include <Packet.h>
-#include <LuaConfigManager.h>
-#include <LuaDataContainer.h>
-#include <LuaTableInfoContainer.h>
-
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -42,3 +26,19 @@ extern "C" {
 #include <lualib.h>
 #include <lauxlib.h>
 }
+
+#include <log4cpp/Category.hh>
+#include <log4cpp/FileAppender.hh>
+#include <log4cpp/BasicLayout.hh>
+#include <log4cpp/PropertyConfigurator.hh>
+#include <google/protobuf/text_format.h>
+
+#include <enum.h>
+#include <internel_struct.h>
+#include <Log.h>
+#include <globalConfig.h>
+#include <msg.pb.h>
+#include <Packet.h>
+#include <LuaConfigManager.h>
+#include <LuaDataContainer.h>
+#include <LuaTableInfoContainer.h>

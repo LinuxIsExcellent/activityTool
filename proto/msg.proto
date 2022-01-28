@@ -15,6 +15,7 @@ enum client_msg
 	REQUEST_LOGIN									= 0;	//客户端请求登陆
 	REQUSET_LUA_TABLE_DATA							= 1;	//请求二维表文件数据
 	REQUSET_SAVE_TABLE_DATA							= 2;	//请求保存二维表数据
+	REQUSET_SHELL_OPTIONS							= 3;	//客户端请求执行shell指令
 }
 
 //服务器消息协议
@@ -23,6 +24,8 @@ enum server_msg
 	SEND_FILE_TREE_INFO								= 0;	//推送当前左边文件树的数据
 	SEND_SERVER_TIME								= 1;	//推送当前服务器时间
 	SEND_LUA_TABLE_DATA								= 2;	//推送单个二维表文件数据
+	SEND_SHELL_CONFIG								= 3;	//推送可执行的shell指令
+	SEND_OPTION_SHELL_PRINT							= 4;	//推送执行shell的打印
 }
 
 //客户端请求登陆
@@ -39,10 +42,22 @@ message server_send_file_tree_notify
 	repeated string group_names							= 3;	//组合的名字列表
 }
 
+// 推送可执行的shell指令
+message server_send_shell_config_notify
+{
+	repeated string shell_ops							= 1;	//shell指令列表
+}
+
 //客户端请求二维表文件数据
 message client_lua_table_data_quest
 {
 	string file_name								= 1;	//文件名字
+}
+
+//客户端请求执行shell指令
+message client_shell_option_quest
+{
+	string option									= 1;	//指令名字
 }
 
 //推送当前服务器时间
@@ -111,4 +126,11 @@ message client_save_table_data_request
 {
 	string  table_name 							= 1;	//表名
 	repeated row_data   row_lists 				= 2;	//行数据列表	
+}
+
+//服务器返回推送执行shell的打印
+message send_shell_option_print_notify
+{
+	string  	line  							= 1;	//打印行数据
+	int32  		flag  							= 2; 	//是否结束(0: 未结束 1:结束)
 }

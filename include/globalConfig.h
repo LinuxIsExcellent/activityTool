@@ -20,34 +20,44 @@ public:
 
     void LoadConfig(lua_State* L, string fileName);
 
-    string getListeningIp()
+    inline string getListeningIp()
     {
         return m_ListeningIp;
     }
 
-    int getListeningPort()
+    inline int getListeningPort()
     {
     	return m_ListeningPort;
     }
 
-    string getConfigPath()
+    inline string getConfigPath()
     {
         return m_ConfigPath;
     }
 
-    string getTempConfigPath()
+    inline string getTempConfigPath()
     {
         return m_TempConfigPath;
     }
 
-    string getListeningProcessPath()
+    inline string getListeningProcessPath()
     {
         return m_ListeningProcessPath;
     }
 
-    std::vector<string>& GetListenLuaFileList()
+    inline std::vector<string>& GetListenLuaFileList()
     {
         return m_listenLuaFileList;
+    }
+
+    inline const string& GetShellPath()
+    {
+        return m_sShellPath;
+    }
+
+    inline const std::vector<VALUEPAIR>& GetShellConfig()
+    {
+        return m_vShellConfig;
     }
 private:
     static GlobalConfig* m_instance;
@@ -61,4 +71,7 @@ private:
     // char* m_ConfigPath;  //可监听的进程id文件的名字
 
     std::vector<string> m_listenLuaFileList;    //监听的所有lua文件列表
+
+    string m_sShellPath;        //shell脚本路径
+    std::vector<VALUEPAIR>      m_vShellConfig;     //可以执行的shell脚本
 };

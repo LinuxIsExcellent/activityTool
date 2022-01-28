@@ -9,10 +9,11 @@ config_path = "/root/workspace/dev_ph/script/config"
 -- 所有的配置文件(没有包含就不会读取)
 config_file_path =
 {
-	"day_login.lua",
-	"time_slot_login.lua",
-	"item.lua",
-	"province.lua",
+	-- "day_login.lua",
+	-- "time_slot_login.lua",
+	-- "item.lua",
+	-- "province.lua",
+	"bonus_rain.lua",
 }
 
 -- 中间件文件路径,根据在客户端操作表格自动生成的表的信息（字段顺序，字段标注，活动的字段组合...）
@@ -40,11 +41,11 @@ listening_process_config =
 }
 
 -- 使用脚本路径
-script_operate_path = "/root/workspace/dev_ph"
+script_operate_path = "/root/workspace/activityTool/shell_script"
 -- 使用脚本
-third_party_config = 
+shell_config = 
 {
-	{"重刷脚本", "reload_all.sh"},
-	{"关闭服务器", "stop_all.sh"},
-	{"开启服务器", "start.sh"},
+	-- ["重刷脚本"] = "reload_all.sh",
+	["关闭服务器"] = "stop_server.sh",
+	["开启服务器"] = "start_server.sh",
 }
