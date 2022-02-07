@@ -2,3 +2,7 @@ Note by zds.
 
 This is a configuration tool that can directly modify the data on server.And show config data on QT dialog.
 
+todo list
+1.lua 的table 里面nil和{}也需要区分
+2.服务器的send需要做成循环，把数据全部发送出去
+

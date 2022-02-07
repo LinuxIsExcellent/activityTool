@@ -27,6 +27,9 @@ public:
 
 	// 发送单个lua二维表文件
 	void OnSendLuaTableDataToClient(std::string sFile);
+
+	// 客户端修改表数据
+	void OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest);
 private:
 	struct sockaddr_in m_client_address;	//客户端连接信息
 	char ip[INET_ADDRSTRLEN];	//客户端ip

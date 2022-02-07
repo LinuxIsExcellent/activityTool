@@ -35,6 +35,8 @@ public:
     // 加载lua配置的数据
     bool LoadLuaConfigData(lua_State* L);
 
+    bool UpdateData(test_2::client_save_table_data_request& proto);
+
     // 获取二维表的数据
     const TABLEDATA& GetTableData()
     {

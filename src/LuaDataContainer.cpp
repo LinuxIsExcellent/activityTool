@@ -195,6 +195,11 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
         nRow += 1;
     }
 
+    sort(m_table_data.dataList.begin(), m_table_data.dataList.end(), [](const ROWDATA& a, const ROWDATA& b)
+    {
+        return a.id < b.id;
+    });
+
     // 根据中间文件的外围数据，把字段重新排序一次
     std::map<string, LuaTableInfoContainer*>* mTableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
     if (mTableInfoMap)
@@ -242,7 +247,6 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     m_table_data.nRow = nRow;
     m_table_data.nColumn = nColumn;
 
-    DumpTableDataToConfigFile();
     return true;
 }
 
@@ -255,7 +259,7 @@ void LuaDataContainer::DumpTableDataToConfigFile()
 {
     ofstream ofs;
     //3.打开文件，如果没有，会在同级目录下自动创建该文件
-    ofs.open("file.lua", ios::out);//采取追加的方式写入文件
+    ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
     
     string sGlobalLuaTableName = "dataconfig_" + m_LuaFileName;
     string sLocalLuaTableName = "local_dataconfig_" + m_LuaFileName;
@@ -307,7 +311,7 @@ void LuaDataContainer::DumpTableDataToConfigFile()
                     }
                     case LUA_TBOOLEAN:
                     {
-                        if(pair.sValue == "0")
+                        if(pair.sValue == "0" or pair.sValue == "")
                         {
                             ofs << "false";
                         }
@@ -317,9 +321,33 @@ void LuaDataContainer::DumpTableDataToConfigFile()
                         }
                         break;
                     }
+                    case LUA_TNIL:
+                    case LUA_TNUMBER:
+                    {
+                        if (pair.sValue == "")
+                        {
+                            ofs << "0";
+                        }
+                        else
+                        {
+                            ofs << pair.sValue;
+                        }
+                        break;
+                    }
+                    case LUA_TTABLE:
+                    {
+                        if (pair.sValue == "")
+                        {
+                            ofs << "{}";
+                        }
+                        else
+                        {
+                            ofs << pair.sValue;
+                        }
+                        break;
+                    }
                     default:
                     {
-                        ofs << pair.sValue;
                         break;
                     }
                 }
@@ -339,4 +367,47 @@ void LuaDataContainer::DumpTableDataToConfigFile()
     ofs << "return " << sGlobalLuaTableName << endl;
     //5.关闭流
     ofs.close();
+}
+
+bool LuaDataContainer::UpdateData(test_2::client_save_table_data_request& proto)
+{
+    m_table_data.dataList.clear();
+    m_table_data.sTableName = proto.table_name(); 
+
+    int nRow = 0;
+    int nColumn = 0;
+    for (int i = 0; i < proto.row_lists_size();++i)
+    {
+        test_2::row_data row_data = proto.row_lists(i);
+        std::string row_key_str = row_data.key();
+
+        int nRowKey = atoi(row_key_str.c_str());
+
+        ROWDATA rowData;
+        rowData.id = nRowKey;
+
+        int nColumn_ = 0;
+        for (int m = 0; m < row_data.pair_size(); ++m) {
+            test_2::pair_value pair = row_data.pair(m);
+            VALUEPAIR vPairs;
+
+            vPairs.sField = pair.key();
+            vPairs.sValue = pair.value();
+
+            rowData.dataList.push_back(vPairs);
+
+            nColumn_++;
+        }
+
+        nColumn = MAX(nColumn, nColumn_);
+        nRow++;
+        m_table_data.dataList.push_back(rowData);
+    }
+
+    m_table_data.nRow = nRow;
+    m_table_data.nColumn = nColumn;
+
+    DumpTableDataToConfigFile();   
+
+    return true;
 }

@@ -98,6 +98,13 @@ void Client::OnNetMsgProcess(Packet &packet)
 
 			OnSendLuaTableDataToClient(quest.file_name());
         }
+        else if (nCmd == test_2::client_msg::REQUSET_SAVE_TABLE_DATA)
+        {
+        	test_2::client_save_table_data_request quest;
+			quest.ParseFromString(strData);
+
+			OnClientQuestSaveTableData(quest);
+        }
     }
 }
 
@@ -119,6 +126,25 @@ void Client::OnDisconnect()
 {
 	LOG_INFO("客户端断开链接： ip = " + std::string(ip) + ", port = " + std::to_string(m_nPort));
 }
+
+void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest)
+{
+	std::map<string, LuaDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
+	if(tableDataMap)
+	{
+		std::string sFileName = quest.table_name();
+		auto iter = tableDataMap->find(sFileName);
+		if (iter != tableDataMap->end())
+		{
+			iter->second->UpdateData(quest);
+		}
+
+		string testData = LuaConfigManager::GetInstance()->GetLuaDataByName(sFileName);
+
+		SendData(0, test_2::server_msg::SEND_LUA_TABLE_DATA, testData);
+	}
+}
+
 
 void Client::OnSendLuaTableDataToClient(std::string sFile)
 {
