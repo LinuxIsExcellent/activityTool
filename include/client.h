@@ -34,6 +34,9 @@ public:
 	// 客户端修改表数据
 	void OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest);
 
+	// 客户端修改表的外围数据
+	void OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& quest);
+
 private:
 	// 执行shell指令
 	void RequesetExceShellOps(string option);

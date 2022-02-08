@@ -16,6 +16,7 @@ enum client_msg
 	REQUSET_LUA_TABLE_DATA							= 1;	//请求二维表文件数据
 	REQUSET_SAVE_TABLE_DATA							= 2;	//请求保存二维表数据
 	REQUSET_SHELL_OPTIONS							= 3;	//客户端请求执行shell指令
+	REQUEST_SAVE_TABLE_INFO							= 4;	//客户端请求保存二维表的外围信息
 }
 
 //服务器消息协议
@@ -82,6 +83,12 @@ message pair_value
 	string value								= 2;	//数值
 }
 
+message field_type_pair
+{
+	string key									= 1;	//字段
+	int32 lua_type								= 2;	//数据的类型
+}
+
 //一行的数据
 message row_data
 {
@@ -102,16 +109,16 @@ message field_squence
 //一张表的数据(仅仅只是二维程度的展开，如果有多维，则更深维度的表直接转换成string类型的数据)
 message table_data
 {
-	string               table_name 			= 1;	//表名
-	int32			     row_count 				= 2;	//多少行
-	int32	             column_count 			= 3;	//多少列
+	string               		 table_name 			= 1;	//表名
+	int32			     		 row_count 				= 2;	//多少行
+	int32	             		 column_count 			= 3;	//多少列
 
-	repeated string      filed_names 			= 4;	//字段名（直接从lua配置表读取到的字段顺序）
-	repeated int32       filed_types 			= 5;	//字段的类型(跟字段名一一对应, 规定lua的二维表配置字段名对应的字段的类型是一致的)
-	repeated row_data    row_lists 				= 6;	//行数据列表
+	repeated string       		 filed_names 			= 4;	//字段名（直接从lua配置表读取到的字段顺序）
+	repeated field_type_pair     filed_types 			= 5;	//字段的类型(跟字段名一一对应, 规定lua的二维表每行配置字段名对应的字段的类型是一致的)
+	repeated row_data    		 row_lists 				= 6;	//行数据列表
 
 	//下面这部分有可能是没有的，一些由client手动配置的信息（字段顺序，字段标注，活动的字段组合）
-	repeated field_squence filed_sequences 		= 7;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序，这个顺序是由client手动调整的，然后记录在中间配置文件中)
+	repeated field_squence 		 filed_sequences 		= 7;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序，这个顺序是由client手动调整的，然后记录在中间配置文件中)
 }
 
 //一张二维表的其它信息(对应的是server里面的LuaTableInfoContainer类读取的lua文件结构)
@@ -133,4 +140,11 @@ message send_shell_option_print_notify
 {
 	string  	line  							= 1;	//打印行数据
 	int32  		flag  							= 2; 	//是否结束(0: 未结束 1:结束)
+}
+
+//客户端请求保存二维表的外围信息
+message client_save_table_info_request
+{
+	string   				table_name 						= 1;	//表名
+	repeated string 		field 							= 2;	//表的字段
 }

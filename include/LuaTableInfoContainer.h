@@ -15,9 +15,6 @@ public:
     // 加载lua表的信息数据
     bool LoadTableInfoData(lua_State* L);
 
-    // 获取数据
-    string GetStrData();
-
     // 获取字段顺序队列数据
     std::vector<FIELDSQUENCE>& GetFieldQquenceData()
     {
@@ -28,8 +25,6 @@ private:
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
-
-    test_2::table_info _table_info;  //对应的protobuf的数据(把lua表的数据直接存入protobuf里面)
     
     std::vector<FIELDSQUENCE> m_vFieldSquences;     //字段顺序队列
 };

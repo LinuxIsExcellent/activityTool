@@ -113,6 +113,13 @@ void Client::OnNetMsgProcess(Packet &packet)
 
 			RequesetExceShellOps(quest.option());
         }
+        else if (nCmd == test_2::client_msg::REQUEST_SAVE_TABLE_INFO)
+        {
+        	test_2::client_save_table_info_request quest;
+			quest.ParseFromString(strData);
+
+			OnClientQuestSaveTableInfo(quest);
+        }
     }
 }
 
@@ -191,6 +198,11 @@ void Client::RequesetExceShellOps(string option)
 
 	LOG_INFO("shell 指令执行完毕");
 	pclose(fp);
+}
+
+void Client::OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& quest)
+{
+
 }
 
 void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest)

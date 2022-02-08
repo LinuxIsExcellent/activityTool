@@ -47,7 +47,7 @@ string LuaConfigManager::GetLuaDataByName(string name)
             }
         }
     
-        // 根据配置表读出来的字段顺序和字段值的类型
+        // 根据配置表读出来的字段
         for (int i = 0; i < feildStr.size(); ++i)
         {
             std::string* feildName = table_data_proto.add_filed_names();
@@ -61,6 +61,15 @@ string LuaConfigManager::GetLuaDataByName(string name)
                 }
             }
         }
+
+        // 根据配置表读出来的字段的类型
+        // for (auto iter = feildType.begin(); iter != feildType.end(); ++iter)
+        // {
+        //     test_2::field_type_pair table_data_proto.add_filed_types();
+        //     iter->first;
+        //     iter->second;
+
+        // }
 
         // 再填充数据表的外围信息
         auto iter1 = m_mTableInfoMap.find(name);

@@ -11,14 +11,6 @@ LuaTableInfoContainer::~LuaTableInfoContainer()
 	// free data
 }
 
-string LuaTableInfoContainer::GetStrData()
-{
-    string output;
-    _table_info.SerializeToString(&output);
-    
-    return output;
-}
-
  void LuaTableInfoContainer::SplitSequenceKeyToNumVector(const std::string str, std::vector<string>& v, const char* delimiter /*= "_"*/)
 {
 	if (delimiter == nullptr || str.empty())
