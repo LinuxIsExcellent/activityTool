@@ -71,8 +71,13 @@ void Client::SendData(uint16_t nSystem, uint16_t nCmd, string& data)
 
 	// 如果该文件描述符是非阻塞模式的话，send函数会根据内核缓冲区的可用空间把数据拷贝到内核，并且直接返回，返回值为已经拷贝了的字节数
 	// 所以最好设置成阻塞模式，这样能保证需要发送的数据全部拷贝到内核缓冲区，并且通过tcp发送到客户端
-	// TODO：可以使用非阻塞模式的socket，但是这样需要在应用层进行比较多的处理，显而易见的解决方案是：如果只拷贝一部分到内核缓冲区，需要继续循环调用send函数
-	send(m_fd, packet.getDataBegin(), packet.getLength(), 0);
+	// 可以使用非阻塞模式的socket，但是这样需要在应用层进行比较多的处理，显而易见的解决方案是：如果只拷贝一部分到内核缓冲区，需要继续循环调用send函数
+	int nSent = 0;
+
+	while(nSent < packet.getLength())
+	{
+		nSent += send(m_fd, packet.getDataBegin() + nSent, packet.getLength() - nSent, 0);
+	}
 
 	// LOG_INFO("nSendCount = " + std::to_string(nSendCount));
 }
@@ -91,6 +96,8 @@ void Client::OnNetMsgProcess(Packet &packet)
         {
         	OnSendFileTreeInfoToClient();
         	OnSendShellConfigToClient();
+
+        	OnSendServerCurrentTimestamp();
         }
         else if (nCmd == test_2::client_msg::REQUSET_LUA_TABLE_DATA)
         {
@@ -202,7 +209,21 @@ void Client::RequesetExceShellOps(string option)
 
 void Client::OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& quest)
 {
+	std::string sTableName = quest.table_name();
 
+	std::map<string, LuaTableInfoContainer*>* tableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
+	if (tableInfoMap)
+	{
+		auto iter = tableInfoMap->find(sTableName);
+		if (iter != tableInfoMap->end())
+		{
+			iter->second->UpdateData(quest);
+		}
+
+		string testData = LuaConfigManager::GetInstance()->GetLuaDataByName(sTableName);
+
+		SendData(0, test_2::server_msg::SEND_LUA_TABLE_DATA, testData);
+	}
 }
 
 void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest)
@@ -273,4 +294,18 @@ void Client::OnSendShellConfigToClient()
     	notify.SerializeToString(&output);
     	SendData(0, test_2::server_msg::SEND_SHELL_CONFIG, output);
 	}
+}
+
+void Client::OnSendServerCurrentTimestamp()
+{
+	time_t timestamp;
+	uint64_t nTime = time(&timestamp);
+
+	test_2::send_server_current_time_nofity notify;
+
+	notify.set_time(nTime);
+
+	string output;
+    notify.SerializeToString(&output);
+    SendData(0, test_2::server_msg::SEND_SERVER_TIME, output);
 }

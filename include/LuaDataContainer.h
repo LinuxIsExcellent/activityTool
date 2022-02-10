@@ -25,6 +25,9 @@ public:
         return m_vFeildStrs;
     }
 
+
+    // 排序最外层的字段
+    void SortFieldSquence();
     // 获取字段对应的类型
     const std::map<std::string, int>& GetVFeildTypes()
     {

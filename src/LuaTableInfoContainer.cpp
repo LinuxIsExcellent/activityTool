@@ -43,6 +43,47 @@ LuaTableInfoContainer::~LuaTableInfoContainer()
 	}
 }
 
+void LuaTableInfoContainer::DumpTableInfoToConfigFile()
+{
+	ofstream ofs;
+    //3.打开文件，如果没有，会在同级目录下自动创建该文件
+    ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
+
+    string sLuaTableName = m_LuaFileName + "_TABLE_INFO";
+
+    ofs << sLuaTableName << " =" << endl;
+    ofs << "{" << endl;
+
+    std::string sTab = "\t";
+    // 写入表的字段顺序信息
+    for (auto data : m_vFieldSquences)
+    {
+    	std::string vSFieldSquencesKey = "field_sequence";
+    	if (data.vNLevels.size() > 0)
+    	{
+    		for (auto nData : data.vNLevels)
+    		{
+    			vSFieldSquencesKey = vSFieldSquencesKey + "_" + std::to_string(nData);
+    		}
+    	}
+
+    	ofs << sTab << vSFieldSquencesKey << " =" << endl;
+
+    	ofs << sTab << "{" << endl;
+    	for (int i = 1; i <= data.vSFieldSquences.size(); ++i)
+    	{
+    		ofs << sTab << sTab << "[" << i << "]" << " = " << "\"" << data.vSFieldSquences[i - 1] << "\","<< endl;
+    	}
+
+    	ofs << sTab << "}," << endl;
+    }
+
+    ofs << "}" << endl;
+
+    //5.关闭流
+    ofs.close();
+}
+
 bool LuaTableInfoContainer::LoadTableInfoData(lua_State* L)
 {
     
@@ -113,4 +154,44 @@ bool LuaTableInfoContainer::LoadTableInfoData(lua_State* L)
     }
 
     return true;
+}
+
+void LuaTableInfoContainer::UpdateData(test_2::client_save_table_info_request& quest)
+{
+	m_vFieldSquences.clear();
+
+	for (int i = 0; i < quest.filed_sequences_size(); i++)
+	{
+		FIELDSQUENCE fieldSquence;
+		test_2::field_squence field_squence = quest.filed_sequences(i);
+
+		for (int j = 0; j < field_squence.levels_size(); j++)
+		{
+			uint16_t nLevel = field_squence.levels(j);
+
+			fieldSquence.vNLevels.push_back(nLevel);
+		}
+
+		for (int j = 0; j < field_squence.fields_size(); j++)
+		{
+			std::string sField = field_squence.fields(j);
+
+			fieldSquence.vSFieldSquences.push_back(sField);
+		}
+
+		m_vFieldSquences.push_back(fieldSquence);
+	}
+
+	DumpTableInfoToConfigFile();
+
+	// 重新给二维表的最外层数据排序
+	std::map<string, LuaDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
+	if(tableDataMap)
+	{
+		auto iter = tableDataMap->find(m_LuaFileName);
+		if (iter != tableDataMap->end())
+		{
+			iter->second->SortFieldSquence();
+		}
+	}
 }

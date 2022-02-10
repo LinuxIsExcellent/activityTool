@@ -57,19 +57,15 @@ string LuaConfigManager::GetLuaDataByName(string name)
 
                 if (feildType.find(*feildName) != feildType.end())
                 {
-                    table_data_proto.add_filed_types(feildType.find(*feildName)->second);
+                    test_2::field_type_pair* filed_types = table_data_proto.add_filed_types();
+                    if (filed_types)
+                    {
+                        filed_types->set_key(*feildName);
+                        filed_types->set_lua_type(feildType.find(*feildName)->second);
+                    }
                 }
             }
         }
-
-        // 根据配置表读出来的字段的类型
-        // for (auto iter = feildType.begin(); iter != feildType.end(); ++iter)
-        // {
-        //     test_2::field_type_pair table_data_proto.add_filed_types();
-        //     iter->first;
-        //     iter->second;
-
-        // }
 
         // 再填充数据表的外围信息
         auto iter1 = m_mTableInfoMap.find(name);
@@ -170,8 +166,9 @@ void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
             if (container->LoadTableInfoData(L))
             {
                 LOG_INFO("加载lua二维表信息成功 : " + sFileTableName);
-                m_mTableInfoMap.insert(pair<string, LuaTableInfoContainer*> (sFileTableName, container));
             }
         }
+
+        m_mTableInfoMap.insert(pair<string, LuaTableInfoContainer*> (sFileTableName, container));
     }
 }

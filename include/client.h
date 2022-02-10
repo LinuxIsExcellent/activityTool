@@ -37,6 +37,8 @@ public:
 	// 客户端修改表的外围数据
 	void OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& quest);
 
+	// 发送服务器当前时间
+	void OnSendServerCurrentTimestamp();
 private:
 	// 执行shell指令
 	void RequesetExceShellOps(string option);

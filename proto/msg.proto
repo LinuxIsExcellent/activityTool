@@ -145,6 +145,12 @@ message send_shell_option_print_notify
 //客户端请求保存二维表的外围信息
 message client_save_table_info_request
 {
-	string   				table_name 						= 1;	//表名
-	repeated string 		field 							= 2;	//表的字段
+	string   					 table_name 				= 1;	//表名
+	repeated field_squence 		 filed_sequences 			= 2;	//二维表的顺序
+}
+
+//服务器推送当前服务器时间
+message send_server_current_time_nofity
+{
+	int64		time 							= 1;	//当前服务器时间戳
 }

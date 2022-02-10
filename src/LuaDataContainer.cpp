@@ -209,6 +209,17 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
         return a.id < b.id;
     });
 
+    // 把最外层的字段先排序
+    SortFieldSquence();
+
+    m_table_data.nRow = nRow;
+    m_table_data.nColumn = nColumn;
+
+    return true;
+}
+
+void LuaDataContainer::SortFieldSquence()
+{
     // 根据中间文件的外围数据，把字段重新排序一次
     std::map<string, LuaTableInfoContainer*>* mTableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
     if (mTableInfoMap)
@@ -252,16 +263,32 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
             });
         }
     }
-
-    m_table_data.nRow = nRow;
-    m_table_data.nColumn = nColumn;
-
-    return true;
 }
 
-bool FieldSort(VALUEPAIR a, VALUEPAIR b)
+/*
+ 函数说明：对字符串中所有指定的子串进行替换
+ 参数：
+string resource_str            //源字符串
+string sub_str                //被替换子串
+string new_str                //替换子串
+返回值: string
+ */
+string subreplace(string resource_str, string sub_str, string new_str)
 {
-    return false;
+    string::size_type last_pos = 0;
+    string::size_type pos = resource_str.find_first_of(sub_str, last_pos);
+
+    while(pos != string::npos)   //替换所有指定子串
+    {
+        // 替换
+        resource_str.replace(pos, sub_str.length(), new_str);
+
+        // 移动位置，避免重复循环替换
+        last_pos = pos + new_str.length();
+
+        pos = resource_str.find_first_of(sub_str, last_pos);
+    }
+    return resource_str;
 }
 
 void LuaDataContainer::DumpTableDataToConfigFile()
@@ -306,21 +333,25 @@ void LuaDataContainer::DumpTableDataToConfigFile()
         for (int j = 0; j < rowData.dataList.size(); ++j)
         {
             VALUEPAIR pair = rowData.dataList[j];
+            string sValue = pair.sValue;
+            string sField = pair.sField;
 
-            ofs << pair.sField << " = ";
+            ofs << sField << " = ";
 
-            if (m_mFeildTypes.find(pair.sField) != m_mFeildTypes.end())
+            if (m_mFeildTypes.find(sField) != m_mFeildTypes.end())
             {
-                switch(m_mFeildTypes.find(pair.sField)->second)
+                switch(m_mFeildTypes.find(sField)->second)
                 {
                     case LUA_TSTRING:
                     {
-                        ofs << "\"" << pair.sValue << "\"";
+                        sValue = subreplace(sValue, "\n", "\\n");
+                        sValue = subreplace(sValue, "\"", "\\\"");
+                        ofs << "\"" << sValue << "\"";
                         break;
                     }
                     case LUA_TBOOLEAN:
                     {
-                        if(pair.sValue == "0" or pair.sValue == "")
+                        if(sValue == "0" or sValue == "")
                         {
                             ofs << "false";
                         }
@@ -333,25 +364,25 @@ void LuaDataContainer::DumpTableDataToConfigFile()
                     case LUA_TNIL:
                     case LUA_TNUMBER:
                     {
-                        if (pair.sValue == "")
+                        if (sValue == "")
                         {
                             ofs << "0";
                         }
                         else
                         {
-                            ofs << pair.sValue;
+                            ofs << sValue;
                         }
                         break;
                     }
                     case LUA_TTABLE:
                     {
-                        if (pair.sValue == "")
+                        if (sValue == "")
                         {
                             ofs << "nil";
                         }
                         else
                         {
-                            ofs << pair.sValue;
+                            ofs << sValue;
                         }
                         break;
                     }

@@ -20,8 +20,11 @@ public:
     {
         return m_vFieldSquences;
     }
-private:
 
+    // 客户端请求保存外围信息
+    void UpdateData(test_2::client_save_table_info_request& quest);
+private:
+    void DumpTableInfoToConfigFile();
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
