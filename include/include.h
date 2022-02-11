@@ -7,6 +7,8 @@
 #include <iostream>
 #include <stringbuffer.h>
 #include <fstream>
+#include <time.h>
+#include <sys/time.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>

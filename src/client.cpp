@@ -127,6 +127,13 @@ void Client::OnNetMsgProcess(Packet &packet)
 
 			OnClientQuestSaveTableInfo(quest);
         }
+        else if (nCmd == test_2::client_msg::REQUEST_MODIFY_SERVER_TIME)
+        {
+        	test_2::client_modify_server_time_quest quest;
+			quest.ParseFromString(strData);
+
+			OnClientQuestModifyServerTime(quest.time());
+        }
     }
 }
 
@@ -147,6 +154,28 @@ void Client::OnConnect(struct sockaddr_in & address, int fd)
 void Client::OnDisconnect()
 {
 	LOG_INFO("客户端断开链接： ip = " + std::string(ip) + ", port = " + std::to_string(m_nPort));
+}
+
+void Client::OnClientQuestModifyServerTime(uint64_t nTime)
+{
+	timeval p;
+	gettimeofday(&p, NULL);
+
+	struct tm* ptm = localtime (&(p.tv_sec));
+    char time_string[40];
+
+    strftime(time_string, sizeof(time_string), "%Y-%m-%d %H:%M:%S", ptm);
+
+	LOG_INFO("请求修改系统时间 : " + std::string(time_string));
+	p.tv_sec = nTime;
+    settimeofday(&p, NULL);
+
+    ptm = localtime (&(p.tv_sec));
+    char time_string[40];
+
+    strftime(time_string, sizeof(time_string), "%Y-%m-%d %H:%M:%S", ptm);
+
+    LOG_INFO("系统时间修改为 : " + std::string(time_string));
 }
 
 void Client::RequesetExceShellOps(string option)

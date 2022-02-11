@@ -56,6 +56,7 @@ void IOManager::InitIOManager()
     addsig(SIGCHLD);
     addsig(SIGTERM);
     addsig(SIGINT);
+    addsig(SIGALRM);
 }
 
 void IOManager::AddListeningFd(string ip, int port)
@@ -121,6 +122,7 @@ void IOManager::Exit()
 void IOManager::Loop()
 {
     loop = true;
+    bool timeout = false;
     while(loop)
     {
         // 等待事件的产生（阻塞等待）
@@ -166,6 +168,11 @@ void IOManager::Loop()
                     {
                         switch(signals[i])
                         {
+                            case SIGALRM:
+                            {
+                                timeout = true;
+                                break;
+                            }
                             case SIGCHLD:
                             case SIGHUP:
                             {

@@ -17,6 +17,7 @@ enum client_msg
 	REQUSET_SAVE_TABLE_DATA							= 2;	//请求保存二维表数据
 	REQUSET_SHELL_OPTIONS							= 3;	//客户端请求执行shell指令
 	REQUEST_SAVE_TABLE_INFO							= 4;	//客户端请求保存二维表的外围信息
+	REQUEST_MODIFY_SERVER_TIME						= 5;	//请求修改服务器时间
 }
 
 //服务器消息协议
@@ -153,4 +154,10 @@ message client_save_table_info_request
 message send_server_current_time_nofity
 {
 	int64		time 							= 1;	//当前服务器时间戳
+}
+
+//请求修改服务器时间
+message client_modify_server_time_quest
+{
+	int64		time 							= 1;	//请求修改的时间戳
 }

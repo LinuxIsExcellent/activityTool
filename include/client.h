@@ -39,6 +39,9 @@ public:
 
 	// 发送服务器当前时间
 	void OnSendServerCurrentTimestamp();
+
+	// 请求修改服务器时间
+	void OnClientQuestModifyServerTime(uint64_t nTime);
 private:
 	// 执行shell指令
 	void RequesetExceShellOps(string option);
