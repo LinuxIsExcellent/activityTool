@@ -42,5 +42,6 @@ extern "C" {
 #include <msg.pb.h>
 #include <Packet.h>
 #include <LuaConfigManager.h>
-#include <LuaDataContainer.h>
-#include <LuaTableInfoContainer.h>
+#include <LuaTableDataContainer.h>
+#include <LuaExtInfoContainer.h>
+#include <LuaListDataContainer.h>

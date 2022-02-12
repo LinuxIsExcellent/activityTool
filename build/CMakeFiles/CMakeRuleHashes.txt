@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+650ef391ab299124c1683c7194624367 msg.pb.cc

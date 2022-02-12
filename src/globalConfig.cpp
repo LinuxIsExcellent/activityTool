@@ -33,13 +33,13 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
         return;
     }
 
-    m_listenLuaFileList.clear();
+    m_LuaTableFileList.clear();
     lua_pushnil(L);
     while(lua_next(L, -2))
     {
         string strFile = lua_tostring(L, -1);
 
-        m_listenLuaFileList.push_back(strFile);
+        m_LuaTableFileList.push_back(strFile);
         lua_pop(L, 1);
     }
 
@@ -59,5 +59,20 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
 
             lua_pop(L, 1);
         }   
+    }
+
+    // Lua文件列表
+    lua_getglobal(L, "config_list_file_path");
+    if (lua_istable(L, -1))
+    {
+        m_LuaMapFileList.clear();
+        lua_pushnil(L);
+        while(lua_next(L, -2))
+        {
+            string strFile = lua_tostring(L, -1);
+    
+            m_LuaMapFileList.push_back(strFile);
+            lua_pop(L, 1);
+        }
     }
 }

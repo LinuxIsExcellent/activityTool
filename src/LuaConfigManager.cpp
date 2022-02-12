@@ -4,7 +4,7 @@ void LuaConfigManager::FreeData()
 {
     for(auto it = m_mDataMap.begin(); it != m_mDataMap.end(); it++)
     {
-        LuaDataContainer *luaData = it->second;
+        LuaTableDataContainer *luaData = it->second;
         delete luaData;
 
         luaData = NULL;
@@ -104,6 +104,37 @@ string LuaConfigManager::GetLuaDataByName(string name)
 }
 
 
+void LuaConfigManager::LoadLuaListConfigData(lua_State *L)
+{
+    if (!L) return;
+
+    std::vector<string> fileList = GlobalConfig::GetInstance()->GetListenLuaListFileList();
+    string sConfigDirPath = GlobalConfig::GetInstance()->getConfigPath();
+    if (fileList.size() <= 0) return ;
+
+    for (int i = 0; i < fileList.size(); ++i)
+    {
+        string sFileTableName = fileList[i];
+        string sLuaFileAbsolutePath = sConfigDirPath + "/" + fileList[i];
+
+        // 处理字符串得出lua配置文件的名字
+        int nBeginPos = sFileTableName.rfind("/") + 1;
+        int nEndPos = sFileTableName.find(".lua");
+
+        sFileTableName = sFileTableName.substr(nBeginPos, nEndPos - nBeginPos);
+
+        LuaListDataContainer* luaData = new LuaListDataContainer(sFileTableName, sLuaFileAbsolutePath);
+        if (luaData)
+        {
+            if (luaData->LoadLuaConfigData(L))
+            {
+                LOG_INFO("加载lua数据成功 : " + sFileTableName);
+                m_mLuaListDataMap.insert(pair<string, LuaListDataContainer*> (sFileTableName, luaData));
+            }
+        }
+    }
+}
+
 void LuaConfigManager::LoadAllLuaConfigData(lua_State *L)
 {
     if (!L) return;
@@ -123,13 +154,13 @@ void LuaConfigManager::LoadAllLuaConfigData(lua_State *L)
 
         sFileTableName = sFileTableName.substr(nBeginPos, nEndPos - nBeginPos);
 
-        LuaDataContainer* luaData = new LuaDataContainer(sFileTableName, sLuaFileAbsolutePath);
+        LuaTableDataContainer* luaData = new LuaTableDataContainer(sFileTableName, sLuaFileAbsolutePath);
         if (luaData)
         {
             if (luaData->LoadLuaConfigData(L))
             {
                 LOG_INFO("加载lua数据成功 : " + sFileTableName);
-                m_mDataMap.insert(pair<string, LuaDataContainer*> (sFileTableName, luaData));
+                m_mDataMap.insert(pair<string, LuaTableDataContainer*> (sFileTableName, luaData));
             }
         }
     }
@@ -160,7 +191,7 @@ void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
         string fileName = sFileTableName + "_TABLE_INFO.lua";
         string sLuaFileAbsolutePath = sTempConfigDirPath + "/" + fileName;
 
-        LuaTableInfoContainer* container = new LuaTableInfoContainer(sFileTableName, sLuaFileAbsolutePath);
+        LuaExtInfoContainer* container = new LuaExtInfoContainer(sFileTableName, sLuaFileAbsolutePath);
         if (container)
         {
             if (container->LoadTableInfoData(L))
@@ -169,6 +200,6 @@ void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
             }
         }
 
-        m_mTableInfoMap.insert(pair<string, LuaTableInfoContainer*> (sFileTableName, container));
+        m_mTableInfoMap.insert(pair<string, LuaExtInfoContainer*> (sFileTableName, container));
     }
 }

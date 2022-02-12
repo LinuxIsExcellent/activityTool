@@ -30,3 +30,11 @@ typedef struct fieldSquence
     std::vector<uint16_t> vNLevels;         //深度队列
     std::vector<std::string> vSFieldSquences;       //对应的字段顺序
 }FIELDSQUENCE;
+
+// 一维表的一个数据
+typedef struct LuaKeyValue
+{
+    string sKey;        //键
+    string sValue;        //值
+    int16_t fieldType;        //值的lua类型
+}LUAKEYVALUE;

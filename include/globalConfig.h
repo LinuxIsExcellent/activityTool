@@ -47,7 +47,12 @@ public:
 
     inline std::vector<string>& GetListenLuaFileList()
     {
-        return m_listenLuaFileList;
+        return m_LuaTableFileList;
+    }
+
+    inline std::vector<string>& GetListenLuaListFileList()
+    {
+        return m_LuaMapFileList;
     }
 
     inline const string& GetShellPath()
@@ -70,7 +75,9 @@ private:
     string m_ListeningProcessPath; //监听的进程id文件产生的路径
     // char* m_ConfigPath;  //可监听的进程id文件的名字
 
-    std::vector<string> m_listenLuaFileList;    //监听的所有lua文件列表
+    std::vector<string> m_LuaTableFileList;    //所有二维表文件列表
+
+    std::vector<string> m_LuaMapFileList;    //监听的所有lua文件列表
 
     string m_sShellPath;        //shell脚本路径
     std::vector<VALUEPAIR>      m_vShellConfig;     //可以执行的shell脚本

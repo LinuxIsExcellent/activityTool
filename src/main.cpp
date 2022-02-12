@@ -29,6 +29,9 @@ int main()
     //加载所有lua配置数据
     LuaConfigManager::GetInstance()->LoadAllLuaConfigData(L);
 
+    // 加载所有的lua键值对一维表数据
+    LuaConfigManager::GetInstance()->LoadLuaListConfigData(L);
+
     // 初始化IO管理器
     IOManager::GetInstance()->InitIOManager();
     // 监听ip和端口

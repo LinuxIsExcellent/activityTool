@@ -171,7 +171,7 @@ void Client::OnClientQuestModifyServerTime(uint64_t nTime)
     settimeofday(&p, NULL);
 
     ptm = localtime (&(p.tv_sec));
-    char time_string[40];
+    time_string[40];
 
     strftime(time_string, sizeof(time_string), "%Y-%m-%d %H:%M:%S", ptm);
 
@@ -240,7 +240,7 @@ void Client::OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& 
 {
 	std::string sTableName = quest.table_name();
 
-	std::map<string, LuaTableInfoContainer*>* tableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
+	std::map<string, LuaExtInfoContainer*>* tableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
 	if (tableInfoMap)
 	{
 		auto iter = tableInfoMap->find(sTableName);
@@ -257,7 +257,7 @@ void Client::OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& 
 
 void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest)
 {
-	std::map<string, LuaDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
+	std::map<string, LuaTableDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
 	if(tableDataMap)
 	{
 		std::string sFileName = quest.table_name();
@@ -282,12 +282,12 @@ void Client::OnSendLuaTableDataToClient(std::string sFile)
 
 void Client::OnSendFileTreeInfoToClient()
 {
-	std::map<string, LuaDataContainer*>* mLuaTableDatas = LuaConfigManager::GetInstance()->GetTableDataMap();
+	std::map<string, LuaTableDataContainer*>* mLuaTableDatas = LuaConfigManager::GetInstance()->GetTableDataMap();
 	if (mLuaTableDatas)
 	{
 		test_2::server_send_file_tree_notify notify;
 
-		for (map<string, LuaDataContainer*>::iterator iter = mLuaTableDatas->begin(); iter != mLuaTableDatas->end(); ++iter)
+		for (map<string, LuaTableDataContainer*>::iterator iter = mLuaTableDatas->begin(); iter != mLuaTableDatas->end(); ++iter)
 		{
 			std::string* fileName = notify.add_lua_table_file_names();
 			if(fileName)

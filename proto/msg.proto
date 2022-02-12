@@ -122,7 +122,7 @@ message table_data
 	repeated field_squence 		 filed_sequences 		= 7;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序，这个顺序是由client手动调整的，然后记录在中间配置文件中)
 }
 
-//一张二维表的其它信息(对应的是server里面的LuaTableInfoContainer类读取的lua文件结构)
+//一张二维表的其它信息(对应的是server里面的LuaExtInfoContainer类读取的lua文件结构)
 message table_info
 {
 	string  table_name 							= 1;	//表名

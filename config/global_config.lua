@@ -6,7 +6,7 @@ server_port = 23543
 -- 配置文件路径
 config_path = "/root/workspace/dev_ph/script/config"
 
--- 所有的配置文件(没有包含就不会读取)
+-- 二维表展开的配置文件
 config_file_path =
 {
 	"day_login.lua",
@@ -15,6 +15,12 @@ config_file_path =
 	"province.lua",
 	"bonus_rain.lua",
 	"item_group.lua",
+}
+
+-- 键值对一维展开的配置文件
+config_list_file_path =
+{
+	"global_activity.lua",
 }
 
 -- 中间件文件路径,根据在客户端操作表格自动生成的表的信息（字段顺序，字段标注，活动的字段组合...）
