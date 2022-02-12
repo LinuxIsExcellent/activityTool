@@ -265,41 +265,23 @@ void LuaTableDataContainer::SortFieldSquence()
     }
 }
 
-/*
- 函数说明：对字符串中所有指定的子串进行替换
- 参数：
-string resource_str            //源字符串
-string sub_str                //被替换子串
-string new_str                //替换子串
-返回值: string
- */
-string subreplace(string resource_str, string sub_str, string new_str)
-{
-    string::size_type last_pos = 0;
-    string::size_type pos = resource_str.find_first_of(sub_str, last_pos);
-
-    while(pos != string::npos)   //替换所有指定子串
-    {
-        // 替换
-        resource_str.replace(pos, sub_str.length(), new_str);
-
-        // 移动位置，避免重复循环替换
-        last_pos = pos + new_str.length();
-
-        pos = resource_str.find_first_of(sub_str, last_pos);
-    }
-    return resource_str;
-}
-
 void LuaTableDataContainer::DumpTableDataToConfigFile()
 {
     ofstream ofs;
-    //3.打开文件，如果没有，会在同级目录下自动创建该文件
+    //1.打开文件，如果没有，会在同级目录下自动创建该文件
     ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
     
     string sGlobalLuaTableName = "dataconfig_" + m_LuaFileName;
     string sLocalLuaTableName = "local_dataconfig_" + m_LuaFileName;
-    //4.写入文件
+    //2.写入文件标题
+    char title[64];
+    sprintf(title, "asddas %s", "asd");
+
+    LOG_INFO("请求保存一维表数据");
+    LOG_INFO("title" + std::string(title));
+
+    // ofs << std::string(title) << endl;
+    //3.写入配置数据
     ofs << sGlobalLuaTableName << " = " << "{}" << endl;
     ofs << endl;
     ofs << "local " << sLocalLuaTableName << " = " << sGlobalLuaTableName << endl;
@@ -409,7 +391,7 @@ void LuaTableDataContainer::DumpTableDataToConfigFile()
     ofs.close();
 }
 
-bool LuaTableDataContainer::UpdateData(test_2::client_save_table_data_request& proto)
+bool LuaTableDataContainer::UpdateData(const test_2::client_save_table_data_request& proto)
 {
     m_table_data.dataList.clear();
     m_table_data.sTableName = proto.table_name(); 

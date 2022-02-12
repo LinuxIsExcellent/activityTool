@@ -54,7 +54,6 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
     ofs << sLuaTableName << " =" << endl;
     ofs << "{" << endl;
 
-    std::string sTab = "\t";
     // 写入表的字段顺序信息
     for (auto data : m_vFieldSquences)
     {
@@ -67,15 +66,15 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
     		}
     	}
 
-    	ofs << sTab << vSFieldSquencesKey << " =" << endl;
+    	ofs << TAB << vSFieldSquencesKey << " =" << endl;
 
-    	ofs << sTab << "{" << endl;
+    	ofs << TAB << "{" << endl;
     	for (int i = 1; i <= data.vSFieldSquences.size(); ++i)
     	{
-    		ofs << sTab << sTab << "[" << i << "]" << " = " << "\"" << data.vSFieldSquences[i - 1] << "\","<< endl;
+    		ofs << TAB << TAB << "[" << i << "]" << " = " << "\"" << data.vSFieldSquences[i - 1] << "\","<< endl;
     	}
 
-    	ofs << sTab << "}," << endl;
+    	ofs << TAB << "}," << endl;
     }
 
     ofs << "}" << endl;
@@ -156,7 +155,7 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
     return true;
 }
 
-void LuaExtInfoContainer::UpdateData(test_2::client_save_table_info_request& quest)
+void LuaExtInfoContainer::UpdateData(const test_2::client_save_table_info_request& quest)
 {
 	m_vFieldSquences.clear();
 

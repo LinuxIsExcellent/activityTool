@@ -35,7 +35,7 @@ public:
     // 释放资源
     void FreeData();
 
-    string GetLuaDataByName(string name);
+    string GetLuaTableDataByName(string name);
 
     std::map<string, LuaTableDataContainer*>* GetTableDataMap()
     {
@@ -45,6 +45,13 @@ public:
     std::map<string, LuaExtInfoContainer*>* GetTableInfoMap()
     {
         return &m_mTableInfoMap;
+    }
+
+    string GetLuaListDataByName(string name);
+
+    std::map<string, LuaListDataContainer*>* GetLuaListMap()
+    {
+        return &m_mLuaListDataMap;
     }
 private:
     static LuaConfigManager* m_instance;

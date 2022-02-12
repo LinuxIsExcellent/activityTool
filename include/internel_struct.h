@@ -38,3 +38,6 @@ typedef struct LuaKeyValue
     string sValue;        //值
     int16_t fieldType;        //值的lua类型
 }LUAKEYVALUE;
+
+// 缩进符
+const std::string TAB = "\t";

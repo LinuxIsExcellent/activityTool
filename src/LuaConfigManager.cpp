@@ -9,9 +9,54 @@ void LuaConfigManager::FreeData()
 
         luaData = NULL;
     }
+
+    for(auto it = m_mLuaListDataMap.begin(); it != m_mLuaListDataMap.end(); it++)
+    {
+        LuaListDataContainer *luaData = it->second;
+        delete luaData;
+
+        luaData = NULL;
+    }
+
+    for(auto it = m_mTableInfoMap.begin(); it != m_mTableInfoMap.end(); it++)
+    {
+        LuaExtInfoContainer *luaData = it->second;
+        delete luaData;
+
+        luaData = NULL;
+    }
 }
 
-string LuaConfigManager::GetLuaDataByName(string name)
+string LuaConfigManager::GetLuaListDataByName(string name)
+{
+    auto iter = m_mLuaListDataMap.find(name);
+    if (iter != m_mLuaListDataMap.end())
+    {
+        const std::vector<LUAKEYVALUE> listData = iter->second->GetListData();
+
+        test_2::send_lua_list_data_notify notify;
+        notify.set_table_name(name);
+
+        for (int i = 0; i < listData.size(); ++i)
+        {
+            test_2::field_type_key_value* key_value = notify.add_filed_types();
+            if (key_value)
+            {
+                key_value->set_key(listData[i].sKey);
+                key_value->set_value(listData[i].sValue);
+                key_value->set_type(listData[i].fieldType);
+            }
+        }
+
+        string output;
+        notify.SerializeToString(&output);
+        return output;
+    }
+
+    return "";
+}
+
+string LuaConfigManager::GetLuaTableDataByName(string name)
 {
     auto iter = m_mDataMap.find(name);
     if (iter != m_mDataMap.end())

@@ -11,6 +11,24 @@ static lua_State *L = NULL;
 // 全局I/O管理器
 IOManager* IOManager::m_instance = NULL;
 
+string subreplace(string resource_str, string sub_str, string new_str)
+{
+    string::size_type last_pos = 0;
+    string::size_type pos = resource_str.find_first_of(sub_str, last_pos);
+
+    while(pos != string::npos)   //替换所有指定子串
+    {
+        // 替换
+        resource_str.replace(pos, sub_str.length(), new_str);
+
+        // 移动位置，避免重复循环替换
+        last_pos = pos + new_str.length();
+
+        pos = resource_str.find_first_of(sub_str, last_pos);
+    }
+    return resource_str;
+}
+
 int main()
 {
     // 一些初始化的工作

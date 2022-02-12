@@ -32,16 +32,22 @@ public:
 	void OnSendLuaTableDataToClient(std::string sFile);
 
 	// 客户端修改表数据
-	void OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest);
+	void OnClientQuestSaveTableData(const test_2::client_save_table_data_request& quest);
 
 	// 客户端修改表的外围数据
-	void OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& quest);
+	void OnClientQuestSaveTableInfo(const test_2::client_save_table_info_request& quest);
 
 	// 发送服务器当前时间
 	void OnSendServerCurrentTimestamp();
 
 	// 请求修改服务器时间
 	void OnClientQuestModifyServerTime(uint64_t nTime);
+
+	// 发送单个一维表文件数据
+	void OnSendLuaListDataToClient(std::string sFile);
+
+	// 请求保存单个一维表数据
+	void OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_request& quest);
 private:
 	// 执行shell指令
 	void RequesetExceShellOps(string option);

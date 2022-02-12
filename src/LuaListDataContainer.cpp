@@ -11,6 +11,98 @@ LuaListDataContainer::~LuaListDataContainer()
 	// free data
 }
 
+void LuaListDataContainer::DumpListDataToConfigFile()
+{
+    ofstream ofs;
+    //1.打开文件，如果没有，会在同级目录下自动创建该文件
+    ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
+    
+    timeval p;
+    gettimeofday(&p, NULL);
+
+    struct tm* ptm = localtime (&(p.tv_sec));
+    char time_string[40];
+
+    strftime(time_string, sizeof(time_string), "%Y-%m-%d %H:%M:%S", ptm);
+
+    char title[256];
+    sprintf(title, AUTO_GEN_FILE_DESC, time_string);
+    
+    ofs << title << endl;
+
+    string sGlobalLuaTableName = m_LuaFileName;
+
+    //2.写入一维表数据
+    ofs << sGlobalLuaTableName << " = " << "{" << endl;
+
+    for (int i = 0; i < m_vValueLists.size(); ++i)
+    {
+        LUAKEYVALUE luaKeyValue = m_vValueLists[i];
+
+        ofs << TAB << luaKeyValue.sKey << " = ";
+
+        std::string sValue = luaKeyValue.sValue;
+
+        switch(luaKeyValue.fieldType)
+        {
+            case LUA_TSTRING:
+            {
+                sValue = subreplace(sValue, "\n", "\\n");
+                sValue = subreplace(sValue, "\"", "\\\"");
+                ofs << "\"" << sValue << "\"";
+                break;
+            }
+            case LUA_TBOOLEAN:
+            {
+                if(sValue == "0" or sValue == "")
+                {
+                    ofs << "false";
+                }
+                else
+                {
+                    ofs << "true";
+                }
+                break;
+            }
+            case LUA_TNIL:
+            case LUA_TNUMBER:
+            {
+                if (sValue == "")
+                {
+                    ofs << "0";
+                }
+                else
+                {
+                    ofs << sValue;
+                }
+                break;
+            }
+            case LUA_TTABLE:
+            {
+                if (sValue == "")
+                {
+                    ofs << "nil";
+                }
+                else
+                {
+                    ofs << sValue;
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+        
+        ofs << "," << endl;
+    }
+
+    ofs << "}";
+    //5.关闭流
+    ofs.close();
+}
+
 // 读取lua配置到一个容器中
 bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
 {
@@ -80,5 +172,25 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         m_vValueLists.push_back(keyValue);
     }
 
+    return true;
+}
+
+bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& proto)
+{
+    m_vValueLists.clear();
+
+    for (int i = 0; i < proto.filed_types_size();++i)
+    {
+        LUAKEYVALUE value;
+
+        test_2::field_type_key_value fieldTypeKeyValue = proto.filed_types(i);
+        value.sKey = fieldTypeKeyValue.key();
+        value.sValue = fieldTypeKeyValue.value();
+        value.fieldType = fieldTypeKeyValue.type();
+
+        m_vValueLists.push_back(value);
+    }
+
+    DumpListDataToConfigFile();
     return true;
 }

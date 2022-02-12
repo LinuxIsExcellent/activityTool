@@ -22,7 +22,7 @@ public:
     }
 
     // 客户端请求保存外围信息
-    void UpdateData(test_2::client_save_table_info_request& quest);
+    void UpdateData(const test_2::client_save_table_info_request& quest);
 private:
     void DumpTableInfoToConfigFile();
 private:

@@ -134,6 +134,20 @@ void Client::OnNetMsgProcess(Packet &packet)
 
 			OnClientQuestModifyServerTime(quest.time());
         }
+        else if (nCmd == test_2::client_msg::REQUSET_LUA_LIST_DATA)
+        {
+        	test_2::client_lua_list_data_quest quest;
+			quest.ParseFromString(strData);
+
+			OnSendLuaListDataToClient(quest.file_name());
+        }
+        else if (nCmd == test_2::client_msg::REQUSET_SAVE_LUA_LIST_DATA)
+        {
+        	test_2::save_lua_list_data_request quest;
+			quest.ParseFromString(strData);
+
+			OnClientQuestSaveLuaListInfo(quest);
+        }
     }
 }
 
@@ -236,7 +250,7 @@ void Client::RequesetExceShellOps(string option)
 	pclose(fp);
 }
 
-void Client::OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& quest)
+void Client::OnClientQuestSaveTableInfo(const test_2::client_save_table_info_request& quest)
 {
 	std::string sTableName = quest.table_name();
 
@@ -249,13 +263,11 @@ void Client::OnClientQuestSaveTableInfo(test_2::client_save_table_info_request& 
 			iter->second->UpdateData(quest);
 		}
 
-		string testData = LuaConfigManager::GetInstance()->GetLuaDataByName(sTableName);
-
-		SendData(0, test_2::server_msg::SEND_LUA_TABLE_DATA, testData);
+		OnSendLuaTableDataToClient(sTableName);
 	}
 }
 
-void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& quest)
+void Client::OnClientQuestSaveTableData(const test_2::client_save_table_data_request& quest)
 {
 	std::map<string, LuaTableDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
 	if(tableDataMap)
@@ -267,26 +279,24 @@ void Client::OnClientQuestSaveTableData(test_2::client_save_table_data_request& 
 			iter->second->UpdateData(quest);
 		}
 
-		string testData = LuaConfigManager::GetInstance()->GetLuaDataByName(sFileName);
-
-		SendData(0, test_2::server_msg::SEND_LUA_TABLE_DATA, testData);
+		OnSendLuaTableDataToClient(sFileName);
 	}
 }
 
 void Client::OnSendLuaTableDataToClient(std::string sFile)
 {
-	string testData = LuaConfigManager::GetInstance()->GetLuaDataByName(sFile);
+	string testData = LuaConfigManager::GetInstance()->GetLuaTableDataByName(sFile);
 
 	SendData(0, test_2::server_msg::SEND_LUA_TABLE_DATA, testData);
 }
 
 void Client::OnSendFileTreeInfoToClient()
 {
+	test_2::server_send_file_tree_notify notify;
+
 	std::map<string, LuaTableDataContainer*>* mLuaTableDatas = LuaConfigManager::GetInstance()->GetTableDataMap();
 	if (mLuaTableDatas)
 	{
-		test_2::server_send_file_tree_notify notify;
-
 		for (map<string, LuaTableDataContainer*>::iterator iter = mLuaTableDatas->begin(); iter != mLuaTableDatas->end(); ++iter)
 		{
 			std::string* fileName = notify.add_lua_table_file_names();
@@ -295,11 +305,24 @@ void Client::OnSendFileTreeInfoToClient()
 				*fileName = iter->first;
 			}
 		}
-
-		string output;
-    	notify.SerializeToString(&output);
-    	SendData(0, test_2::server_msg::SEND_FILE_TREE_INFO, output);
 	}
+
+	std::map<string, LuaListDataContainer*>* mLuaListDatas = LuaConfigManager::GetInstance()->GetLuaListMap();
+	if (mLuaListDatas)
+	{
+		for (map<string, LuaListDataContainer*>::iterator iter = mLuaListDatas->begin(); iter != mLuaListDatas->end(); ++iter)
+		{
+			std::string* fileName = notify.add_lua_file_names();
+			if(fileName)
+			{
+				*fileName = iter->first;
+			}
+		}
+	}
+
+	string output;
+    notify.SerializeToString(&output);
+    SendData(0, test_2::server_msg::SEND_FILE_TREE_INFO, output);
 }
 
 void Client::OnSendShellConfigToClient()
@@ -337,4 +360,28 @@ void Client::OnSendServerCurrentTimestamp()
 	string output;
     notify.SerializeToString(&output);
     SendData(0, test_2::server_msg::SEND_SERVER_TIME, output);
+}
+
+void Client::OnSendLuaListDataToClient(std::string sFile)
+{
+	string testData = LuaConfigManager::GetInstance()->GetLuaListDataByName(sFile);
+
+	SendData(0, test_2::server_msg::SEND_LUA_LIST_DATA, testData);
+}
+
+
+void Client::OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_request& quest)
+{
+	std::map<string, LuaListDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetLuaListMap();
+	if(tableDataMap)
+	{
+		std::string sFileName = quest.table_name();
+		auto iter = tableDataMap->find(sFileName);
+		if (iter != tableDataMap->end())
+		{
+			iter->second->UpdateData(quest);
+		}
+
+		OnSendLuaListDataToClient(sFileName);
+	}	
 }
