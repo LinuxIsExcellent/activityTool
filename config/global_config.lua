@@ -9,19 +9,20 @@ config_path = "/root/workspace/dev_ph/script/config"
 -- 二维表展开的配置文件
 config_file_path =
 {
-	-- "day_login.lua",
+	"day_login.lua",
 	-- "time_slot_login.lua",
 	-- "item.lua",
 	-- "province.lua",
 	-- "bonus_rain.lua",
-	"task.lua",
-	"item_group.lua",
+	-- "task.lua",
+	-- "item_group.lua",
+	-- "coin_rooms.lua",
 }
 
 -- 键值对一维展开的配置文件
 config_list_file_path =
 {
-	"global_activity.lua",
+	-- "global_activity.lua",
 }
 
 -- 中间件文件路径,根据在客户端操作表格自动生成的表的信息（字段顺序，字段标注，活动的字段组合...）

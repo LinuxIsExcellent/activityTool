@@ -130,10 +130,12 @@ string LuaConfigManager::GetLuaTableDataByName(string name)
 
                     for (int j = 0; j < squence.vSFieldSquences.size(); ++j)
                     {
-                        std::string* fieldStr = fieldSquence->add_fields();
-                        if(fieldStr)
+                        test_2::field_info* fieldInfo = fieldSquence->add_infos();
+                        if(fieldInfo)
                         {
-                            *fieldStr = squence.vSFieldSquences[j];
+                            fieldInfo->set_field_name(squence.vSFieldSquences[j].sFieldName);
+                            fieldInfo->set_field_desc(squence.vSFieldSquences[j].sFieldAnnonation);
+                            fieldInfo->set_field_link(squence.vSFieldSquences[j].sFieldLink);
                         }
                     }
                 }

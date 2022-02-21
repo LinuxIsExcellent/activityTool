@@ -13,6 +13,7 @@ enum client_msg
 	REQUEST_MODIFY_SERVER_TIME						= 5;	//请求修改服务器时间
 	REQUSET_LUA_LIST_DATA							= 6;	//请求一维表文件数据
 	REQUSET_SAVE_LUA_LIST_DATA						= 7;	//请求保存一维表数据
+	REQUSET_FIELD_LINK_INFO							= 8;	//请求关联信息
 }
 
 //服务器消息协议
@@ -24,6 +25,7 @@ enum server_msg
 	SEND_SHELL_CONFIG								= 3;	//推送可执行的shell指令
 	SEND_OPTION_SHELL_PRINT							= 4;	//推送执行shell的打印
 	SEND_LUA_LIST_DATA								= 5;	//推送单个一维表文件数据
+	SEND_FIELD_LINK_DATA							= 6;	//推送关联信息
 }
 
 //客户端请求登陆
@@ -93,6 +95,14 @@ message row_data
 	repeated pair_value pair 				= 2;	//列数据列表
 }
 
+//字段的信息
+message field_info
+{
+	string field_name 						= 1;	//字段名字
+	string field_desc 						= 2;	//字段的描述
+	string field_link 						= 3;	//字段的关联
+}
+
 //levels :
 //如果为空的话，证明这个squence代表的是最外层的字段顺序。
 //如果levels为{[n]},则代表的是第n个字段为table的表的顺序
@@ -100,7 +110,7 @@ message row_data
 message field_squence
 {
 	repeated int32 levels						= 1;	//深度队列（如果为空，就是最外层的字段顺序）
-	repeated string fields						= 2;	//字段顺序
+	repeated field_info infos					= 2;	//字段顺序
 }
 
 //一张表的数据(仅仅只是二维程度的展开，如果有多维，则更深维度的表直接转换成string类型的数据)
@@ -143,7 +153,7 @@ message send_shell_option_print_notify
 message client_save_table_info_request
 {
 	string   					 table_name 				= 1;	//表名
-	repeated field_squence 		 filed_sequences 			= 2;	//二维表的顺序
+	repeated field_squence 		 field_squences 			= 2;	//二维表的字段信息
 }
 
 //服务器推送当前服务器时间
@@ -183,4 +193,25 @@ message save_lua_list_data_request
 {
 	string               		 		table_name 			= 1;	//表名
 	repeated field_type_key_value     	filed_types 		= 2;	//每列的数据
+}
+
+
+//客户端请求关联的信息
+message client_field_link_info_quest
+{
+	
+}
+
+//表的字段信息
+message table_field_list
+{
+	string 							table_name 			= 1;			//表名
+	repeated string 				fields 				= 2;			//字段列表
+}
+
+//服务器返回关联的信息
+message send_field_link_info
+{
+	repeated table_field_list 		table 				= 1;			//二维表
+	repeated table_field_list 		list 				= 2;			//一维表
 }

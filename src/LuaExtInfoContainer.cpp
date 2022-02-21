@@ -71,7 +71,27 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
     	ofs << TAB << "{" << endl;
     	for (int i = 1; i <= data.vSFieldSquences.size(); ++i)
     	{
-    		ofs << TAB << TAB << "[" << i << "]" << " = " << "\"" << data.vSFieldSquences[i - 1] << "\","<< endl;
+    		ofs << TAB << TAB << "[" << i << "]" << " = {" << endl;
+    		ofs << TAB << TAB << TAB << "" << "field_name = " << "\"" << data.vSFieldSquences[i - 1].sFieldName << "\","<< endl;
+
+    		// 做一下换行处理
+    		string sFieldAnnonation = data.vSFieldSquences[i - 1].sFieldAnnonation;
+    		sFieldAnnonation = subreplace(sFieldAnnonation, "\n", "\\n");
+			sFieldAnnonation = subreplace(sFieldAnnonation, "\"", "\\\"");
+
+			string sFieldLink = data.vSFieldSquences[i - 1].sFieldLink;
+
+			if(!sFieldAnnonation.empty())
+			{
+				ofs << TAB << TAB << TAB << "" << "field_desc = " << "\"" << sFieldAnnonation << "\","<< endl;
+			}
+    		
+			if(!sFieldLink.empty())
+			{
+				ofs << TAB << TAB << TAB << "" << "field_link = " << "\"" << data.vSFieldSquences[i - 1].sFieldLink << "\","<< endl;
+			}
+
+    		ofs << TAB << TAB << "}," << endl;
     	}
 
     	ofs << TAB << "}," << endl;
@@ -119,35 +139,67 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
 
     	string sKey = lua_tostring(L, -2);
 
-    	std::vector<string> sVector;
-    	SplitSequenceKeyToNumVector(sKey, sVector);
-
-    	// 如果field_sequence后面没有数字,则就是最外层的二维表的顺序
-    	if(sVector.size() > 2)
+    	// 表格的字段顺序
+    	if (string_contains(sKey, "field_sequence"))
     	{
-    		for(int i = 2; i < sVector.size(); ++i)
-    		{
-    			fieldSquence.vNLevels.push_back(atoi(sVector[i].c_str()));
-    			LOG_INFO("string key num = " + sVector[i]);
-    		}
-    	}
+    		std::vector<string> sVector;
+    		SplitSequenceKeyToNumVector(sKey, sVector);
 
-    	// 读取table里面的field
-    	if (lua_type(L, -1) == LUA_TTABLE)
-        {
-        	lua_pushnil(L);
-
-        	while(lua_next(L, -2))
+    		// 如果field_sequence后面没有数字,则就是最外层的二维表的顺序
+    		if(sVector.size() > 2)
     		{
-    			if (lua_type(L, -1) == LUA_TSTRING)
+    			for(int i = 2; i < sVector.size(); ++i)
     			{
-    				fieldSquence.vSFieldSquences.push_back(lua_tostring(L, -1));
+    				fieldSquence.vNLevels.push_back(atoi(sVector[i].c_str()));
     			}
-    			lua_pop(L, 1);
     		}
+
+    		// 读取table里面的field
+    		if (lua_type(L, -1) == LUA_TTABLE)
+        	{
+        		lua_pushnil(L);
+
+        		while(lua_next(L, -2))
+    			{
+    				if (lua_type(L, -1) == LUA_TTABLE)
+    				{
+    					FIELDINFO fieldInfo;
+    					lua_pushnil(L);
+    					while(lua_next(L, -2))
+    					{
+    						if (lua_type(L, -1) == LUA_TSTRING)
+    						{
+    							string keyStr = lua_tostring(L, -2);
+    							string valueStr = lua_tostring(L, -1);
+
+    							if (keyStr == "field_name")
+    							{
+    								fieldInfo.sFieldName = valueStr;
+    							}
+    							else if (keyStr == "field_desc")
+    							{
+    								fieldInfo.sFieldAnnonation = valueStr;
+    							}
+    							else if (keyStr == "field_link")
+    							{
+    								fieldInfo.sFieldLink = valueStr;
+    							}
+
+    						}
+    						lua_pop(L, 1);
+    					}
+
+    					fieldSquence.vSFieldSquences.push_back(fieldInfo);
+
+    				}
+    				lua_pop(L, 1);
+    			}
+    		}
+
+    		m_vFieldSquences.push_back(fieldSquence);
     	}
 
-    	m_vFieldSquences.push_back(fieldSquence);
+
 
     	lua_pop(L, 1);
     }
@@ -159,10 +211,10 @@ void LuaExtInfoContainer::UpdateData(const test_2::client_save_table_info_reques
 {
 	m_vFieldSquences.clear();
 
-	for (int i = 0; i < quest.filed_sequences_size(); i++)
+	for (int i = 0; i < quest.field_squences_size(); i++)
 	{
 		FIELDSQUENCE fieldSquence;
-		test_2::field_squence field_squence = quest.filed_sequences(i);
+		test_2::field_squence field_squence = quest.field_squences(i);
 
 		for (int j = 0; j < field_squence.levels_size(); j++)
 		{
@@ -171,11 +223,16 @@ void LuaExtInfoContainer::UpdateData(const test_2::client_save_table_info_reques
 			fieldSquence.vNLevels.push_back(nLevel);
 		}
 
-		for (int j = 0; j < field_squence.fields_size(); j++)
+		for (int j = 0; j < field_squence.infos_size(); j++)
 		{
-			std::string sField = field_squence.fields(j);
+			FIELDINFO fieldInfo;
 
-			fieldSquence.vSFieldSquences.push_back(sField);
+			test_2::field_info info = field_squence.infos(j);
+			fieldInfo.sFieldName = info.field_name();
+			fieldInfo.sFieldAnnonation = info.field_desc();
+			fieldInfo.sFieldLink = info.field_link();
+
+			fieldSquence.vSFieldSquences.push_back(fieldInfo);
 		}
 
 		m_vFieldSquences.push_back(fieldSquence);

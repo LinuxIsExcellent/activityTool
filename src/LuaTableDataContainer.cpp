@@ -236,7 +236,7 @@ void LuaTableDataContainer::SortFieldSquence()
                 {
                     for (int j = 0; j < squence.vSFieldSquences.size(); ++j)
                     {
-                        mFieldSquence.insert(pair<string, int> (squence.vSFieldSquences[j], j));
+                        mFieldSquence.insert(pair<string, int> (squence.vSFieldSquences[j].sFieldName, j));
                     }
                 }
             }

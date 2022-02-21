@@ -29,8 +29,29 @@ string subreplace(string resource_str, string sub_str, string new_str)
     return resource_str;
 }
 
+bool string_contains(string resource_str, string sub_str)
+{
+    string::size_type pos = resource_str.find(sub_str);
+    if (pos != string::npos)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 int main()
 {
+    string s1 = string("string1");
+    string s2 = string("string2");
+
+    const char* p1 = s1.substr(1).data();
+    const char* p2 = s2.substr(1).data();
+
+    std::cout << "object : " << p1 << p2 << std::endl;
+
     // 一些初始化的工作
     L = luaL_newstate();
     if(L == NULL)

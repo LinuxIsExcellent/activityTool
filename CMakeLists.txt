@@ -49,7 +49,6 @@ target_include_directories(lua PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-E")
 
 #添加编译选项
-#add_compile_options(-std=c++11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -llog4cpp -pthread")
 
 #设置protobuf的文件路径
@@ -68,7 +67,7 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 #指定可执行文件的输出目录，输出到bin下面  
-#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 #指定库文件输出路径  
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
@@ -95,4 +94,4 @@ target_link_libraries(observer ${PROTOBUF_LIBRARIES})
 #链接lua静态库
 target_link_libraries(observer lua)
 
-message("cmake done")
+message(STATUS "cmake done " ${PROTOBUF_LIBRARIES})

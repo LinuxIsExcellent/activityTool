@@ -20,7 +20,7 @@ public:
     {
         return m_vFieldSquences;
     }
-
+    
     // 客户端请求保存外围信息
     void UpdateData(const test_2::client_save_table_info_request& quest);
 private:

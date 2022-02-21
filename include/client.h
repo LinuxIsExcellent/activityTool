@@ -48,6 +48,9 @@ public:
 
 	// 请求保存单个一维表数据
 	void OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_request& quest);
+
+	// 发送能关联的信息
+	void OnSendFieldLinkInfo();
 private:
 	// 执行shell指令
 	void RequesetExceShellOps(string option);

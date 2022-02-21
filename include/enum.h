@@ -14,3 +14,13 @@ string new_str                //替换子串
 返回值: string
  */
 string subreplace(string resource_str, string sub_str, string new_str);
+
+
+/*
+ 函数说明：检测是否包含某一个字串
+ 参数：
+string resource_str            //源字符串
+string sub_str                //被替换子串
+返回值: bool
+ */
+bool string_contains(string resource_str, string sub_str);

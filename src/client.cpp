@@ -148,6 +148,10 @@ void Client::OnNetMsgProcess(Packet &packet)
 
 			OnClientQuestSaveLuaListInfo(quest);
         }
+        else if (nCmd == test_2::client_msg::REQUSET_FIELD_LINK_INFO)
+        {
+        	OnSendFieldLinkInfo();	
+        }
     }
 }
 
@@ -384,4 +388,60 @@ void Client::OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_reque
 
 		OnSendLuaListDataToClient(sFileName);
 	}	
+}
+
+void Client::OnSendFieldLinkInfo()
+{
+	test_2::send_field_link_info notify;
+
+	std::map<string, LuaTableDataContainer*>* mLuaTableDatas = LuaConfigManager::GetInstance()->GetTableDataMap();
+	if (mLuaTableDatas)
+	{
+		for (map<string, LuaTableDataContainer*>::iterator iter = mLuaTableDatas->begin(); iter != mLuaTableDatas->end(); ++iter)
+		{
+			test_2::table_field_list* tableFieldList = notify.add_table();
+			if (tableFieldList)
+			{
+				tableFieldList->set_table_name(iter->first);
+			}
+
+			const std::vector<std::string>& vFieldStr = iter->second->GetVFeildStr();
+			for (int i = 0; i < vFieldStr.size(); ++i)
+			{
+				std::string* fieldName = tableFieldList->add_fields();
+				if (fieldName)
+				{
+					*fieldName = vFieldStr[i];
+				}
+			}
+		}
+	}
+
+	std::map<string, LuaListDataContainer*>* mTableDataMap = LuaConfigManager::GetInstance()->GetLuaListMap();
+	if (mTableDataMap)
+	{
+		for (map<string, LuaListDataContainer*>::iterator iter = mTableDataMap->begin(); iter != mTableDataMap->end(); ++iter)
+		{
+			test_2::table_field_list* tableFieldList = notify.add_table();
+			if (tableFieldList)
+			{
+				tableFieldList->set_table_name(iter->first);
+			}
+
+			const std::vector<LUAKEYVALUE>& luaKeyValue = iter->second->GetListData();
+			for (int i = 0; i < luaKeyValue.size(); ++i)
+			{
+				std::string* fieldName = tableFieldList->add_fields();
+				if (fieldName)
+				{
+					*fieldName = luaKeyValue[i].sKey;
+				}
+			}
+		}
+	}
+
+	string output;
+    notify.SerializeToString(&output);
+    
+	SendData(0, test_2::server_msg::SEND_FIELD_LINK_DATA, output);
 }
