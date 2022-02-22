@@ -204,6 +204,7 @@ void LuaConfigManager::LoadAllLuaConfigData(lua_State *L)
         LuaTableDataContainer* luaData = new LuaTableDataContainer(sFileTableName, sLuaFileAbsolutePath);
         if (luaData)
         {
+            LOG_INFO("加载lua数据开始 : " + sFileTableName);
             if (luaData->LoadLuaConfigData(L))
             {
                 LOG_INFO("加载lua数据成功 : " + sFileTableName);

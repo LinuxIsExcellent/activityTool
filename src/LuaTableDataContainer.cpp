@@ -69,8 +69,9 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L)
         else if (lua_type(L, -1) == LUA_TNUMBER)
         {
             double num = lua_tonumber(L, -1);
-            std::string str_num = doubleToString(num);
-            sValueTable = sValueTable + str_num;
+            // std::string str_num = doubleToString(num);
+            // sValueTable = sValueTable + str_num;
+            sValueTable = sValueTable + std::to_string(num);
         }
 
         sValueTable = sValueTable + ", ";
@@ -168,6 +169,7 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     			}
     			else if (nValueType == LUA_TNUMBER)
     			{
+                    // TODO:优化成读取到一个double里面去,要不然这里处理得太慢了
                     double num = lua_tonumber(L, -1);
                     std::string str_num = doubleToString(num);
                     sValue = str_num;
