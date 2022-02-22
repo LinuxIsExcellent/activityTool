@@ -42,6 +42,22 @@ bool string_contains(string resource_str, string sub_str)
     }
 }
 
+std::string doubleToString(double price) {
+    auto res = std::to_string(price);
+    const std::string format("$1");
+    try {
+        std::regex r("(\\d*)\\.0{6}|");
+        std::regex r2("(\\d*\\.{1}0*[^0]+)0*");
+        res = std::regex_replace(res, r2, format);
+        res = std::regex_replace(res, r, format);
+    }
+    catch (const std::exception & e) {
+        return res;
+    }
+    return res;
+}
+
+
 int main()
 {
     string s1 = string("string1");

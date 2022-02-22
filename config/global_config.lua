@@ -16,7 +16,7 @@ config_file_path =
 	-- "bonus_rain.lua",
 	-- "task.lua",
 	-- "item_group.lua",
-	-- "coin_rooms.lua",
+    -- "coin_rooms.lua",
 }
 
 -- 键值对一维展开的配置文件

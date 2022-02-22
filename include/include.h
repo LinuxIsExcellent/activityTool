@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <sys/epoll.h>
 #include <pthread.h>
+#include <regex>
 
 using namespace std;
 

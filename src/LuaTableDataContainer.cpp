@@ -68,10 +68,9 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L)
         }
         else if (lua_type(L, -1) == LUA_TNUMBER)
         {
-            char str[64];
-            sprintf(str, "%g", lua_tonumber(L, -1));
-
-            sValueTable = sValueTable + str;
+            double num = lua_tonumber(L, -1);
+            std::string str_num = doubleToString(num);
+            sValueTable = sValueTable + str_num;
         }
 
         sValueTable = sValueTable + ", ";
@@ -169,10 +168,9 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     			}
     			else if (nValueType == LUA_TNUMBER)
     			{
-                    char str[64];
-                    sprintf(str, "%g", lua_tonumber(L, -1));
-
-                    sValue = str;
+                    double num = lua_tonumber(L, -1);
+                    std::string str_num = doubleToString(num);
+                    sValue = str_num;
     			}
 
                 VALUEPAIR pair_value;

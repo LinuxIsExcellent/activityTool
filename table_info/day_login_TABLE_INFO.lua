@@ -1,28 +1,25 @@
 day_login_TABLE_INFO =
 {
-	field_sequence_3_3 =
-	{
-	},
 	field_sequence_3 =
 	{
 	},
 	field_sequence =
 	{
 		[1] = {
+			field_name = "id",
+			field_desc = "一个唯一的id",
+		},
+		[2] = {
 			field_name = "week_num_list",
 			field_desc = "每周的开放天数",
 		},
-		[2] = {
+		[3] = {
 			field_name = "end_time",
 			field_desc = "结束时间阿松大暗示\n阿松大阿萨大大\n\n",
 		},
-		[3] = {
+		[4] = {
 			field_name = "reg_day_low",
 			field_desc = "注册时间大于多少天的用户",
-		},
-		[4] = {
-			field_name = "id",
-			field_desc = "一个唯一的id",
 		},
 		[5] = {
 			field_name = "channel",
@@ -50,5 +47,8 @@ day_login_TABLE_INFO =
 			field_name = "ban_channel",
 			field_desc = "禁止渠道",
 		},
+	},
+	field_sequence_3_3 =
+	{
 	},
 }

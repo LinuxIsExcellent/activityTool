@@ -24,3 +24,11 @@ string sub_str                //被替换子串
 返回值: bool
  */
 bool string_contains(string resource_str, string sub_str);
+
+/* 函数说明：将double转换成一个字符串
+ 参数：
+ double price 		//转换的数字
+返回值:string 		//结果串
+*/
+
+std::string doubleToString(double price);
