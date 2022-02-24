@@ -36,6 +36,7 @@ extern "C" {
 #include <log4cpp/PropertyConfigurator.hh>
 #include <google/protobuf/text_format.h>
 
+#include <lst_timer.h>
 #include <enum.h>
 #include <internel_struct.h>
 #include <Log.h>

@@ -39,6 +39,13 @@ void IOManager::addsig(int sig)
     assert(sigaction(sig, &sa, NULL) != -1);
 }
 
+void IOManager::TimerHandler()
+{
+    LOG_INFO("timer handler");
+    timer_lst.tick();
+    alarm(1);
+}
+
 void IOManager::InitIOManager()
 {
     // 创建epoll实例
@@ -57,6 +64,7 @@ void IOManager::InitIOManager()
     addsig(SIGTERM);
     addsig(SIGINT);
     addsig(SIGALRM);
+    alarm(1);
 }
 
 void IOManager::AddListeningFd(string ip, int port)
@@ -220,6 +228,12 @@ void IOManager::Loop()
                     }
                 }
             }
+        }
+
+        if (timeout)
+        {
+            TimerHandler();
+            timeout = false;
         }
     }
 

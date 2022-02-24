@@ -37,6 +37,9 @@ public:
     // 初始化io管理器
     void InitIOManager();
 
+    // 处理定时器
+    void TimerHandler();
+
     // 增加网络端口监听
     void AddListeningFd(string ip, int port);
 
@@ -53,4 +56,6 @@ private:
     std::map<int, Client*> m_mClients; //所有处于链接状态的客户端
 
     bool loop;
+
+    sort_timer_lst timer_lst;
 };
