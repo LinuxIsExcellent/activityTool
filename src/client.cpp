@@ -98,6 +98,7 @@ void Client::OnNetMsgProcess(Packet &packet)
         	OnSendShellConfigToClient();
 
         	OnSendServerCurrentTimestamp();
+        	OnSendCurrentProcessStatusInfo();
         }
         else if (nCmd == test_2::client_msg::REQUSET_LUA_TABLE_DATA)
         {
@@ -242,7 +243,7 @@ void Client::RequesetExceShellOps(string option)
 
 	test_2::send_shell_option_print_notify notify;
 
-	notify.set_line("脚本执行结束");
+	notify.set_line("=======脚本执行结束========");
 	notify.set_flag(1);
 
 	string output;
@@ -251,7 +252,7 @@ void Client::RequesetExceShellOps(string option)
 	SendData(0, test_2::server_msg::SEND_OPTION_SHELL_PRINT, output);
 
 	LOG_INFO("shell 指令执行完毕");
-	pclose(fp);
+	fclose(fp);
 }
 
 void Client::OnClientQuestSaveTableInfo(const test_2::client_save_table_info_request& quest)
@@ -442,6 +443,34 @@ void Client::OnSendFieldLinkInfo()
 
 	string output;
     notify.SerializeToString(&output);
-    
+
 	SendData(0, test_2::server_msg::SEND_FIELD_LINK_DATA, output);
+}
+
+void Client::OnSendCurrentProcessStatusInfo()
+{
+	test_2::send_process_listening_status_info notify;
+	const std::map<std::string, uint16_t>& vListenProcessStatus = IOManager::GetInstance()->GetProcessStatues();
+
+	const std::vector<LISTENPROCESSINFO>& vListenProcessInfo = GlobalConfig::GetInstance()->GetListeningProcessInfo();
+	for (auto data : vListenProcessInfo)
+	{	
+		uint16_t nStatus = 0;
+		if (vListenProcessStatus.find(data.pidFile) != vListenProcessStatus.end())
+		{
+			nStatus = vListenProcessStatus.find(data.pidFile)->second;
+		}
+
+		test_2::process_statue_info* info = notify.add_infos();
+		if (info)
+		{
+			info->set_process_name(data.processName);
+			info->set_statue(nStatus);
+		}
+	}
+
+	string output;
+    notify.SerializeToString(&output);
+
+	SendData(0, test_2::server_msg::SEND_PROCESS_STATUS_INFO, output);
 }

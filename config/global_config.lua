@@ -33,18 +33,18 @@ listening_process_path = "/root/workspace/dev_ph"
 -- 可监听的进程id文件的名字
 listening_process_config =
 {
-	[1] = {"gamesvr.pid", "服务1"},
-	[2] = {"center.pid", "服务2"},
-	[3] = {"chatsvr.pid", "服务3"},
-	-- [4] = {"datasvr.pid", "服务4"},
-	-- [5] = {"jackpot.pid", "服务5"},
-	-- [6] = {"logger.pid", "服务6"},
-	-- [7] = {"logon.pid", "服务7"},
-	-- [8] = {"mailsvr.pid", "服务8"},
-	-- [9] = {"roomcenter.pid", "服务9"},
-	-- [10] = {"roomsvr.pid", "服务10"},
-	-- [11] = {"teamsvr.pid", "服务11"},
-	-- [12] = {"usercenter.pid", "服务12"},
+	[1] = {"gamesvr.pid", "asda"},
+	[2] = {"center.pid", "asdas"},
+	[3] = {"chatsvr.pid", "聊天服"},
+	[4] = {"datasvr.pid", "数据服"},
+	[5] = {"jackpot.pid", "jackpot服"},
+	[6] = {"logger.pid", "日志服"},
+	[7] = {"logon.pid", "登录服"},
+	[8] = {"mailsvr.pid", "邮件服"},
+	[9] = {"roomcenter.pid", "房间中心服"},
+	[10] = {"roomsvr.pid", "房间服"},
+	[11] = {"teamsvr.pid", "战队服"},
+	[12] = {"usercenter.pid", "用户中心服"},
 }
 
 -- 使用脚本路径
@@ -52,8 +52,7 @@ script_operate_path = "/root/workspace/activityTool/shell_script"
 -- 使用脚本
 shell_config = 
 {
-	-- ["重刷脚本"] = "reload_all.sh",
 	["关闭服务器"] = "stop_server.sh",
 	["开启服务器"] = "start_server.sh",
-	["检测服务器"] = "kill.sh",
+	["重刷脚本"] = "reload_server.sh",
 }

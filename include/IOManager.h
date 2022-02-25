@@ -6,6 +6,7 @@
 #define MAX_EVENT_NUMBER 1024
 static int s_pipefd[2];    //把信号事件转换成IO事件的管道
 
+class Client;
 // IO管理类
 // 使用epoll编写的一个类，用来统一服务中的所有事件源
 class IOManager
@@ -40,6 +41,11 @@ public:
         return m_instance;
     }
 
+    const std::map<std::string, uint16_t>& GetProcessStatues()
+    {
+        return m_listenProcessStatues;
+    }
+
     // 增加定时器
     void AddTimer(util_timer* timer);
 
@@ -64,4 +70,6 @@ private:
     bool loop;
 
     sort_timer_lst timer_lst;
+
+    std::map<std::string, uint16_t>  m_listenProcessStatues;     //监听的服务的运行状态
 };

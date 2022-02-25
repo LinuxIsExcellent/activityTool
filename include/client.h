@@ -51,6 +51,9 @@ public:
 
 	// 发送能关联的信息
 	void OnSendFieldLinkInfo();
+
+	//发送当前的服务进程的状态
+	void OnSendCurrentProcessStatusInfo();
 private:
 	// 执行shell指令
 	void RequesetExceShellOps(string option);

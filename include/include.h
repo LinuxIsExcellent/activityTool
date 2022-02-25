@@ -41,6 +41,7 @@ extern "C" {
 #include <internel_struct.h>
 #include <Log.h>
 #include <globalConfig.h>
+#include <IOManager.h>
 #include <msg.pb.h>
 #include <Packet.h>
 #include <LuaConfigManager.h>

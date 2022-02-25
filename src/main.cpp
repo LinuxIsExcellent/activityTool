@@ -1,5 +1,4 @@
 #include "include.h"
-#include "IOManager.h"
 
 // 全局配置单例
 GlobalConfig* GlobalConfig::m_instance = NULL;
@@ -107,9 +106,6 @@ int main()
     timer1->expire = cur_time;
     timer1->nLoopSec = 8;
     timer1->cb_func = TimerTest2;
-
-    int nResult = kill(3378, 0);
-    LOG_INFO("nResult = " + std::to_string(nResult));
 
     // IOManager::GetInstance()->AddTimer(timer1);
 

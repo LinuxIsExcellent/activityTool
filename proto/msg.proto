@@ -26,6 +26,7 @@ enum server_msg
 	SEND_OPTION_SHELL_PRINT							= 4;	//推送执行shell的打印
 	SEND_LUA_LIST_DATA								= 5;	//推送单个一维表文件数据
 	SEND_FIELD_LINK_DATA							= 6;	//推送关联信息
+	SEND_PROCESS_STATUS_INFO						= 7;	//推送当前的进程的状态
 }
 
 //客户端请求登陆
@@ -214,4 +215,16 @@ message send_field_link_info
 {
 	repeated table_field_list 		table 				= 1;			//二维表
 	repeated table_field_list 		list 				= 2;			//一维表
+}
+
+message process_statue_info
+{
+	string 							process_name 		= 2;			//进程名字
+	int32  							statue				= 3;			//进程状态
+}
+
+//发送服务器监听的进程的状态
+message send_process_listening_status_info
+{
+	repeated  process_statue_info infos = 1;
 }

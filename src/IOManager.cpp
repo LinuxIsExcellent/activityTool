@@ -43,34 +43,57 @@ void IOManager::addsig(int sig)
 void IOManager::ProcessMonitorHandler()
 {
     const std::vector<LISTENPROCESSINFO>& vListenProcessInfo = GlobalConfig::GetInstance()->GetListeningProcessInfo();
+
+    bool bStatusChange = false;
     for (auto data : vListenProcessInfo)
     {
-        LOG_INFO("data.pidFile = " + data.pidFile);
-        LOG_INFO("data.processName = " + data.processName);
-        data.pidFile;
-        data.processName;
-
         std::string sPath = GlobalConfig::GetInstance()->getListeningProcessPath();
 
         ifstream ifs;
         //1.打开文件，如果没有，会在同级目录下自动创建该文件
-        LOG_INFO("file path = " + sPath + "/" + data.pidFile);
         ifs.open(sPath + "/" + data.pidFile, ios::in);//采取追加的方式写入文件
         string pid;
         ifs >> pid;
 
         int nPid = atoi(pid.c_str());
+        uint16_t nStatus = 0;       //未启动
         if (nPid > 0)
         {
             if(kill(nPid, 0) == 0)
             {
-                // 进程正在运行
+                nStatus = 1;
             }
             else
             {
-                // 进程出现异常
+                nStatus = 0;
             }
         }
+
+
+        if(m_listenProcessStatues.find(data.pidFile) != m_listenProcessStatues.end() && m_listenProcessStatues.find(data.pidFile)->second != nStatus)
+        {
+            m_listenProcessStatues.find(data.pidFile)->second = nStatus;
+            bStatusChange = true;
+        }
+        else
+        {
+            m_listenProcessStatues.insert(pair<string, int>(data.pidFile, nStatus));
+        }
+    }
+
+    if (bStatusChange)
+    {
+        // 推送给当前所有的客户端监听的进程状态改变
+        for (auto it = m_mClients.begin(); it != m_mClients.end(); ++it)
+        {
+            it->second->OnSendCurrentProcessStatusInfo();
+        }
+    }
+
+    // 每5s发送一次心跳包
+    for (auto it = m_mClients.begin(); it != m_mClients.end(); ++it)
+    {
+        it->second->OnSendServerCurrentTimestamp();
     }
 }
 

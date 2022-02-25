@@ -94,7 +94,7 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
                 {
                     info.pidFile = strFile;
                 }   
-                else if (lua_tonumber(L, -2) == 1)
+                else if (lua_tonumber(L, -2) == 2)
                 {
                     info.processName = strFile;
                 }
