@@ -25,6 +25,9 @@ private:
 
     // 处理定时器
     void TimerHandler();
+
+    // 监听进程的状态
+    void ProcessMonitorHandler();
 public:
     ~IOManager() {};
 

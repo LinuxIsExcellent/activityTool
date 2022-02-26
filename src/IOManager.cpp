@@ -39,10 +39,47 @@ void IOManager::addsig(int sig)
     assert(sigaction(sig, &sa, NULL) != -1);
 }
 
+// 监听进程的状态
+void IOManager::ProcessMonitorHandler()
+{
+    const std::vector<LISTENPROCESSINFO>& vListenProcessInfo = GlobalConfig::GetInstance()->GetListeningProcessInfo();
+    for (auto data : vListenProcessInfo)
+    {
+        LOG_INFO("data.pidFile = " + data.pidFile);
+        LOG_INFO("data.processName = " + data.processName);
+        data.pidFile;
+        data.processName;
+
+        std::string sPath = GlobalConfig::GetInstance()->getListeningProcessPath();
+
+        ifstream ifs;
+        //1.打开文件，如果没有，会在同级目录下自动创建该文件
+        LOG_INFO("file path = " + sPath + "/" + data.pidFile);
+        ifs.open(sPath + "/" + data.pidFile, ios::in);//采取追加的方式写入文件
+        string pid;
+        ifs >> pid;
+
+        int nPid = atoi(pid.c_str());
+        if (nPid > 0)
+        {
+            if(kill(nPid, 0) == 0)
+            {
+                // 进程正在运行
+            }
+            else
+            {
+                // 进程出现异常
+            }
+        }
+    }
+}
+
 void IOManager::TimerHandler()
 {
     timer_lst.tick();
-    alarm(1);
+    alarm(5);
+
+    ProcessMonitorHandler();
 }
 
 void IOManager::InitIOManager()
@@ -63,7 +100,7 @@ void IOManager::InitIOManager()
     addsig(SIGTERM);
     addsig(SIGINT);
     addsig(SIGALRM);
-    alarm(1);
+    alarm(5);
 }
 
 void IOManager::AddListeningFd(string ip, int port)

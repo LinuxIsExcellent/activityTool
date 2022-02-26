@@ -64,6 +64,11 @@ public:
     {
         return m_vShellConfig;
     }
+
+    inline const std::vector<LISTENPROCESSINFO>& GetListeningProcessInfo()
+    {
+        return m_vListeningProcess;
+    }
 private:
     static GlobalConfig* m_instance;
 
@@ -81,4 +86,6 @@ private:
 
     string m_sShellPath;        //shell脚本路径
     std::vector<VALUEPAIR>      m_vShellConfig;     //可以执行的shell脚本
+
+    std::vector<LISTENPROCESSINFO>      m_vListeningProcess;     //需要监听的程序列表
 };

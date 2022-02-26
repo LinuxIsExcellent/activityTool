@@ -75,4 +75,35 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
             lua_pop(L, 1);
         }
     }
+
+    // 需要监听的服务器的进程id的文件列表
+    lua_getglobal(L, "listening_process_config");
+    if (lua_istable(L, -1))
+    {
+        m_vListeningProcess.clear();
+        lua_pushnil(L);
+        while(lua_next(L, -2))
+        {
+            lua_pushnil(L);
+
+            LISTENPROCESSINFO info;
+            while(lua_next(L, -2))
+            {
+                string strFile = lua_tostring(L, -1);
+                if (lua_tonumber(L, -2) == 1) 
+                {
+                    info.pidFile = strFile;
+                }   
+                else if (lua_tonumber(L, -2) == 1)
+                {
+                    info.processName = strFile;
+                }
+                
+                lua_pop(L, 1);
+            }
+
+            lua_pop(L, 1);
+            m_vListeningProcess.push_back(info);
+        }
+    }
 }

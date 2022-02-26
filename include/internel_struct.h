@@ -49,3 +49,10 @@ typedef struct LuaKeyValue
 
 // 缩进符
 const std::string TAB = "\t";
+
+// 监听的进程的文件信息
+typedef struct listenProcessInfo
+{
+    std::string pidFile;
+    std::string processName;
+}LISTENPROCESSINFO;

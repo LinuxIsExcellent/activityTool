@@ -29,23 +29,22 @@ config_list_file_path =
 temp_config_path = "/root/workspace/activityTool/table_info"
 
 -- 监听的进程id文件产生的路径
-listening_process_path = "/root/workspace/dev_ph/script/config"
-
+listening_process_path = "/root/workspace/dev_ph"
 -- 可监听的进程id文件的名字
 listening_process_config =
 {
 	[1] = {"gamesvr.pid", "服务1"},
 	[2] = {"center.pid", "服务2"},
 	[3] = {"chatsvr.pid", "服务3"},
-	[4] = {"datasvr.pid", "服务4"},
-	[5] = {"jackpot.pid", "服务5"},
-	[6] = {"logger.pid", "服务6"},
-	[7] = {"logon.pid", "服务7"},
-	[8] = {"mailsvr.pid", "服务8"},
-	[9] = {"roomcenter.pid", "服务9"},
-	[10] = {"roomsvr.pid", "服务10"},
-	[11] = {"teamsvr.pid", "服务11"},
-	[12] = {"usercenter.pid", "服务12"},
+	-- [4] = {"datasvr.pid", "服务4"},
+	-- [5] = {"jackpot.pid", "服务5"},
+	-- [6] = {"logger.pid", "服务6"},
+	-- [7] = {"logon.pid", "服务7"},
+	-- [8] = {"mailsvr.pid", "服务8"},
+	-- [9] = {"roomcenter.pid", "服务9"},
+	-- [10] = {"roomsvr.pid", "服务10"},
+	-- [11] = {"teamsvr.pid", "服务11"},
+	-- [12] = {"usercenter.pid", "服务12"},
 }
 
 -- 使用脚本路径
@@ -56,4 +55,5 @@ shell_config =
 	-- ["重刷脚本"] = "reload_all.sh",
 	["关闭服务器"] = "stop_server.sh",
 	["开启服务器"] = "start_server.sh",
+	["检测服务器"] = "kill.sh",
 }

@@ -101,12 +101,15 @@ int main()
     timer->nLoopSec = 5;
     timer->cb_func = TimerTest1;
 
-    IOManager::GetInstance()->AddTimer(timer);
+    // IOManager::GetInstance()->AddTimer(timer);
 
     util_timer* timer1 = new util_timer();
     timer1->expire = cur_time;
     timer1->nLoopSec = 8;
     timer1->cb_func = TimerTest2;
+
+    int nResult = kill(3378, 0);
+    LOG_INFO("nResult = " + std::to_string(nResult));
 
     // IOManager::GetInstance()->AddTimer(timer1);
 
