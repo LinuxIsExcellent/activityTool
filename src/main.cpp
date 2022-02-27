@@ -56,15 +56,18 @@ std::string doubleToString(double price) {
     return res;
 }
 
-
-void TimerTest1()
+// 全局5s定时器
+void Global5STimer()
 {
-    LOG_INFO("5s timer");
+    // LOG_INFO("global 5s timer");
+
+    IOManager::GetInstance()->ProcessMonitorHandler();
 }
 
-void TimerTest2()
+// 全局15s定时器
+void Global15STimer()
 {
-    LOG_INFO("8s timer");
+    // LOG_INFO("global 15s timer");
 }
 
 int main()
@@ -95,19 +98,20 @@ int main()
 
     time_t cur_time = time(NULL);
 
-    util_timer* timer = new util_timer();
-    timer->expire = cur_time;
-    timer->nLoopSec = 5;
-    timer->cb_func = TimerTest1;
+    util_timer* timer_5s = new util_timer();
+    timer_5s->expire = cur_time;
+    timer_5s->nLoopSec = 5;
+    timer_5s->nLoopMax = 1;
+    timer_5s->cb_func = Global5STimer;
 
-    // IOManager::GetInstance()->AddTimer(timer);
+    IOManager::GetInstance()->AddTimer(timer_5s);
 
-    util_timer* timer1 = new util_timer();
-    timer1->expire = cur_time;
-    timer1->nLoopSec = 8;
-    timer1->cb_func = TimerTest2;
+    util_timer* timer_15s = new util_timer();
+    timer_15s->expire = cur_time;
+    timer_15s->nLoopSec = 15;
+    timer_15s->cb_func = Global15STimer;
 
-    // IOManager::GetInstance()->AddTimer(timer1);
+    IOManager::GetInstance()->AddTimer(timer_15s);
 
     // 开始IO循环
     IOManager::GetInstance()->Loop();

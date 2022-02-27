@@ -32,3 +32,9 @@ bool string_contains(string resource_str, string sub_str);
 */
 
 std::string doubleToString(double price);
+
+// 全局5s定时器
+void Global5STimer();
+
+// 全局15s定时器
+void Global15STimer();

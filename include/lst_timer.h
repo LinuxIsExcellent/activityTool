@@ -5,7 +5,7 @@
 class util_timer
 {
     public:
-        util_timer():prev(NULL),next(NULL),nLoopSec(0),nLoopMax(0){}
+        util_timer():prev(NULL),next(NULL),expire(0),nLoopSec(0),nLoopMax(0),nLoopcount(0){}
     public:
         time_t expire;  /*定时器截止时间*/
         unsigned int nLoopSec;  /*循环间隔如果大于0， 则证明这个定时器是一个多次循环的定时器*/
@@ -132,71 +132,79 @@ class sort_timer_lst
 
             time_t cur = time(NULL);
 
-            util_timer* head_tmp = head;
-            util_timer* tmp = head_tmp;
 
-            printf("tick\n");
-            while(tmp)
+            util_timer* first_time = head;
+
+            while(first_time)
             {
-                if (cur < tmp ->expire)
+                if (cur < first_time ->expire)
                 {
                     break;
                 }
                 //调用回调函数
-                tmp->cb_func();
+                first_time->cb_func();
                 
-                printf("nLoopSec = %d, nLoopMax = %d, tmp ->expire = %d\n", tmp->nLoopSec, tmp->nLoopMax, tmp->expire);
-                if (tmp->nLoopSec > 0/* && (tmp->nLoopMax == 0 || tmp->nLoopcount < tmp->nLoopMax)*/)
+                //printf("nLoopSec = %d, nLoopMax = %d, first_time->nLoopcount = %d, first_time ->expire = %d\n", first_time->nLoopSec, first_time->nLoopMax, first_time->nLoopcount, first_time->expire);
+                if (first_time->nLoopSec > 0 && (first_time->nLoopMax == 0 || first_time->nLoopcount < first_time->nLoopMax - 1))
                 {
-                    printf("重新添加到列表i面了吗\n");
-                    tmp->nLoopcount += 1;
+                    // 修改这个循环定时器的参数
+                    first_time->nLoopcount += 1;
                     //为了避免服务器调整时间之后，多次同一个回调函数的调用
-                    tmp->expire = cur + tmp->nLoopSec;
+                    first_time->expire = cur + first_time->nLoopSec;
 
-                    // // 如果后面没有定时器
-                    // if(!head->next)
-                    // {
-                    //     head = tmp;
+                    // 1.后续没有定时器
+                    // 2.调整了时间之后还是小于后续的定时器截至时间
+                    // 则直接退出循环
+                    if(first_time->next == NULL || (first_time->expire <= first_time->next->expire))
+                    {
+                        // printf("直接退出循环, first_time = %x, first_time->expire = %d, first_time->next->expire = %d\n", first_time, first_time->expire, first_time->next->expire);
+                        break;
+                    }
 
-                    //     printf("后面没有了\n");
-                    // }
-                    // // 有定时器，则要找到正确的位置
-                    // else
-                    // {
-                    //     util_timer* next = head->next;
-                    //     while(next)
-                    //     {
-                    //         if (next->expire >= tmp->expire)
-                    //         {
-                    //             next->prev->next = tmp;
-                    //             tmp->next = next;
-                    //             break;
-                    //         }
+                    //调整头指针的位置
+                    head = first_time->next;
+                    head->prev = NULL;
 
-                    //         next = next->next;
+                    util_timer* temp_next = first_time->next;
+                    while(temp_next->expire < first_time->expire)
+                    {
+                        if (first_time->expire < temp_next->expire)
+                        {
+                            temp_next->prev->next = first_time;
+                            temp_next->prev = first_time;
 
-                    //         if (!next)
-                    //         {
-                    //             next->next = tmp;
-                    //             tmp->prev = next;
-                    //             tmp->next = NULL;
-                    //         }
-                    //     }
-                    // }
+                            first_time->prev = temp_next->prev->next;
+                            first_time->next = temp_next;
 
-                    add_timer(tmp);
+                            break;
+                        }
+
+                        if (temp_next->next)
+                        {
+                            temp_next = temp_next->next;
+                        }
+                        else
+                        {
+                            temp_next->next = first_time;
+                            first_time->prev = temp_next;
+                            first_time->next = NULL;
+
+                            tail = first_time;
+                        }
+                    }
                 }
                 // 如果定时器已失效
                 else
                 {
-                    delete tmp;
+                    head = first_time->next;
                     if (head)
                     {
                         head->prev = NULL;
                     }
-                }
 
-                tmp = head->next;
+                    delete first_time;
+                    first_time = head->next;
+                }
             }
         }
     private:

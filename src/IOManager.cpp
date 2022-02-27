@@ -100,9 +100,9 @@ void IOManager::ProcessMonitorHandler()
 void IOManager::TimerHandler()
 {
     timer_lst.tick();
-    alarm(5);
+    alarm(1);
 
-    ProcessMonitorHandler();
+    // ProcessMonitorHandler();
 }
 
 void IOManager::InitIOManager()
@@ -123,7 +123,7 @@ void IOManager::InitIOManager()
     addsig(SIGTERM);
     addsig(SIGINT);
     addsig(SIGALRM);
-    alarm(5);
+    alarm(1);
 }
 
 void IOManager::AddListeningFd(string ip, int port)

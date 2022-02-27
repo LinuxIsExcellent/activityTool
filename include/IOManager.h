@@ -26,9 +26,6 @@ private:
 
     // 处理定时器
     void TimerHandler();
-
-    // 监听进程的状态
-    void ProcessMonitorHandler();
 public:
     ~IOManager() {};
 
@@ -54,6 +51,9 @@ public:
 
     // 增加网络端口监听
     void AddListeningFd(string ip, int port);
+
+    // 监听进程的状态
+    void ProcessMonitorHandler();
 
     // 事件循环
     void Loop();
