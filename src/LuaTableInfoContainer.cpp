@@ -77,15 +77,13 @@ bool LuaTableInfoContainer::LoadTableInfoData(lua_State* L)
     	return false;
     }
 
-    _table_info.set_table_name(m_LuaFileName);
-
     //置空栈顶
     lua_pushnil(L);
 
-    test_2::field_squence* _field_squence;
     while(lua_next(L, -2))
     {
-    	_field_squence = _table_info.add_filed_sequences();
+
+    	FIELDSQUENCE fieldSquence;
 
     	string sKey = lua_tostring(L, -2);
 
@@ -97,7 +95,7 @@ bool LuaTableInfoContainer::LoadTableInfoData(lua_State* L)
     	{
     		for(int i = 2; i < sVector.size(); ++i)
     		{
-    			_field_squence->add_levels(atoi(sVector[i].c_str()));
+    			fieldSquence.vNLevels.push_back(atoi(sVector[i].c_str()));
     			LOG_INFO("string key num = " + sVector[i]);
     		}
     	}
@@ -111,16 +109,13 @@ bool LuaTableInfoContainer::LoadTableInfoData(lua_State* L)
     		{
     			if (lua_type(L, -1) == LUA_TSTRING)
     			{
-    				string* field = _field_squence->add_fields();
-    				if(field)
-    				{
-    					std::string sValue = lua_tostring(L, -1);
-    					*field = sValue;
-    				}
+    				fieldSquence.vSFieldSquences.push_back(lua_tostring(L, -1));
     			}
     			lua_pop(L, 1);
     		}
     	}
+
+    	m_vFieldSquences.push_back(fieldSquence);
 
     	lua_pop(L, 1);
     }

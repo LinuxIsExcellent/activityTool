@@ -47,7 +47,7 @@ string LuaConfigManager::GetLuaDataByName(string name)
     auto iter = m_mDataMap.find(name);
     if (iter != m_mDataMap.end())
     {
-        return iter->second->GetStrData();
+        return iter->second->GetProtoDataStr();
     }
 
     return "";

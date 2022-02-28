@@ -188,7 +188,6 @@ void IOManager::Loop()
                 {
                     memset(buf, '\0', TCP_BUFFER_SIZE);
                     int ret = recv(sockfd, buf, TCP_BUFFER_SIZE - 1, 0);
-                    LOG_INFO("ret = " + std::to_string(ret));
                     if (ret < 0)
                     {
                         if ((errno == EAGAIN) || (errno == EWOULDBLOCK))

@@ -11,11 +11,47 @@ LuaDataContainer::~LuaDataContainer()
 	// free data
 }
 
-string LuaDataContainer::GetStrData()
+string LuaDataContainer::GetProtoDataStr()
 {
-    string output;
-    _table.SerializeToString(&output);
+    test_2::table_data table_data_proto;
+    table_data_proto.set_table_name(m_LuaFileName);
+    table_data_proto.set_row_count(m_table_data.nRow);
+    table_data_proto.set_column_count(m_table_data.nColumn);
+
+    for (int16_t i = 0; i < m_table_data.dataList.size(); ++i)
+    {
+        test_2::row_data* row_lists = table_data_proto.add_row_lists();
+        if(row_lists)
+        {
+            ROWDATA rowData = m_table_data.dataList[i];
+            row_lists->set_key(std::to_string(rowData.id));
+
+            for (int16_t j = 0; j < rowData.dataList.size(); ++ j)
+            {
+                test_2::pair_value* pairValue = row_lists->add_pair();
+                if (pairValue)
+                {
+                    VALUEPAIR pairData = rowData.dataList[j];
+
+                    pairValue->set_key(pairData.sField);
+                    pairValue->set_value(pairData.sValue);
+                }
+            }
+        }
+    }
     
+    for (int i = 0; i < m_vFeildStrs.size(); ++i)
+    {
+        std::string* feildName = table_data_proto.add_filed_names();
+        if(feildName)
+        {
+            *feildName = m_vFeildStrs[i];
+        }
+        table_data_proto.add_filed_types(m_vFeildTypes[i]);
+    }
+
+    string output;
+    table_data_proto.SerializeToString(&output);
     return output;
 }
 
@@ -116,8 +152,10 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
     	return false;
     }
 
-    _table.set_table_name(m_LuaFileName);
+    m_table_data.sTableName = m_LuaFileName;
 
+    std::map<string, int> mFeildStrs;
+    m_vFeildTypes.clear();
     //置空栈顶
     lua_pushnil(L);
 
@@ -126,13 +164,12 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
 
     // 默认读的是二维表
     // 目前只支持二维表，所以第一层key的读取用int
-    test_2::row_data* row_lists;
     while(lua_next(L, -2))
     {
     	int nKey = lua_tonumber(L, -2);
-        
-        row_lists = _table.add_row_lists();
-        row_lists->set_key(std::to_string(nKey));
+
+        ROWDATA row_data;
+        row_data.id = nKey;
 
     	if (lua_type(L, -1) == LUA_TTABLE)
         {
@@ -145,26 +182,27 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
                 string sValue;
     			// cout << "sKey = " << sKey << endl;
 
-                test_2::pair_value* pairValue = row_lists->add_pair();
+                int nValueType = lua_type(L, -1);
+
     			// 如果key值是一个table
-    			if (lua_type(L, -1) == LUA_TTABLE)
+    			if (nValueType == LUA_TTABLE)
     			{
     				// ParseLuaTableToString(L);
     				sValue = ParseLuaTableToString(L);
     			}
-    			else if (lua_type(L, -1) == LUA_TSTRING)
+    			else if (nValueType == LUA_TSTRING)
     			{
     				sValue = lua_tostring(L, -1);
     			}
-    			else if (lua_type(L, -1) == LUA_TBOOLEAN)
+    			else if (nValueType == LUA_TBOOLEAN)
     			{
     				sValue = std::to_string(lua_toboolean(L, -1));
     			}
-    			else if (lua_type(L, -1) == LUA_TNIL)
+    			else if (nValueType == LUA_TNIL)
     			{
     				sValue = std::to_string(lua_tointeger(L, -1));
     			}
-    			else if (lua_type(L, -1) == LUA_TNUMBER)
+    			else if (nValueType == LUA_TNUMBER)
     			{
                     char str[64];
                     sprintf(str, "%g", lua_tonumber(L, -1));
@@ -172,30 +210,37 @@ bool LuaDataContainer::LoadLuaConfigData(lua_State* L)
                     sValue = str;
     			}
 
-                pairValue->set_key(sKey);
-                pairValue->set_value(sValue);
+                VALUEPAIR pair_value;
+                pair_value.sField = sKey;
+                pair_value.sValue = sValue;
+
+                // 记录一个读取的字段顺序，为了确保每行的数据展示是一致的
+                if (mFeildStrs.find(sKey) == mFeildStrs.end())
+                {
+                    mFeildStrs.insert(pair<string, int> (sKey, mFeildStrs.size() + 1));
+
+                    m_vFeildStrs.push_back(sKey);
+                    m_vFeildTypes.push_back(test_2::DATA_TYPE(nValueType));
+                }
+
+                row_data.dataList.push_back(pair_value);
 
     			lua_pop(L, 1);
                 nColumn_ += 1;
     		}
 
             nColumn = MAX(nColumn_, nColumn);
+            row_data.nFeildCount = nColumn;
         }
+
+        m_table_data.dataList.push_back(row_data);
 
     	lua_pop(L, 1);
         nRow += 1;
     }
 
-    _table.set_row_count(nRow);
-    _table.set_column_count(nColumn);
-
-    // std::string protoStr;
-    // google::protobuf::TextFormat::PrintToString(_table, &protoStr);
-    // LOG_INFO(protoStr);
-
-    // string output;
-    // _table.SerializeToString(&output);
-    // LOG_ERROR(output);
+    m_table_data.nRow = nRow;
+    m_table_data.nColumn = nColumn;
 
     return true;
 }
