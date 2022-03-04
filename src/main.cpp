@@ -101,7 +101,7 @@ int main()
     util_timer* timer_5s = new util_timer();
     timer_5s->expire = cur_time;
     timer_5s->nLoopSec = 5;
-    timer_5s->nLoopMax = 1;
+    // timer_5s->nLoopMax = 1;
     timer_5s->cb_func = Global5STimer;
 
     IOManager::GetInstance()->AddTimer(timer_5s);

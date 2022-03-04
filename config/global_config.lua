@@ -10,13 +10,13 @@ config_path = "/root/workspace/dev_ph/script/config"
 config_file_path =
 {
 	"day_login.lua",
-	-- "time_slot_login.lua",
-	-- "item.lua",
-	-- "province.lua",
-	-- "bonus_rain.lua",
-	-- "task.lua",
+	"time_slot_login.lua",
+	"item.lua",
+	"province.lua",
+	"bonus_rain.lua",
+	"task.lua",
 	"item_group.lua",
-    -- "coin_rooms.lua",
+    "coin_rooms.lua",
 }
 
 -- 键值对一维展开的配置文件

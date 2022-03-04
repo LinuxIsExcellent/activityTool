@@ -38,34 +38,34 @@ message client_login_request
 //推送左边文件树的数据
 message server_send_file_tree_notify
 {
-	repeated string lua_file_names						= 1;	//一维表的文件名字列表
-	repeated string lua_table_file_names				= 2;	//二维表的文件名字列表
-	repeated string group_names							= 3;	//组合的名字列表
+	repeated bytes lua_file_names						= 1;	//一维表的文件名字列表
+	repeated bytes lua_table_file_names					= 2;	//二维表的文件名字列表
+	repeated bytes group_names							= 3;	//组合的名字列表
 }
 
 // 推送可执行的shell指令
 message server_send_shell_config_notify
 {
-	repeated string shell_ops							= 1;	//shell指令列表
+	repeated bytes shell_ops							= 1;	//shell指令列表
 }
 
 //客户端请求二维表文件数据
 message client_lua_table_data_quest
 {
-	string file_name								= 1;	//文件名字
+	bytes file_name								= 1;	//文件名字
 }
 
 //客户端请求执行shell指令
 message client_shell_option_quest
 {
-	string option									= 1;	//指令名字
+	bytes option									= 1;	//指令名字
 }
 
 //推送当前服务器时间
 message server_send_current_time_notify
 {
 	int64 time_stamp 								= 1;	//当前服务器时间
-	string time_zone 								= 2;	//时区
+	bytes time_zone 								= 2;	//时区
 }
 
 enum DATA_TYPE
@@ -79,29 +79,29 @@ enum DATA_TYPE
 
 message pair_value
 {
-	string key									= 1;	//键值
-	string value								= 2;	//数值
+	bytes  key									= 1;	//键值
+	bytes  value								= 2;	//数值
 }
 
 message field_type_pair
 {
-	string key									= 1;	//字段
+	bytes key									= 1;	//字段
 	int32 lua_type								= 2;	//数据的类型
 }
 
 //一行的数据
 message row_data
 {
-	string key 								= 1;	//当前行的key
+	bytes  key 								= 1;	//当前行的key
 	repeated pair_value pair 				= 2;	//列数据列表
 }
 
 //字段的信息
 message field_info
 {
-	string field_name 						= 1;	//字段名字
-	string field_desc 						= 2;	//字段的描述
-	string field_link 						= 3;	//字段的关联
+	bytes field_name 						= 1;	//字段名字
+	bytes field_desc 						= 2;	//字段的描述
+	bytes field_link 						= 3;	//字段的关联
 }
 
 //levels :
@@ -117,11 +117,11 @@ message field_squence
 //一张表的数据(仅仅只是二维程度的展开，如果有多维，则更深维度的表直接转换成string类型的数据)
 message table_data
 {
-	string               		 table_name 			= 1;	//表名
+	bytes               		 table_name 			= 1;	//表名
 	int32			     		 row_count 				= 2;	//多少行
 	int32	             		 column_count 			= 3;	//多少列
 
-	repeated string       		 filed_names 			= 4;	//字段名（直接从lua配置表读取到的字段顺序）
+	repeated bytes       		 filed_names 			= 4;	//字段名（直接从lua配置表读取到的字段顺序）
 	repeated field_type_pair     filed_types 			= 5;	//字段的类型(跟字段名一一对应, 规定lua的二维表每行配置字段名对应的字段的类型是一致的)
 	repeated row_data    		 row_lists 				= 6;	//行数据列表
 
@@ -132,28 +132,28 @@ message table_data
 //一张二维表的其它信息(对应的是server里面的LuaExtInfoContainer类读取的lua文件结构)
 message table_info
 {
-	string  table_name 							= 1;	//表名
+	bytes  table_name 							= 1;	//表名
 	repeated field_squence filed_sequences 		= 2;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序)
 }
 
 //客户端请求保存二维表数据
 message client_save_table_data_request
 {
-	string  table_name 							= 1;	//表名
+	bytes  table_name 							= 1;	//表名
 	repeated row_data   row_lists 				= 2;	//行数据列表	
 }
 
 //服务器返回推送执行shell的打印
 message send_shell_option_print_notify
 {
-	string  	line  							= 1;	//打印行数据
-	int32  		flag  							= 2; 	//是否结束(0: 未结束 1:结束)
+	bytes  	line  							= 1;	//打印行数据
+	int32  	flag  							= 2; 	//是否结束(0: 未结束 1:结束)
 }
 
 //客户端请求保存二维表的外围信息
 message client_save_table_info_request
 {
-	string   					 table_name 				= 1;	//表名
+	bytes   					 table_name 				= 1;	//表名
 	repeated field_squence 		 field_squences 			= 2;	//二维表的字段信息
 }
 
@@ -172,27 +172,27 @@ message client_modify_server_time_quest
 //客户端请求一维表文件数据
 message client_lua_list_data_quest
 {
-	string file_name								= 1;	//文件名字
+	bytes file_name								= 1;	//文件名字
 }
 
 message field_type_key_value
 {
-	string key									= 1;	//字段
-	string value								= 2;	//数据
+	bytes  key									= 1;	//字段
+	bytes  value								= 2;	//数据
 	int32  type 								= 3;	//类型
 }
 
 //服务器返回一维表的数据
 message send_lua_list_data_notify
 {
-	string               		 		table_name 			= 1;	//表名
+	bytes               		 		table_name 			= 1;	//表名
 	repeated field_type_key_value     	filed_types 		= 2;	//每列的数据
 }
 
 //客户端请求保存一维表数据
 message save_lua_list_data_request
 {
-	string               		 		table_name 			= 1;	//表名
+	bytes               		 		table_name 			= 1;	//表名
 	repeated field_type_key_value     	filed_types 		= 2;	//每列的数据
 }
 
@@ -206,8 +206,8 @@ message client_field_link_info_quest
 //表的字段信息
 message table_field_list
 {
-	string 							table_name 			= 1;			//表名
-	repeated string 				fields 				= 2;			//字段列表
+	bytes 							table_name 			= 1;			//表名
+	repeated bytes 					fields 				= 2;			//字段列表
 }
 
 //服务器返回关联的信息
@@ -219,7 +219,7 @@ message send_field_link_info
 
 message process_statue_info
 {
-	string 							process_name 		= 2;			//进程名字
+	bytes 							process_name 		= 2;			//进程名字
 	int32  							statue				= 3;			//进程状态
 }
 
