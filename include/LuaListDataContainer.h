@@ -23,6 +23,9 @@ public:
     // 把数据写入到lua文件中
     void DumpListDataToConfigFile();
 private:
+
+    // 根据最外层的key在文件内的顺序给数据集合排序
+    void SortValueListsByKeySquence();
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径

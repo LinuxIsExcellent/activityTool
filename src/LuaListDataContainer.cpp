@@ -133,8 +133,6 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
     //置空栈顶
     lua_pushnil(L);
 
-    // 默认读的是二维表
-    // 目前只支持二维表，所以第一层key的读取用int
     while(lua_next(L, -2))
     {
         LUAKEYVALUE keyValue;
@@ -155,10 +153,13 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         }
         else if (lua_type(L, -1) == LUA_TNUMBER)
         {
-            char str[64];
-            sprintf(str, "%g", lua_tonumber(L, -1));
+            double num = lua_tonumber(L, -1);
+            std::string str_num = doubleToString(num);
+            keyValue.sValue = str_num;
 
-            keyValue.sValue = str;
+            // char str[64];
+            // sprintf(str, "%g", lua_tonumber(L, -1));
+            // keyValue.sValue = str;
         }
         else if (lua_type(L, -1) == LUA_TBOOLEAN)
         {
@@ -172,7 +173,59 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         m_vValueLists.push_back(keyValue);
     }
 
+    SortValueListsByKeySquence();
+
     return true;
+}
+
+void LuaListDataContainer::SortValueListsByKeySquence()
+{
+    if (m_vValueLists.size() <= 0) return;
+
+    ifstream ifs;
+    //1.打开文件，如果没有，会在同级目录下自动创建该文件
+    ifs.open(m_LuaFilePath, ios::in);//采取追加的方式写入文件
+
+    int nRow = 1;
+    while(ifs.peek() != EOF)
+    {
+        nRow++;
+        char buffer[1024];
+        ifs.getline(buffer, 1024);
+
+        char* cPtr = buffer;
+        bool bIsNewKey = true;
+
+        std::cout << "nRow = " << nRow << std::endl;
+
+        while(*cPtr != '\0')
+        {
+            if (*cPtr != ' ')
+            {
+                std::cout << "当前行的字符" <<  *cPtr << std::endl;
+            }
+
+            if (*(++cPtr) == '=')
+            {
+                break;
+            }
+        }
+
+        // std::cout << "当前行的数据: " << buffer << std::endl;
+    }
+
+    // ifs.seekg(0, ifs.end);
+    // int nLength = ifs.tellg();
+    // ifs.seekg(0, ifs.beg);
+
+    // char* buffer = new char [nLength];
+    // ifs.read(buffer, nLength);
+
+    // string sFile(buffer, nLength);
+
+    LOG_INFO("全局数据加载成功");
+
+    ifs.close();
 }
 
 bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& proto)

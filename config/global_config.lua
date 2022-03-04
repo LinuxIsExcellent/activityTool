@@ -9,13 +9,13 @@ config_path = "/root/workspace/dev_ph/script/config"
 -- 二维表展开的配置文件
 config_file_path =
 {
-	"day_login.lua",
+	-- "day_login.lua",
 	-- "time_slot_login.lua",
 	-- "item.lua",
 	-- "province.lua",
 	-- "bonus_rain.lua",
 	-- "task.lua",
-	"item_group.lua",
+	-- "item_group.lua",
     -- "coin_rooms.lua",
 }
 

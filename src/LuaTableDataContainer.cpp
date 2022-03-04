@@ -69,9 +69,9 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L)
         else if (lua_type(L, -1) == LUA_TNUMBER)
         {
             double num = lua_tonumber(L, -1);
-            // std::string str_num = doubleToString(num);
-            // sValueTable = sValueTable + str_num;
-            sValueTable = sValueTable + std::to_string(num);
+            std::string str_num = doubleToString(num);
+            sValueTable = sValueTable + str_num;
+            // sValueTable = sValueTable + std::to_string(num);
         }
 
         sValueTable = sValueTable + ", ";

@@ -55,6 +55,8 @@ void IOManager::ProcessMonitorHandler()
         string pid;
         ifs >> pid;
 
+        ifs.close();
+
         int nPid = atoi(pid.c_str());
         uint16_t nStatus = 0;       //未启动
         if (nPid > 0)
@@ -153,6 +155,8 @@ void IOManager::AddListeningFd(string ip, int port)
     ret = listen(m_listenFd, 5);
 
     addfd(m_epollFd,m_listenFd);
+
+    LOG_INFO("绑定监听的服务器ip和端口成功 :" + ip + ", " + std::to_string(port));
 }
 
 void IOManager::OnClientDisconnect(int sockfd)
@@ -194,6 +198,7 @@ void IOManager::AddTimer(util_timer* timer)
 
 void IOManager::Loop()
 {
+    LOG_INFO("服务启动完毕，开启事件循环");
     loop = true;
     bool timeout = false;
     while(loop)
