@@ -173,7 +173,7 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         m_vValueLists.push_back(keyValue);
     }
 
-    SortValueListsByKeySquence();
+    //SortValueListsByKeySquence();
 
     return true;
 }
@@ -185,7 +185,8 @@ void LuaListDataContainer::SortValueListsByKeySquence()
     ifstream ifs;
     //1.打开文件，如果没有，会在同级目录下自动创建该文件
     ifs.open(m_LuaFilePath, ios::in);//采取追加的方式写入文件
-
+    
+    std::map<std::string, unsigned int> mFieldRawSquence;
     int nRow = 1;
     while(ifs.peek() != EOF)
     {
@@ -194,15 +195,13 @@ void LuaListDataContainer::SortValueListsByKeySquence()
         ifs.getline(buffer, 1024);
 
         char* cPtr = buffer;
-        bool bIsNewKey = true;
-
-        std::cout << "nRow = " << nRow << std::endl;
-
+        
+        string sKey;
         while(*cPtr != '\0')
         {
-            if (*cPtr != ' ')
+            if (*cPtr != ' ' && *cPtr != '\t')
             {
-                std::cout << "当前行的字符" <<  *cPtr << std::endl;
+                sKey.push_back(*cPtr);
             }
 
             if (*(++cPtr) == '=')
@@ -210,22 +209,29 @@ void LuaListDataContainer::SortValueListsByKeySquence()
                 break;
             }
         }
-
-        // std::cout << "当前行的数据: " << buffer << std::endl;
+        
+        mFieldRawSquence.insert(pair <std::string, unsigned int> (sKey, nRow));
     }
 
-    // ifs.seekg(0, ifs.end);
-    // int nLength = ifs.tellg();
-    // ifs.seekg(0, ifs.beg);
-
-    // char* buffer = new char [nLength];
-    // ifs.read(buffer, nLength);
-
-    // string sFile(buffer, nLength);
-
-    LOG_INFO("全局数据加载成功");
-
     ifs.close();
+
+    //根据原生顺序进行排序
+    sort(m_vValueLists.begin(), m_vValueLists.end(), [mFieldRawSquence](const LUAKEYVALUE& a, const LUAKEYVALUE& b)
+            {
+                unsigned int nFactorA = 0;
+                unsigned int nFactorB = 0;
+                if (mFieldRawSquence.find(a.sKey) != mFieldRawSquence.end())
+                {
+                    nFactorA = mFieldRawSquence.find(a.sKey)->second;
+                }
+
+                if (mFieldRawSquence.find(b.sKey) != mFieldRawSquence.end())
+                {
+                    nFactorB = mFieldRawSquence.find(b.sKey)->second;
+                }
+                
+                return nFactorA < nFactorB;
+            });
 }
 
 bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& proto)
