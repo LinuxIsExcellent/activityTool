@@ -47,12 +47,51 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
 {
 	ofstream ofs;
     //3.打开文件，如果没有，会在同级目录下自动创建该文件
+    std::string tmp_path;
+    tmp_path = m_LuaFilePath + ".back";
+    LOG_INFO("tmp_path = " + tmp_path);
+
     ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
 
     string sLuaTableName = m_LuaFileName + "_TABLE_INFO";
 
     ofs << sLuaTableName << " =" << endl;
     ofs << "{" << endl;
+
+    for (auto iter = m_mFieldSquences.begin(); iter != m_mFieldSquences.end(); ++iter)
+    {
+        ofs << TAB << iter->first << " =" << endl;
+        ofs << TAB << "{" << endl;
+
+        auto squence = iter->second.vSFieldSquences;
+        for (int i = 1; i <= squence.size(); ++i)
+        {
+            ofs << TAB << TAB << "[" << i << "]" << " = {" << endl;
+            ofs << TAB << TAB << TAB << "" << "field_name = " << "\"" << squence[i - 1].sFieldName << "\","<< endl;
+    
+            // 做一下换行处理
+            string sFieldAnnonation = squence[i - 1].sFieldAnnonation;
+            sFieldAnnonation = subreplace(sFieldAnnonation, "\n", "\\n");
+            sFieldAnnonation = subreplace(sFieldAnnonation, "\"", "\\\"");
+    
+            string sFieldLink = squence[i - 1].sFieldLink;
+    
+            if(!sFieldAnnonation.empty())
+            {
+             ofs << TAB << TAB << TAB << "" << "field_desc = " << "\"" << sFieldAnnonation << "\","<< endl;
+            }
+            
+            if(!sFieldLink.empty())
+            {
+             ofs << TAB << TAB << TAB << "" << "field_link = " << "\"" << squence[i - 1].sFieldLink << "\","<< endl;
+            }
+    
+            ofs << TAB << TAB << "}," << endl;
+        }
+
+        ofs << TAB << "}," << endl;
+    }
+
 
     // 写入表的字段顺序信息
    //  for (auto data : m_vFieldSquences)
@@ -97,7 +136,10 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
    //  	ofs << TAB << "}," << endl;
    //  }
 
-   //  ofs << "}" << endl;
+    LOG_INFO("asdsadas");
+
+    
+    ofs << "}" << endl;
 
     //5.关闭流
     ofs.close();
@@ -192,45 +234,39 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
 
 void LuaExtInfoContainer::UpdateData(const test_2::client_save_table_info_request& quest)
 {
-	m_mFieldSquences.clear();
+    m_mFieldSquences.clear();
 
-	// for (int i = 0; i < quest.field_squences_size(); i++)
-	// {
-	// 	FIELDSQUENCE fieldSquence;
-	// 	test_2::field_squence field_squence = quest.field_squences(i);
+	for (int i = 0; i < quest.field_squences_size(); i++)
+	{
+		test_2::field_squence field_squence = quest.field_squences(i);
+        std::string sIndex = field_squence.index();
 
-	// 	for (int j = 0; j < field_squence.levels_size(); j++)
-	// 	{
-	// 		uint16_t nLevel = field_squence.levels(j);
+        FIELDSQUENCE fieldSquence;
+		for (int j = 0; j < field_squence.infos_size(); j++)
+		{
+			FIELDINFO fieldInfo;
 
-	// 		fieldSquence.vNLevels.push_back(nLevel);
-	// 	}
+			test_2::field_info info = field_squence.infos(j);
+			fieldInfo.sFieldName = info.field_name();
+			fieldInfo.sFieldAnnonation = info.field_desc();
+			fieldInfo.sFieldLink = info.field_link();
 
-	// 	for (int j = 0; j < field_squence.infos_size(); j++)
-	// 	{
-	// 		FIELDINFO fieldInfo;
+			fieldSquence.vSFieldSquences.push_back(fieldInfo);
+		}
 
-	// 		test_2::field_info info = field_squence.infos(j);
-	// 		fieldInfo.sFieldName = info.field_name();
-	// 		fieldInfo.sFieldAnnonation = info.field_desc();
-	// 		fieldInfo.sFieldLink = info.field_link();
+		m_mFieldSquences.insert(pair<string, FIELDSQUENCE> (sIndex, fieldSquence));
+	}
+    
+	DumpTableInfoToConfigFile();
 
-	// 		fieldSquence.vSFieldSquences.push_back(fieldInfo);
-	// 	}
-
-	// 	m_vFieldSquences.push_back(fieldSquence);
-	// }
-
-	// // DumpTableInfoToConfigFile();
-
-	// // 重新给二维表的最外层数据排序
-	// std::map<string, LuaTableDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
-	// if(tableDataMap)
-	// {
-	// 	auto iter = tableDataMap->find(m_LuaFileName);
-	// 	if (iter != tableDataMap->end())
-	// 	{
-	// 		iter->second->SortFieldSquence();
-	// 	}
-	// }
+	// 重新给二维表的最外层数据排序
+	std::map<string, LuaTableDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
+	if(tableDataMap)
+	{
+		auto iter = tableDataMap->find(m_LuaFileName);
+		if (iter != tableDataMap->end())
+		{
+			iter->second->SortFieldSquence();
+		}
+	}
 }
