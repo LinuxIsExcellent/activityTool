@@ -56,3 +56,11 @@ typedef struct listenProcessInfo
     std::string pidFile;
     std::string processName;
 }LISTENPROCESSINFO;
+
+// 数据的一个数据
+typedef struct LuaArrayValue
+{
+    int16_t nKey;        //键
+    string sValue;        //值
+    int16_t fieldType;        //值的lua类型
+}LUAARRAYVALUE;

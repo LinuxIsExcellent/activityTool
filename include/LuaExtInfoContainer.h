@@ -15,10 +15,21 @@ public:
     // 加载lua表的信息数据
     bool LoadTableInfoData(lua_State* L);
 
-    // 获取字段顺序队列数据
-    std::vector<FIELDSQUENCE>& GetFieldQquenceData()
+    // 通过键值获得字段顺序数据
+    FIELDSQUENCE* GetFieldSquenceDataByKey(std::string sKey)
     {
-        return m_vFieldSquences;
+        if(m_mFieldSquences.find(sKey) != m_mFieldSquences.end())
+        {
+            return &m_mFieldSquences.find(sKey)->second;
+        }
+
+        return NULL;
+    }
+
+    // 获取字段顺序数据
+    std::map<std::string, FIELDSQUENCE>& GetFieldQquenceData()
+    {
+        return m_mFieldSquences;
     }
     
     // 客户端请求保存外围信息
@@ -29,5 +40,5 @@ private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
     
-    std::vector<FIELDSQUENCE> m_vFieldSquences;     //字段顺序队列
+    std::map<std::string, FIELDSQUENCE> m_mFieldSquences;     //字段顺序队列
 };

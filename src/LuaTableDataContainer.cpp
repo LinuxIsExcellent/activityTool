@@ -12,81 +12,182 @@ LuaTableDataContainer::~LuaTableDataContainer()
 }
 
 // 把lua栈中的栈顶元素解析成lua格式的字符串
-string LuaTableDataContainer::ParseLuaTableToString(lua_State *L)
+string LuaTableDataContainer::ParseLuaTableToString(lua_State *L, std::string sTableKey/* = ""*/)
 {
-	string sValueTable = "{";
     if (!lua_type(L, -1) == LUA_TTABLE)
     {
         LOG_ERROR("is not a string");
         return "";
     }
 
+    string sValueTable = "{";
+
+    std::vector<LuaKeyValue> vKeyValueData;
+    std::vector<LUAARRAYVALUE> vArrayValueData;
+
     lua_pushnil(L);
-    bool has_field = false;
     // LOG_INFO("lua_rawlen - " + std::to_string(lua_rawlen(L, -2)));
     while(lua_next(L, -2))
-    {
-        string sKey = "";
+    {   
+        std::string sValue = "";
+        int16_t nValueType = lua_type(L, -1);
+        int16_t nKeyType = lua_type(L, -2);
 
-        if (lua_type(L, -2) == LUA_TNUMBER || lua_type(L, -2) == LUA_TNIL)
+        if (nValueType == LUA_TTABLE)
         {
-            sKey = "[" + std::to_string(lua_tointeger(L, -2)) + "]";
-        }
-        else if (lua_type(L, -2) == LUA_TSTRING)
-        {
-            string strKey = lua_tostring(L, -2);
-            if (ISDIGIT(strKey))
+            std::string sSubTableKey = "";
+            // 先判断是数组还是key—value
+            if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
             {
-                sKey = std::string("[\"") + lua_tostring(L, -2) + std::string("\"]");
+                sSubTableKey = sTableKey + "%ARRAY";
             }
             else
             {
-                sKey = lua_tostring(L, -2);
+                sSubTableKey = sTableKey + "#" + lua_tostring(L, -2);
+            }
+
+            sValue = ParseLuaTableToString(L, sSubTableKey);
+        }
+        else if (nValueType == LUA_TSTRING)
+        {
+            sValue = std::string("\"") + lua_tostring(L, -1) + std::string("\"");
+        }
+        else if (nValueType == LUA_TBOOLEAN)
+        {
+            sValue = std::to_string(lua_toboolean(L, -1));
+        }
+        else if (nValueType == LUA_TNIL)
+        {
+            sValue = std::to_string(lua_tointeger(L, -1));
+        }
+        else if (nValueType == LUA_TNUMBER)
+        {
+            sValue = lua_tostring(L, -1);
+        }
+
+        if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
+        {
+            int16_t nKey = lua_tointeger(L, -2);
+
+            LUAARRAYVALUE luaArrayValue;
+            luaArrayValue.nKey = nKey;
+            luaArrayValue.sValue = sValue;
+            luaArrayValue.fieldType = nKeyType;
+
+            vArrayValueData.push_back(luaArrayValue);
+        }
+        else if (nKeyType == LUA_TSTRING)
+        {
+            string strKey = lua_tostring(L, -2);
+
+            LuaKeyValue luaKeyValue;
+            luaKeyValue.sKey = strKey;
+            luaKeyValue.sValue = sValue;
+            luaKeyValue.fieldType = nKeyType;
+
+            vKeyValueData.push_back(luaKeyValue);
+        }
+
+        lua_pop(L, 1);
+    }
+    
+    // 键值对部分排序
+    std::map<string, LuaExtInfoContainer*>* mTableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
+    if (mTableInfoMap)
+    {
+        auto iter = mTableInfoMap->find(m_LuaFileName);
+        if (iter != mTableInfoMap->end())
+        {
+            std::map<string, int> mFieldSquence;
+            FIELDSQUENCE* squence = iter->second->GetFieldSquenceDataByKey(sTableKey);
+            if (squence)
+            {
+                for (int j = 0; j < squence->vSFieldSquences.size(); ++j)
+                {
+                    mFieldSquence.insert(pair<string, int> (squence->vSFieldSquences[j].sFieldName, j));
+                }
+
+                sort(vKeyValueData.begin(), vKeyValueData.end(), [mFieldSquence](const LuaKeyValue& a, const LuaKeyValue& b)
+                {
+                    auto iterA = mFieldSquence.find(a.sKey);
+                    auto iterB = mFieldSquence.find(b.sKey);
+                    int nFactorA = 9999;
+                    int nFactorB = 9999;
+            
+                    if (iterA != mFieldSquence.end())
+                    {
+                        nFactorA = iterA->second;
+                    }
+            
+                    if (iterB != mFieldSquence.end())
+                    {
+                        nFactorB = iterB->second;
+                    }
+            
+            
+                    return nFactorA < nFactorB;
+                });
             }
         }
-
-        sValueTable = sValueTable + sKey + " = ";
-
-        // 如果key值是一个table
-        if (lua_type(L, -1) == LUA_TTABLE)
-        {
-            sValueTable = sValueTable + ParseLuaTableToString(L);
-        }
-        else if (lua_type(L, -1) == LUA_TSTRING)
-        {
-            sValueTable = sValueTable + std::string("\"") + lua_tostring(L, -1) + std::string("\"");
-            // cout << "sValue = " << lua_tostring(L, -1) << endl;
-        }
-        else if (lua_type(L, -1) == LUA_TBOOLEAN)
-        {
-            sValueTable = sValueTable + std::to_string(lua_toboolean(L, -1));
-            // cout << "sValue = " << lua_toboolean(L, -1) << endl;
-        }
-        else if (lua_type(L, -1) == LUA_TNIL)
-        {
-            sValueTable = sValueTable + std::to_string(lua_tointeger(L, -1));
-        }
-        else if (lua_type(L, -1) == LUA_TNUMBER)
-        {
-            double num = lua_tonumber(L, -1);
-            std::string str_num = doubleToString(num);
-            sValueTable = sValueTable + str_num;
-            // sValueTable = sValueTable + std::to_string(num);
-        }
-
-        sValueTable = sValueTable + ", ";
-        lua_pop(L, 1);
-
-        has_field = true;
     }
 
-    // 最后一个", "要去掉，暂时找不到怎么判断lua_next中的元素全部遍历结束的方法，如果有办法判断可以在lua_next里面加方法处理
-    if(has_field)
+    // 数据部分进行排序
+    sort(vArrayValueData.begin(), vArrayValueData.end(), [](const LUAARRAYVALUE& a, const LUAARRAYVALUE& b)
+    {  
+        return a.nKey < b.nKey;
+    });
+
+    // 判断数组部分的[key]是否可以省略
+    int nFlag = 1;
+    bool isCompleteArray = true;
+    for (int i = 0; i < vArrayValueData.size(); ++i)
     {
-        sValueTable = sValueTable.erase(sValueTable.length() - 2, 2);
+        vArrayValueData[i].nKey;
+        if (nFlag != vArrayValueData[i].nKey){
+            isCompleteArray = false;
+            break;
+        }
+
+        nFlag++;
+    }
+
+    // 填充数据，键值对在前，数组部分在后
+    for (int i = 0; i < vKeyValueData.size(); ++i)
+    {
+        if (ISDIGIT(vKeyValueData[i].sKey))
+        {
+            sValueTable = sValueTable + std::string("[\"") + vKeyValueData[i].sKey + std::string("\"]");
+        }
+        else
+        {
+            sValueTable = sValueTable + vKeyValueData[i].sKey;
+        }
+
+        sValueTable = sValueTable + " = " + vKeyValueData[i].sValue;
+
+        if (i < vKeyValueData.size() - 1 || vArrayValueData.size() > 0)
+        {
+            sValueTable = sValueTable + ", ";
+        }
+    }
+
+    for (int i = 0; i < vArrayValueData.size(); ++i)
+    {
+        if (!isCompleteArray)
+        {
+            sValueTable = sValueTable + "[" + std::to_string(vArrayValueData[i].nKey) + "]" + " = ";
+        }
+
+        sValueTable = sValueTable + vArrayValueData[i].sValue;
+
+        if (i < vArrayValueData.size() - 1)
+        {
+            sValueTable = sValueTable + ", ";
+        }
     }
 
     sValueTable = sValueTable + "}";
+
     return sValueTable;
 }
 
@@ -152,8 +253,7 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     			// 如果key值是一个table
     			if (nValueType == LUA_TTABLE)
     			{
-    				// ParseLuaTableToString(L);
-    				sValue = ParseLuaTableToString(L);
+                    sValue = ParseLuaTableToString(L, sKey);
     			}
     			else if (nValueType == LUA_TSTRING)
     			{
@@ -169,10 +269,7 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     			}
     			else if (nValueType == LUA_TNUMBER)
     			{
-                    // TODO:优化成读取到一个double里面去,要不然这里处理得太慢了
-                    double num = lua_tonumber(L, -1);
-                    std::string str_num = doubleToString(num);
-                    sValue = str_num;
+                    sValue = lua_tostring(L, -1);
     			}
 
                 VALUEPAIR pair_value;
@@ -228,16 +325,12 @@ void LuaTableDataContainer::SortFieldSquence()
         if (iter != mTableInfoMap->end())
         {   
             std::map<string, int> mFieldSquence;
-            std::vector<FIELDSQUENCE> vFieldSquences = iter->second->GetFieldQquenceData();
-            for (int i = 0; i < vFieldSquences.size(); ++i)
+            FIELDSQUENCE* squence = iter->second->GetFieldSquenceDataByKey("field_sequence");
+            if (squence)
             {
-                FIELDSQUENCE squence = vFieldSquences[i];
-                if(squence.vNLevels.size() == 0)
+                for (int j = 0; j < squence->vSFieldSquences.size(); ++j)
                 {
-                    for (int j = 0; j < squence.vSFieldSquences.size(); ++j)
-                    {
-                        mFieldSquence.insert(pair<string, int> (squence.vSFieldSquences[j].sFieldName, j));
-                    }
+                    mFieldSquence.insert(pair<string, int> (squence->vSFieldSquences[j].sFieldName, j));
                 }
             }
 

@@ -141,7 +141,7 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         string sValue;
         if (lua_type(L, -1) == LUA_TTABLE)
         {
-            keyValue.sValue = LuaTableDataContainer::ParseLuaTableToString(L);
+            // keyValue.sValue = LuaTableDataContainer::ParseLuaTableToString(L);
         }
         else if (lua_type(L, -1) == LUA_TSTRING)
         {
@@ -153,13 +153,11 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         }
         else if (lua_type(L, -1) == LUA_TNUMBER)
         {
-            double num = lua_tonumber(L, -1);
-            std::string str_num = doubleToString(num);
-            keyValue.sValue = str_num;
+            // double num = lua_tonumber(L, -1);
+            // std::string str_num = doubleToString(num);
+            // keyValue.sValue = str_num;
 
-            // char str[64];
-            // sprintf(str, "%g", lua_tonumber(L, -1));
-            // keyValue.sValue = str;
+            keyValue.sValue = lua_tostring(L, -1);
         }
         else if (lua_type(L, -1) == LUA_TBOOLEAN)
         {

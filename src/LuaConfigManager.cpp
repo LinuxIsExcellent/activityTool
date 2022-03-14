@@ -116,18 +116,15 @@ string LuaConfigManager::GetLuaTableDataByName(string name)
         auto iter1 = m_mTableInfoMap.find(name);
         if (iter1 != m_mTableInfoMap.end())
         {
-            std::vector<FIELDSQUENCE> vFieldSquences = iter1->second->GetFieldQquenceData();
-            for (int i = 0; i < vFieldSquences.size(); ++i)
+            std::map<std::string, FIELDSQUENCE> mFieldSquences = iter1->second->GetFieldQquenceData();
+            for (auto loopIter = mFieldSquences.begin(); loopIter != mFieldSquences.end(); ++loopIter)
             {
-                FIELDSQUENCE squence = vFieldSquences[i];
                 test_2::field_squence* fieldSquence = table_data_proto.add_filed_sequences();
                 if (fieldSquence)
                 {
-                    for (int j = 0; j < squence.vNLevels.size(); ++j)
-                    {
-                        fieldSquence->add_levels(squence.vNLevels[j]);
-                    }
+                    fieldSquence->set_index(loopIter->first);
 
+                    FIELDSQUENCE squence = loopIter->second;
                     for (int j = 0; j < squence.vSFieldSquences.size(); ++j)
                     {
                         test_2::field_info* fieldInfo = fieldSquence->add_infos();
@@ -139,6 +136,7 @@ string LuaConfigManager::GetLuaTableDataByName(string name)
                         }
                     }
                 }
+                
             }
         }
 

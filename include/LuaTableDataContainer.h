@@ -36,7 +36,7 @@ public:
     }
 
     // 把lua表解析成string格式
-    static string ParseLuaTableToString(lua_State* L);
+    string ParseLuaTableToString(lua_State* L, std::string sTableKey = "");
 
 private:
     // 把数据重写到配置文件中
