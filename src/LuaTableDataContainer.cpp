@@ -142,7 +142,6 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L, std::string sT
     bool isCompleteArray = true;
     for (int i = 0; i < vArrayValueData.size(); ++i)
     {
-        vArrayValueData[i].nKey;
         if (nFlag != vArrayValueData[i].nKey){
             isCompleteArray = false;
             break;

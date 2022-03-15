@@ -35,8 +35,7 @@ typedef struct fieldInfo
 
 typedef struct fieldSquence
 {
-    std::vector<uint16_t> vNLevels;         //深度队列
-    std::vector<FIELDINFO> vSFieldSquences;       //对应的字段的信息
+    std::vector<FIELDINFO> vSFieldSquences;       //对应的字段的值的信息
 }FIELDSQUENCE;
 
 // 一维表的一个数据
