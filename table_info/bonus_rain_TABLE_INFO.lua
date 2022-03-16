@@ -118,4 +118,22 @@ bonus_rain_TABLE_INFO =
 			field_name = "big",
 		},
 	},
+	["special_list%ARRAY"] =
+	{
+		[1] = {
+			field_name = "count",
+		},
+		[2] = {
+			field_name = "item",
+		},
+		[3] = {
+			field_name = "name",
+		},
+		[4] = {
+			field_name = "weight",
+		},
+		[5] = {
+			field_name = "is_real",
+		},
+	},
 }

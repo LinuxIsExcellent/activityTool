@@ -280,7 +280,7 @@ void IOManager::Loop()
                             break;
                         }
                         // OnClientDisconnect(sockfd);
-                        break;
+                        // break;
                     }
                     else if (ret == 0)
                     {

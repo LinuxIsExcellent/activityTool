@@ -42,19 +42,32 @@ void Client::OnRecvMsg(char* buffer, uint nLength)
 		return;
 	}
 
-	int packetLength = *(int*)m_recvBuffer;
-	// 如果缓冲区的字节数量大于等于包头的大小, 则解析一个完整的数据包
-	if (packetLength < RECV_BUFFER_SIZE && m_nBufferDataSize - 4 >= packetLength)
+	while(1)
 	{
-		Packet packet(m_recvBuffer + 4, packetLength);
-		OnNetMsgProcess(packet);
+		int packetLength = *(int*)m_recvBuffer;
+		int nowDataLength = m_nBufferDataSize - 4;
+		// 如果缓冲区的字节数量大于等于包头的大小, 则解析一个完整的数据包
+		if (packetLength < RECV_BUFFER_SIZE && nowDataLength >= packetLength)
+		{
+			Packet packet(m_recvBuffer + 4, packetLength);
+			OnNetMsgProcess(packet);
+	
+			// 使用了的缓冲区大小
+			uint nUseSize = packetLength + 4;
+			// 把缓冲区的剩余数据移到最前面
+			memcpy(m_recvBuffer, m_recvBuffer + nUseSize, RECV_BUFFER_SIZE - nUseSize);
+			// 重新设置缓冲区的字节大小
+			m_nBufferDataSize = m_nBufferDataSize - nUseSize;
 
-		// 使用了的缓冲区大小
-		uint nUseSize = packetLength + 4;
-		// 把缓冲区的剩余数据移到最前面
-		memcpy(m_recvBuffer, m_recvBuffer + nUseSize, RECV_BUFFER_SIZE - nUseSize);
-		// 重新设置缓冲区的字节大小
-		m_nBufferDataSize = m_nBufferDataSize - nUseSize;
+			if (nowDataLength == packetLength)
+			{
+				break;
+			}
+		}
+		else
+		{
+			break;
+		}
 	}
 }
 
@@ -108,6 +121,7 @@ void Client::OnNetMsgProcess(Packet &packet)
         	test_2::client_lua_table_data_quest quest;
 			quest.ParseFromString(strData);
 
+			LOG_INFO("quest.file_name() = " + quest.file_name());
 			OnSendLuaTableDataToClient(quest.file_name());
         }
         else if (nCmd == test_2::client_msg::REQUSET_SAVE_TABLE_DATA)
