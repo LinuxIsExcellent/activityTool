@@ -51,21 +51,25 @@ bonus_rain_TABLE_INFO =
 			field_name = "week_number",
 		},
 	},
-
-	["item_list"] = 
+	["item_list"] =
 	{
 		[1] = {
 			field_name = "-1",
 		},
 		[2] = {
-			field_name = "-2",
+			field_name = "asd123",
 		},
 		[3] = {
+			field_name = "-4",
+		},
+		[4] = {
 			field_name = "-3",
 		},
+		[5] = {
+			field_name = "-2",
+		},
 	},
-
-	["item_list#-1%ARRAY"] = 
+	["item_list#-1%ARRAY"] =
 	{
 		[1] = {
 			field_name = "item_id",
@@ -77,8 +81,7 @@ bonus_rain_TABLE_INFO =
 			field_name = "big",
 		},
 	},
-
-	["item_list#-2%ARRAY"] = 
+	["item_list#-2%ARRAY"] =
 	{
 		[1] = {
 			field_name = "big",
@@ -90,8 +93,7 @@ bonus_rain_TABLE_INFO =
 			field_name = "item_id",
 		},
 	},
-
-	["item_list#-3%ARRAY"] = 
+	["item_list#-3%ARRAY"] =
 	{
 		[1] = {
 			field_name = "item_id",
@@ -103,8 +105,7 @@ bonus_rain_TABLE_INFO =
 			field_name = "big",
 		},
 	},
-
-	["item_list%ARRAY%ARRAY"] = 
+	["item_list%ARRAY%ARRAY"] =
 	{
 		[1] = {
 			field_name = "item_count",

@@ -60,7 +60,7 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
 
     for (auto iter = m_mFieldSquences.begin(); iter != m_mFieldSquences.end(); ++iter)
     {
-        ofs << TAB << iter->first << " =" << endl;
+        ofs << TAB << "[\"" << iter->first << "\"]" << " =" << endl;
         ofs << TAB << "{" << endl;
 
         auto squence = iter->second.vSFieldSquences;
@@ -92,53 +92,6 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
         ofs << TAB << "}," << endl;
     }
 
-
-    // 写入表的字段顺序信息
-   //  for (auto data : m_vFieldSquences)
-   //  {
-   //  	std::string vSFieldSquencesKey = "field_sequence";
-   //  	if (data.vNLevels.size() > 0)
-   //  	{
-   //  		for (auto nData : data.vNLevels)
-   //  		{
-   //  			vSFieldSquencesKey = vSFieldSquencesKey + "_" + std::to_string(nData);
-   //  		}
-   //  	}
-
-   //  	ofs << TAB << vSFieldSquencesKey << " =" << endl;
-
-   //  	ofs << TAB << "{" << endl;
-   //  	for (int i = 1; i <= data.vSFieldSquences.size(); ++i)
-   //  	{
-   //  		ofs << TAB << TAB << "[" << i << "]" << " = {" << endl;
-   //  		ofs << TAB << TAB << TAB << "" << "field_name = " << "\"" << data.vSFieldSquences[i - 1].sFieldName << "\","<< endl;
-
-   //  		// 做一下换行处理
-   //  		string sFieldAnnonation = data.vSFieldSquences[i - 1].sFieldAnnonation;
-   //  		sFieldAnnonation = subreplace(sFieldAnnonation, "\n", "\\n");
-			// sFieldAnnonation = subreplace(sFieldAnnonation, "\"", "\\\"");
-
-			// string sFieldLink = data.vSFieldSquences[i - 1].sFieldLink;
-
-			// if(!sFieldAnnonation.empty())
-			// {
-			// 	ofs << TAB << TAB << TAB << "" << "field_desc = " << "\"" << sFieldAnnonation << "\","<< endl;
-			// }
-    		
-			// if(!sFieldLink.empty())
-			// {
-			// 	ofs << TAB << TAB << TAB << "" << "field_link = " << "\"" << data.vSFieldSquences[i - 1].sFieldLink << "\","<< endl;
-			// }
-
-   //  		ofs << TAB << TAB << "}," << endl;
-   //  	}
-
-   //  	ofs << TAB << "}," << endl;
-   //  }
-
-    LOG_INFO("asdsadas");
-
-    
     ofs << "}" << endl;
 
     //5.关闭流
