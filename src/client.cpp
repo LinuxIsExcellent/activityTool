@@ -92,10 +92,14 @@ void Client::SendData(uint16_t nSystem, uint16_t nCmd, string& data)
 	// send(m_fd, packet.getDataBegin() + nSent, packet.getLength() - nSent, 0);
 	while(nSent < packet.getLength())
 	{
-		nSent += send(m_fd, packet.getDataBegin() + nSent, packet.getLength() - nSent, 0);
+        int ret = send(m_fd, packet.getDataBegin() + nSent, packet.getLength() - nSent, 0);
+        if (ret > 0)
+        {
+            nSent += ret;
+        }
 	}
 
-	LOG_INFO("nSent = " + std::to_string(nSent));
+	//LOG_INFO("total nSent = " + std::to_string(nSent));
 }
 
 void Client::OnNetMsgProcess(Packet &packet)
