@@ -47,10 +47,6 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
 {
 	ofstream ofs;
     //3.打开文件，如果没有，会在同级目录下自动创建该文件
-    std::string tmp_path;
-    tmp_path = m_LuaFilePath + ".back";
-    LOG_INFO("tmp_path = " + tmp_path);
-
     ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
 
     string sLuaTableName = m_LuaFileName + "_TABLE_INFO";
