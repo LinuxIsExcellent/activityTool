@@ -1,32 +1,18 @@
 #ifndef LST_TIMER
 #define LST_TIMER
 
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<arpa/inet.h>
-#include<assert.h>
-#include<stdio.h>
-#include<signal.h>
-#include<unistd.h>
-#include<errno.h>
-#include<string.h>
-#include<fcntl.h>
-#include<stdlib.h>
-#include<sys/epoll.h>
-#include<pthread.h>
-
 #define BUFFER_SIZE 64
 class util_timer
 {
     public:
         util_timer():prev(NULL),next(NULL),nLoopSec(0),nLoopMax(0){}
     public:
-        time_t expire;
+        time_t expire;  /*定时器截止时间*/
         unsigned int nLoopSec;  /*循环间隔如果大于0， 则证明这个定时器是一个多次循环的定时器*/
         unsigned int nLoopMax;  /*循环次数上限，等于0为无限次*/
         unsigned int nLoopcount;  /*当前已经循环了的次数，等于0为无限次*/
         void (*cb_func)(); /*任务回调函数*/
+
         util_timer* prev;
         util_timer* next;
 };
@@ -144,28 +130,73 @@ class sort_timer_lst
                 return;
             }
 
-            printf("timer tick \n");
-
             time_t cur = time(NULL);
 
-            util_timer* tmp = head;
+            util_timer* head_tmp = head;
+            util_timer* tmp = head_tmp;
 
+            printf("tick\n");
             while(tmp)
             {
                 if (cur < tmp ->expire)
                 {
                     break;
                 }
+                //调用回调函数
                 tmp->cb_func();
-                head=tmp->next;
-
-                if (head)
+                
+                printf("nLoopSec = %d, nLoopMax = %d, tmp ->expire = %d\n", tmp->nLoopSec, tmp->nLoopMax, tmp->expire);
+                if (tmp->nLoopSec > 0/* && (tmp->nLoopMax == 0 || tmp->nLoopcount < tmp->nLoopMax)*/)
                 {
-                    head->prev = NULL;
+                    printf("重新添加到列表i面了吗\n");
+                    tmp->nLoopcount += 1;
+                    //为了避免服务器调整时间之后，多次同一个回调函数的调用
+                    tmp->expire = cur + tmp->nLoopSec;
+
+                    // // 如果后面没有定时器
+                    // if(!head->next)
+                    // {
+                    //     head = tmp;
+
+                    //     printf("后面没有了\n");
+                    // }
+                    // // 有定时器，则要找到正确的位置
+                    // else
+                    // {
+                    //     util_timer* next = head->next;
+                    //     while(next)
+                    //     {
+                    //         if (next->expire >= tmp->expire)
+                    //         {
+                    //             next->prev->next = tmp;
+                    //             tmp->next = next;
+                    //             break;
+                    //         }
+
+                    //         next = next->next;
+
+                    //         if (!next)
+                    //         {
+                    //             next->next = tmp;
+                    //             tmp->prev = next;
+                    //             tmp->next = NULL;
+                    //         }
+                    //     }
+                    // }
+
+                    add_timer(tmp);
+                }
+                // 如果定时器已失效
+                else
+                {
+                    delete tmp;
+                    if (head)
+                    {
+                        head->prev = NULL;
+                    }
                 }
 
-                delete tmp;
-                tmp = head;
+                tmp = head->next;
             }
         }
     private:

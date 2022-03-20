@@ -58,16 +58,18 @@ std::string doubleToString(double price) {
 }
 
 
+void TimerTest1()
+{
+    LOG_INFO("5s timer");
+}
+
+void TimerTest2()
+{
+    LOG_INFO("8s timer");
+}
+
 int main()
 {
-    string s1 = string("string1");
-    string s2 = string("string2");
-
-    const char* p1 = s1.substr(1).data();
-    const char* p2 = s2.substr(1).data();
-
-    std::cout << "object : " << p1 << p2 << std::endl;
-
     // 一些初始化的工作
     L = luaL_newstate();
     if(L == NULL)
@@ -91,6 +93,22 @@ int main()
     IOManager::GetInstance()->InitIOManager();
     // 监听ip和端口
     IOManager::GetInstance()->AddListeningFd(GlobalConfig::GetInstance()->getListeningIp(), GlobalConfig::GetInstance()->getListeningPort());
+
+    time_t cur_time = time(NULL);
+
+    util_timer* timer = new util_timer();
+    timer->expire = cur_time;
+    timer->nLoopSec = 5;
+    timer->cb_func = TimerTest1;
+
+    IOManager::GetInstance()->AddTimer(timer);
+
+    util_timer* timer1 = new util_timer();
+    timer1->expire = cur_time;
+    timer1->nLoopSec = 8;
+    timer1->cb_func = TimerTest2;
+
+    // IOManager::GetInstance()->AddTimer(timer1);
 
     // 开始IO循环
     IOManager::GetInstance()->Loop();

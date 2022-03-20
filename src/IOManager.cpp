@@ -41,7 +41,6 @@ void IOManager::addsig(int sig)
 
 void IOManager::TimerHandler()
 {
-    LOG_INFO("timer handler");
     timer_lst.tick();
     alarm(1);
 }
@@ -125,6 +124,12 @@ void IOManager::Exit()
     }
 
     m_mClients.clear();
+}
+
+// 增加定时器
+void IOManager::AddTimer(util_timer* timer)
+{
+    timer_lst.add_timer(timer);
 }
 
 void IOManager::Loop()

@@ -22,6 +22,9 @@ private:
     void OnClientDisconnect(int sockfd);
     // 退出事件循环
     void Exit();
+
+    // 处理定时器
+    void TimerHandler();
 public:
     ~IOManager() {};
 
@@ -34,11 +37,11 @@ public:
         return m_instance;
     }
 
+    // 增加定时器
+    void AddTimer(util_timer* timer);
+
     // 初始化io管理器
     void InitIOManager();
-
-    // 处理定时器
-    void TimerHandler();
 
     // 增加网络端口监听
     void AddListeningFd(string ip, int port);
