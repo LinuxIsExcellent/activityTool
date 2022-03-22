@@ -70,8 +70,54 @@ void Global15STimer()
     // LOG_INFO("global 15s timer");
 }
 
+void daemon_run()
+{
+    int pid;
+    signal(SIGCHLD, SIG_IGN);
+
+    pid = fork();
+    if (pid < 0)
+    {
+        std::cout << "fork error" << std::endl;
+        exit(-1);
+    }
+    else if (pid > 0)
+    {
+        exit(0);
+    }
+
+    setsid();
+    int fd;
+    fd = open("/dev/null", O_RDWR, 0);
+    if(fd != -1)
+    {
+        dup2(fd, STDIN_FILENO);
+        dup2(fd, STDOUT_FILENO);
+        dup2(fd, STDERR_FILENO);
+    }
+    if(fd > 2)
+    {
+        close(fd);
+    }
+}
+
+void DumpPidToFile()
+{
+    int nCurrentPid = getpid();
+    ofstream ofs;
+    //1.打开文件，如果没有，会在同级目录下自动创建该文件
+    ofs.open("./observer.pid", ios::out);//采取追加的方式写入文件
+
+    ofs << nCurrentPid;
+    ofs.close();
+}
+
 int main()
 {
+    daemon_run();
+    
+    DumpPidToFile();
+
     // 一些初始化的工作
     L = luaL_newstate();
     if(L == NULL)
