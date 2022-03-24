@@ -48,6 +48,34 @@ string LuaConfigManager::GetLuaListDataByName(string name)
             }
         }
 
+        // 再填充数据表的外围信息
+        auto iter1 = m_mTableInfoMap.find(name);
+        if (iter1 != m_mTableInfoMap.end())
+        {
+            std::map<std::string, FIELDSQUENCE> mFieldSquences = iter1->second->GetFieldQquenceData();
+            for (auto loopIter = mFieldSquences.begin(); loopIter != mFieldSquences.end(); ++loopIter)
+            {
+                test_2::field_squence* fieldSquence = notify.add_filed_sequences();
+                if (fieldSquence)
+                {
+                    fieldSquence->set_index(loopIter->first);
+
+                    FIELDSQUENCE squence = loopIter->second;
+                    for (int j = 0; j < squence.vSFieldSquences.size(); ++j)
+                    {
+                        test_2::field_info* fieldInfo = fieldSquence->add_infos();
+                        if(fieldInfo)
+                        {
+                            fieldInfo->set_field_name(squence.vSFieldSquences[j].sFieldName);
+                            fieldInfo->set_field_desc(squence.vSFieldSquences[j].sFieldAnnonation);
+                            fieldInfo->set_field_link(squence.vSFieldSquences[j].sFieldLink);
+                        }
+                    }
+                }
+                
+            }
+        }
+
         string output;
         notify.SerializeToString(&output);
         return output;
@@ -246,6 +274,32 @@ void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
             }
         }
 
+        m_mTableInfoMap.insert(pair<string, LuaExtInfoContainer*> (sFileTableName, container));
+    }
+
+    std::vector<string> LuaListFileInfoList = GlobalConfig::GetInstance()->GetListenLuaListFileList();
+    for (int i = 0; i < LuaListFileInfoList.size(); ++i)
+    {
+        string sFileTableName = LuaListFileInfoList[i];
+        // 处理字符串得出lua配置文件的名字
+        int nBeginPos = sFileTableName.rfind("/") + 1;
+        int nEndPos = sFileTableName.find(".lua");
+
+        sFileTableName = sFileTableName.substr(nBeginPos, nEndPos - nBeginPos);
+
+        string fileName = sFileTableName + "_TABLE_INFO.lua";
+        string sLuaFileAbsolutePath = sTempConfigDirPath + "/" + fileName;
+
+        LuaExtInfoContainer* container = new LuaExtInfoContainer(sFileTableName, sLuaFileAbsolutePath);
+        if (container)
+        {
+            if (container->LoadTableInfoData(L))
+            {
+                LOG_INFO("加载lua二维表信息成功 : " + sFileTableName);
+            }
+        }
+
+        LOG_INFO("asdasdasdas + " + sFileTableName);
         m_mTableInfoMap.insert(pair<string, LuaExtInfoContainer*> (sFileTableName, container));
     }
 }

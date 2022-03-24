@@ -51,6 +51,8 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
 
     string sLuaTableName = m_LuaFileName + "_TABLE_INFO";
 
+    LOG_INFO("sLuaTableName = " + sLuaTableName);
+
     ofs << sLuaTableName << " =" << endl;
     ofs << "{" << endl;
 
@@ -206,6 +208,7 @@ void LuaExtInfoContainer::UpdateData(const test_2::client_save_table_info_reques
 		m_mFieldSquences.insert(pair<string, FIELDSQUENCE> (sIndex, fieldSquence));
 	}
     
+    LOG_INFO("m_LuaFilePath = " + m_LuaFilePath);
 	DumpTableInfoToConfigFile();
 
 	// 重新给二维表的最外层数据排序

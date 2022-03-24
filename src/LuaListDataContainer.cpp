@@ -197,8 +197,8 @@ void LuaListDataContainer::SortValueListsByKeySquence()
     while(ifs.peek() != EOF)
     {
         nRow++;
-        char buffer[1024];
-        ifs.getline(buffer, 1024);
+        char buffer[1024 * 1024];
+        ifs.getline(buffer, 1024 * 1024);
 
         char* cPtr = buffer;
         
@@ -238,6 +238,11 @@ void LuaListDataContainer::SortValueListsByKeySquence()
                 
                 return nFactorA < nFactorB;
             });
+
+    for (auto & data : m_vValueLists)
+    {
+        LOG_INFO("data.sKey = " + data.sKey);
+    }
 }
 
 bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& proto)

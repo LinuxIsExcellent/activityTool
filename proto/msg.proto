@@ -129,13 +129,6 @@ message table_data
 	repeated field_squence 		 filed_sequences 		= 7;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序，这个顺序是由client手动调整的，然后记录在中间配置文件中)
 }
 
-//一张二维表的其它信息(对应的是server里面的LuaExtInfoContainer类读取的lua文件结构)
-message table_info
-{
-	bytes  table_name 							= 1;	//表名
-	repeated field_squence filed_sequences 		= 2;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序)
-}
-
 //客户端请求保存二维表数据
 message client_save_table_data_request
 {
@@ -187,6 +180,7 @@ message send_lua_list_data_notify
 {
 	bytes               		 		table_name 			= 1;	//表名
 	repeated field_type_key_value     	filed_types 		= 2;	//每列的数据
+	repeated field_squence 		 		filed_sequences 	= 3;	//表的外围信息
 }
 
 //客户端请求保存一维表数据

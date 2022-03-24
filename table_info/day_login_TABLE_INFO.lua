@@ -49,6 +49,15 @@ day_login_TABLE_INFO =
 	["field_sequence_3_3"] =
 	{
 	},
+	["group%ARRAY"] =
+	{
+		[1] = {
+			field_name = "name",
+		},
+		[2] = {
+			field_name = "age",
+		},
+	},
 	["table1"] =
 	{
 		[1] = {
@@ -79,16 +88,16 @@ day_login_TABLE_INFO =
 	["table1#gold_config%ARRAY"] =
 	{
 		[1] = {
-			field_name = "tips_en",
-		},
-		[2] = {
-			field_name = "prob",
-		},
-		[3] = {
 			field_name = "count",
 		},
-		[4] = {
+		[2] = {
 			field_name = "tips_th",
+		},
+		[3] = {
+			field_name = "tips_en",
+		},
+		[4] = {
+			field_name = "prob",
 		},
 	},
 }
