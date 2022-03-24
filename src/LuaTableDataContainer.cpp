@@ -12,7 +12,7 @@ LuaTableDataContainer::~LuaTableDataContainer()
 }
 
 // 把lua栈中的栈顶元素解析成lua格式的字符串
-string LuaTableDataContainer::ParseLuaTableToString(lua_State *L, std::string sTableKey/* = ""*/)
+string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_State *L, std::string sTableKey)
 {
     if (!lua_type(L, -1) == LUA_TTABLE)
     {
@@ -30,8 +30,8 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L, std::string sT
     while(lua_next(L, -2))
     {   
         std::string sValue = "";
-        int16_t nValueType = lua_type(L, -1);
-        int16_t nKeyType = lua_type(L, -2);
+        int64_t nValueType = lua_type(L, -1);
+        int64_t nKeyType = lua_type(L, -2);
 
         if (nValueType == LUA_TTABLE)
         {
@@ -46,7 +46,7 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L, std::string sT
                 sSubTableKey = sTableKey + "#" + lua_tostring(L, -2);
             }
 
-            sValue = ParseLuaTableToString(L, sSubTableKey);
+            sValue = ParseLuaTableToString(tableName, L, sSubTableKey);
         }
         else if (nValueType == LUA_TSTRING)
         {
@@ -67,7 +67,7 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L, std::string sT
 
         if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
         {
-            int16_t nKey = lua_tointeger(L, -2);
+            int64_t nKey = lua_tointeger(L, -2);
 
             LUAARRAYVALUE luaArrayValue;
             luaArrayValue.nKey = nKey;
@@ -95,7 +95,7 @@ string LuaTableDataContainer::ParseLuaTableToString(lua_State *L, std::string sT
     std::map<string, LuaExtInfoContainer*>* mTableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
     if (mTableInfoMap)
     {
-        auto iter = mTableInfoMap->find(m_LuaFileName);
+        auto iter = mTableInfoMap->find(tableName);
         if (iter != mTableInfoMap->end())
         {
             std::map<string, int> mFieldSquence;
@@ -252,7 +252,7 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     			// 如果key值是一个table
     			if (nValueType == LUA_TTABLE)
     			{
-                    sValue = ParseLuaTableToString(L, sKey);
+                    sValue = ParseLuaTableToString(m_LuaFileName, L, sKey);
     			}
     			else if (nValueType == LUA_TSTRING)
     			{
@@ -412,13 +412,14 @@ void LuaTableDataContainer::DumpTableDataToConfigFile()
 
             ofs << sField << " = ";
 
+            sValue = subreplace(sValue, "\n", "\\n");
+
             if (m_mFeildTypes.find(sField) != m_mFeildTypes.end())
             {
                 switch(m_mFeildTypes.find(sField)->second)
                 {
                     case LUA_TSTRING:
                     {
-                        sValue = subreplace(sValue, "\n", "\\n");
                         sValue = subreplace(sValue, "\"", "\\\"");
                         ofs << "\"" << sValue << "\"";
                         break;

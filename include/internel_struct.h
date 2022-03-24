@@ -10,8 +10,8 @@ typedef struct oneValuePair
 // 一行的数据
 typedef struct oneRowData
 {
-    int16_t id;      //对应的唯一id
-    int16_t nFeildCount;    //有多少个字段(二维表的所有行都是一致的，只是为了好读取)
+    int64_t id;      //对应的唯一id
+    int64_t nFeildCount;    //有多少个字段(二维表的所有行都是一致的，只是为了好读取)
     std::vector<VALUEPAIR> dataList;    //一行内所有的列数据
 }ROWDATA;
 
@@ -19,8 +19,8 @@ typedef struct oneRowData
 typedef struct tableData
 {
     string sTableName;
-    int16_t nRow;    //多少行
-    int16_t nColumn;    //多少列
+    int64_t nRow;    //多少行
+    int64_t nColumn;    //多少列
     std::vector<ROWDATA> dataList;    //每行的数据
 }TABLEDATA;
 
@@ -43,7 +43,7 @@ typedef struct LuaKeyValue
 {
     string sKey;        //键
     string sValue;        //值
-    int16_t fieldType;        //值的lua类型
+    int64_t fieldType;        //值的lua类型
 }LUAKEYVALUE;
 
 // 缩进符
@@ -59,7 +59,7 @@ typedef struct listenProcessInfo
 // 数据的一个数据
 typedef struct LuaArrayValue
 {
-    int16_t nKey;        //键
+    int64_t nKey;        //键
     string sValue;        //值
-    int16_t fieldType;        //值的lua类型
+    int64_t fieldType;        //值的lua类型
 }LUAARRAYVALUE;

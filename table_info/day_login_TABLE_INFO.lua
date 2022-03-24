@@ -1,9 +1,6 @@
 day_login_TABLE_INFO =
 {
-	field_sequence_3_3 =
-	{
-	},
-	field_sequence =
+	["field_sequence"] =
 	{
 		[1] = {
 			field_name = "id",
@@ -46,7 +43,52 @@ day_login_TABLE_INFO =
 			field_desc = "禁止渠道",
 		},
 	},
-	field_sequence_3 =
+	["field_sequence_3"] =
 	{
+	},
+	["field_sequence_3_3"] =
+	{
+	},
+	["table1"] =
+	{
+		[1] = {
+			field_name = "end_time",
+		},
+		[2] = {
+			field_name = "begin_time",
+		},
+		[3] = {
+			field_name = "buy_count",
+		},
+		[4] = {
+			field_name = "consumes",
+		},
+		[5] = {
+			field_name = "gold_config",
+		},
+	},
+	["table1#consumes"] =
+	{
+		[1] = {
+			field_name = "item_count",
+		},
+		[2] = {
+			field_name = "item_id",
+		},
+	},
+	["table1#gold_config%ARRAY"] =
+	{
+		[1] = {
+			field_name = "tips_en",
+		},
+		[2] = {
+			field_name = "prob",
+		},
+		[3] = {
+			field_name = "count",
+		},
+		[4] = {
+			field_name = "tips_th",
+		},
 	},
 }

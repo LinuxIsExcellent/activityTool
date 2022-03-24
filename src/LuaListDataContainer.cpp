@@ -96,6 +96,14 @@ void LuaListDataContainer::DumpListDataToConfigFile()
         }
         
         ofs << "," << endl;
+
+        if (i < m_vValueLists.size() - 1)
+        {
+            if (m_vValueLists[i + 1].fieldType == LUA_TTABLE)
+            {
+                ofs << endl;
+            }
+        }
     }
 
     ofs << "}";
@@ -141,7 +149,7 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         string sValue;
         if (lua_type(L, -1) == LUA_TTABLE)
         {
-            // keyValue.sValue = LuaTableDataContainer::ParseLuaTableToString(L);
+            keyValue.sValue = LuaTableDataContainer::ParseLuaTableToString(m_LuaFileName, L, keyValue.sKey);
         }
         else if (lua_type(L, -1) == LUA_TSTRING)
         {
@@ -171,7 +179,7 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         m_vValueLists.push_back(keyValue);
     }
 
-    //SortValueListsByKeySquence();
+    SortValueListsByKeySquence();
 
     return true;
 }

@@ -114,7 +114,7 @@ void DumpPidToFile()
 
 int main()
 {
-    daemon_run();
+    //daemon_run();
     
     DumpPidToFile();
 
