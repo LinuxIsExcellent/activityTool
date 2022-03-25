@@ -238,11 +238,6 @@ void LuaListDataContainer::SortValueListsByKeySquence()
                 
                 return nFactorA < nFactorB;
             });
-
-    for (auto & data : m_vValueLists)
-    {
-        LOG_INFO("data.sKey = " + data.sKey);
-    }
 }
 
 bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& proto)

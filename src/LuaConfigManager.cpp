@@ -299,7 +299,6 @@ void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
             }
         }
 
-        LOG_INFO("asdasdasdas + " + sFileTableName);
         m_mTableInfoMap.insert(pair<string, LuaExtInfoContainer*> (sFileTableName, container));
     }
 }

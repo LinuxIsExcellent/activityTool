@@ -11,7 +11,7 @@ config_file_path =
 {
 	"day_login.lua",
 	--"time_slot_login.lua",
-	--"item.lua",
+	"item.lua",
 	--"province.lua",
 	--"bonus_rain.lua",
 	--"task.lua",
