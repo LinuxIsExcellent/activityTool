@@ -150,14 +150,14 @@ int main()
     // timer_5s->nLoopMax = 1;
     timer_5s->cb_func = Global5STimer;
 
-    // IOManager::GetInstance()->AddTimer(timer_5s);
+    IOManager::GetInstance()->AddTimer(timer_5s);
 
     util_timer* timer_15s = new util_timer();
     timer_15s->expire = cur_time;
     timer_15s->nLoopSec = 15;
     timer_15s->cb_func = Global15STimer;
 
-    // IOManager::GetInstance()->AddTimer(timer_15s);
+    IOManager::GetInstance()->AddTimer(timer_15s);
 
     // 开始IO循环
     IOManager::GetInstance()->Loop();

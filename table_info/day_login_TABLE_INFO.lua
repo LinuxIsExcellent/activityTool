@@ -7,24 +7,26 @@ day_login_TABLE_INFO =
 			field_desc = "一个唯一的id",
 		},
 		[2] = {
+			field_name = "reg_day_low",
+			field_desc = "注册时间大于多少天的用户",
+			field_link = "table#item#id",
+		},
+		[3] = {
 			field_name = "end_time",
 			field_desc = "结束时间阿松大 撒 阿萨",
 		},
-		[3] = {
+		[4] = {
 			field_name = "item_group",
 			field_desc = "奖励组",
+			field_link = "table#day_login#group",
 		},
-		[4] = {
+		[5] = {
 			field_name = "group",
 			field_desc = "包体",
 		},
-		[5] = {
+		[6] = {
 			field_name = "week_num_list",
 			field_desc = "每周的开放天数",
-		},
-		[6] = {
-			field_name = "reg_day_low",
-			field_desc = "注册时间大于多少天的用户",
 		},
 		[7] = {
 			field_name = "channel",
@@ -52,10 +54,10 @@ day_login_TABLE_INFO =
 	["group%ARRAY"] =
 	{
 		[1] = {
-			field_name = "name",
+			field_name = "age",
 		},
 		[2] = {
-			field_name = "age",
+			field_name = "name",
 		},
 	},
 	["table1"] =
@@ -79,25 +81,25 @@ day_login_TABLE_INFO =
 	["table1#consumes"] =
 	{
 		[1] = {
-			field_name = "item_count",
+			field_name = "item_id",
 		},
 		[2] = {
-			field_name = "item_id",
+			field_name = "item_count",
 		},
 	},
 	["table1#gold_config%ARRAY"] =
 	{
 		[1] = {
-			field_name = "count",
+			field_name = "prob",
 		},
 		[2] = {
-			field_name = "tips_th",
+			field_name = "count",
 		},
 		[3] = {
-			field_name = "tips_en",
+			field_name = "tips_th",
 		},
 		[4] = {
-			field_name = "prob",
+			field_name = "tips_en",
 		},
 	},
 }
