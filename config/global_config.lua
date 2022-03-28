@@ -9,9 +9,9 @@ config_path = "/root/workspace/dev_ph/script/config"
 -- 二维表展开的配置文件
 config_file_path =
 {
-	"day_login.lua",
+	--"day_login.lua",
 	--"time_slot_login.lua",
-	"item.lua",
+	--"item.lua",
 	--"province.lua",
 	--"bonus_rain.lua",
 	--"task.lua",
@@ -33,8 +33,8 @@ listening_process_path = "/root/workspace/dev_ph"
 -- 可监听的进程id文件的名字
 listening_process_config =
 {
-	[1] = {"gamesvr.pid", "asda"},
-	[2] = {"center.pid", "asdas"},
+	[1] = {"gamesvr.pid", "网关服"},
+	[2] = {"center.pid", "中心服"},
 	[3] = {"chatsvr.pid", "聊天服"},
 	[4] = {"datasvr.pid", "数据服"},
 	[5] = {"jackpot.pid", "jackpot服"},

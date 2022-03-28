@@ -280,14 +280,12 @@ void Client::OnClientQuestSaveTableInfo(const test_2::client_save_table_info_req
 {
 	std::string sTableName = quest.table_name();
 
-	LOG_INFO("sTableName = " + sTableName);
 	std::map<string, LuaExtInfoContainer*>* tableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
 	if (tableInfoMap)
 	{
 		auto iter = tableInfoMap->find(sTableName);
 		if (iter != tableInfoMap->end())
 		{
-			LOG_INFO("进来了嘛 = " + sTableName);
 			iter->second->UpdateData(quest);
 		}
 

@@ -51,8 +51,6 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
 
     string sLuaTableName = m_LuaFileName + "_TABLE_INFO";
 
-    LOG_INFO("sLuaTableName = " + sLuaTableName);
-
     ofs << sLuaTableName << " =" << endl;
     ofs << "{" << endl;
 
@@ -64,7 +62,8 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
         auto squence = iter->second.vSFieldSquences;
         for (int i = 1; i <= squence.size(); ++i)
         {
-            ofs << TAB << TAB << "[" << i << "]" << " = {" << endl;
+        	ofs << TAB << TAB << "-- " << i << endl;
+            ofs << TAB << TAB << "{" << endl;
             ofs << TAB << TAB << TAB << "" << "field_name = " << "\"" << squence[i - 1].sFieldName << "\","<< endl;
     
             // 做一下换行处理
@@ -105,7 +104,7 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
     if (ret)
     {
         string error = lua_tostring(L,-1);
-        // LOG_ERROR(error);
+        LOG_ERROR(error);
         return false;
     }
     else
@@ -139,6 +138,7 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
 
         	while(lua_next(L, -2))
     		{
+    			int nKey = lua_tonumber(L, -2);
     			if (lua_type(L, -1) == LUA_TTABLE)
     			{
     				FIELDINFO fieldInfo;
@@ -208,7 +208,6 @@ void LuaExtInfoContainer::UpdateData(const test_2::client_save_table_info_reques
 		m_mFieldSquences.insert(pair<string, FIELDSQUENCE> (sIndex, fieldSquence));
 	}
     
-    LOG_INFO("m_LuaFilePath = " + m_LuaFilePath);
 	DumpTableInfoToConfigFile();
 
 	// 重新给二维表的最外层数据排序
