@@ -324,7 +324,7 @@ void LuaTableDataContainer::SortFieldSquence()
         if (iter != mTableInfoMap->end())
         {   
             std::map<string, int> mFieldSquence;
-            FIELDSQUENCE* squence = iter->second->GetFieldSquenceDataByKey("field_sequence");
+            FIELDSQUENCE* squence = iter->second->GetFieldSquenceDataByKey("###field_sequence###");
             if (squence)
             {
                 for (int j = 0; j < squence->vSFieldSquences.size(); ++j)
