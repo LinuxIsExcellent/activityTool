@@ -77,13 +77,13 @@ void Client::SendData(uint16_t nSystem, uint16_t nCmd, string& data)
 	// 因为packet类增加字符串的时候会增加2字节的长度和1字节的结束字符
 	// 所以除了nSystem和nCmd之外需要多增加3字节的数据长度
 
-	LOG_INFO("发送数据包: data length = " + std::to_string(data.length()));
+	//LOG_INFO("发送数据包: data length = " + std::to_string(data.length()));
 
 	uint nDataLength = sizeof(nSystem) + sizeof(nCmd) + 3 + data.length();
 	Packet packet;
 	packet << nDataLength << nSystem << nCmd << data.c_str();
 
-	LOG_INFO("发送数据包: nSystem = " + std::to_string(nSystem) + ", nCmd = " + std::to_string(nCmd) + ", nDataLength = " + std::to_string(nDataLength));
+	//LOG_INFO("发送数据包: nSystem = " + std::to_string(nSystem) + ", nCmd = " + std::to_string(nCmd) + ", nDataLength = " + std::to_string(nDataLength));
 	// 如果该文件描述符是非阻塞模式的话，send函数会根据内核缓冲区的可用空间把数据拷贝到内核，并且直接返回，返回值为已经拷贝了的字节数
 	// 所以最好设置成阻塞模式，这样能保证需要发送的数据全部拷贝到内核缓冲区，并且通过tcp发送到客户端
 	// 可以使用非阻塞模式的socket，但是这样需要在应用层进行比较多的处理，显而易见的解决方案是：如果只拷贝一部分到内核缓冲区，需要继续循环调用send函数
