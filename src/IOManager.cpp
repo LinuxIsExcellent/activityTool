@@ -170,7 +170,7 @@ void IOManager::OnClientDisconnect(int sockfd)
         client->OnDisconnect();
         delete client;
 
-        close(sockfd);
+        shutdown(sockfd, SHUT_RDWR);
         m_mClients.erase(it);
     }
 }
@@ -184,7 +184,7 @@ void IOManager::Exit()
         epoll_ctl(m_epollFd, EPOLL_CTL_DEL, it->first, NULL);
         // 客户端断开链接
         it->second->OnDisconnect();
-        close(it->first);  
+        shutdown(it->first, SHUT_RDWR);  
     }
 
     m_mClients.clear();
@@ -309,10 +309,10 @@ void IOManager::Loop()
 
     if (loop == false)
     {
-        close(m_listenFd);
-        close(m_epollFd);
-        close(s_pipefd[0]);
-        close(s_pipefd[1]);
+        shutdown(m_listenFd, SHUT_RDWR);
+        shutdown(m_epollFd, SHUT_RDWR);
+        shutdown(s_pipefd[0], SHUT_RDWR);
+        shutdown(s_pipefd[1], SHUT_RDWR);
 
         LOG_INFO("网络循环退出，关闭所有的网络链接");
         Exit();
