@@ -14,6 +14,7 @@ enum client_msg
 	REQUSET_LUA_LIST_DATA							= 6;	//请求一维表文件数据
 	REQUSET_SAVE_LUA_LIST_DATA						= 7;	//请求保存一维表数据
 	REQUSET_FIELD_LINK_INFO							= 8;	//请求关联信息
+	REQUSET_FIELD_INFO_BY_LINK						= 9;	//客户端根据字段的关联信息请求字段
 }
 
 //服务器消息协议
@@ -222,3 +223,4 @@ message send_process_listening_status_info
 {
 	repeated  process_statue_info infos = 1;
 }
+
