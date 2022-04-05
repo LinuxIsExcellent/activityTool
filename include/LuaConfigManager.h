@@ -35,7 +35,7 @@ public:
     // 释放资源
     void FreeData();
 
-    string GetLuaTableDataByName(string name);
+    string GetLuaTableDataByName(string name, string sLinkInfo);
 
     std::map<string, LuaTableDataContainer*>* GetTableDataMap()
     {

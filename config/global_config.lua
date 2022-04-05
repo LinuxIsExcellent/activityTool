@@ -15,7 +15,7 @@ config_file_path =
 	--"province.lua",
 	--"bonus_rain.lua",
 	--"task.lua",
-	--"item_group.lua",
+	"item_group.lua",
     "coin_rooms.lua",
 }
 

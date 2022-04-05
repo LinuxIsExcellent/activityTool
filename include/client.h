@@ -29,7 +29,7 @@ public:
 	void OnSendShellConfigToClient();
 
 	// 发送单个lua二维表文件
-	void OnSendLuaTableDataToClient(std::string sFile);
+	void OnSendLuaTableDataToClient(std::string sFile, std::string sLinkInfo = "");
 
 	// 客户端修改表数据
 	void OnClientQuestSaveTableData(const test_2::client_save_table_data_request& quest);

@@ -126,7 +126,7 @@ void Client::OnNetMsgProcess(Packet &packet)
 			quest.ParseFromString(strData);
 
 			LOG_INFO("quest.file_name() = " + quest.file_name());
-			OnSendLuaTableDataToClient(quest.file_name());
+			OnSendLuaTableDataToClient(quest.file_name(), quest.link_info());
         }
         else if (nCmd == test_2::client_msg::REQUSET_SAVE_TABLE_DATA)
         {
@@ -327,9 +327,9 @@ void Client::OnClientQuestSaveTableData(const test_2::client_save_table_data_req
 	}
 }
 
-void Client::OnSendLuaTableDataToClient(std::string sFile)
+void Client::OnSendLuaTableDataToClient(std::string sFile, std::string sLinkInfo/* = ""*/)
 {
-	string testData = LuaConfigManager::GetInstance()->GetLuaTableDataByName(sFile);
+	string testData = LuaConfigManager::GetInstance()->GetLuaTableDataByName(sFile, sLinkInfo);
 
 	SendData(0, test_2::server_msg::SEND_LUA_TABLE_DATA, testData);
 }

@@ -84,7 +84,7 @@ string LuaConfigManager::GetLuaListDataByName(string name)
     return "";
 }
 
-string LuaConfigManager::GetLuaTableDataByName(string name)
+string LuaConfigManager::GetLuaTableDataByName(string name, string sLinkInfo)
 {
     auto iter = m_mDataMap.find(name);
     if (iter != m_mDataMap.end())
@@ -95,6 +95,7 @@ string LuaConfigManager::GetLuaTableDataByName(string name)
         
         test_2::table_data table_data_proto;
         table_data_proto.set_table_name(name);
+        table_data_proto.set_link_info(sLinkInfo);
         table_data_proto.set_row_count(tableData.nRow);
         table_data_proto.set_column_count(tableData.nColumn);
 

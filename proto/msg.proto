@@ -54,6 +54,7 @@ message server_send_shell_config_notify
 message client_lua_table_data_quest
 {
 	bytes file_name								= 1;	//文件名字
+	bytes link_info								= 2;	//连接跳转信息
 }
 
 //客户端请求执行shell指令
@@ -128,6 +129,7 @@ message table_data
 
 	//下面这部分有可能是没有的，一些由client手动配置的信息（字段顺序，字段标注，活动的字段组合）
 	repeated field_squence 		 filed_sequences 		= 7;	//字段名展示的顺序(因为lua里面的key-value对象解析出来不是有序的，所以需要人为定义一个展示顺序，这个顺序是由client手动调整的，然后记录在中间配置文件中)
+	bytes    					 link_info 				= 8;	//附带的链接信息(如果有，就会跳转到对应的行列)
 }
 
 //客户端请求保存二维表数据
@@ -224,3 +226,8 @@ message send_process_listening_status_info
 	repeated  process_statue_info infos = 1;
 }
 
+//客户端根据字段的关联请求对应表的字段
+message client_request_field_link_info
+{
+	
+}
