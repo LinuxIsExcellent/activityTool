@@ -49,6 +49,9 @@ public:
 	// 请求保存单个一维表数据
 	void OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_request& quest);
 
+	//客戶端字段的关联信息获取字段的所有键值
+	void OnClientQuestFieldInfoByLink(std::string sTableName, std::string sTableField);
+
 	// 发送能关联的信息
 	void OnSendFieldLinkInfo();
 

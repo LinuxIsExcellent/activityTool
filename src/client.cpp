@@ -174,6 +174,13 @@ void Client::OnNetMsgProcess(Packet &packet)
         {
         	OnSendFieldLinkInfo();	
         }
+        else if (nCmd == test_2::client_msg::REQUSET_FIELD_INFO_BY_LINK)
+        {
+        	test_2::client_request_field_link_info quest;
+			quest.ParseFromString(strData);
+
+			OnClientQuestFieldInfoByLink(quest.table_name(), quest.field_name());
+        }
     }
 }
 
@@ -413,6 +420,61 @@ void Client::OnSendLuaListDataToClient(std::string sFile)
 	SendData(0, test_2::server_msg::SEND_LUA_LIST_DATA, testData);
 }
 
+
+void Client::OnClientQuestFieldInfoByLink(std::string sTableName, std::string sTableField)
+{
+	std::map<string, LuaTableDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();
+	if(tableDataMap)
+	{
+		test_2::send_field_all_values_info notify;
+		notify.set_table_name(sTableName);
+		notify.set_field_name(sTableField);
+
+		auto iter = tableDataMap->find(sTableName);
+		if (iter != tableDataMap->end())
+		{
+			TABLEDATA tableData = iter->second->GetTableData();
+			for (auto record : tableData.dataList)
+			{
+				for (auto pair : record.dataList)
+				{
+					if (pair.sField == sTableField)
+					{
+						test_2::link_field_info* info = notify.add_infos();
+						if (info)
+						{
+							info->set_field_value(pair.sValue);
+						}
+					}
+				}
+			}
+		}
+
+		string output;
+    	notify.SerializeToString(&output);
+    	SendData(0, test_2::server_msg::SEND_FIELD_INFO_BY_LINK, output);
+	}
+
+	// std::map<string, LuaExtInfoContainer*>* tableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
+	// if (tableInfoMap)
+	// {
+	// 	std::map<string, LuaListDataContainer*>* luaListDataMap = LuaConfigManager::GetInstance()->GetLuaListMap();
+	// 	if(luaListDataMap)
+	// 	{
+	// 		auto iter = luaListDataMap->find(sTableName);
+	// 		if (iter != luaListDataMap->end())
+	// 		{
+				
+	// 		}
+	// 	}
+
+	// 	auto iter = tableInfoMap->find(sTableName);
+	// 	if (iter != tableInfoMap->end())
+	// 	{
+			
+	// 	}
+	// }
+}
 
 void Client::OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_request& quest)
 {

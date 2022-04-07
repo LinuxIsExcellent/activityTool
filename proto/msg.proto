@@ -14,7 +14,7 @@ enum client_msg
 	REQUSET_LUA_LIST_DATA							= 6;	//请求一维表文件数据
 	REQUSET_SAVE_LUA_LIST_DATA						= 7;	//请求保存一维表数据
 	REQUSET_FIELD_LINK_INFO							= 8;	//请求关联信息
-	REQUSET_FIELD_INFO_BY_LINK						= 9;	//客户端根据字段的关联信息请求字段
+	REQUSET_FIELD_INFO_BY_LINK						= 9;	//客户端根据字段的关联信息请求字段的所有值
 }
 
 //服务器消息协议
@@ -28,6 +28,7 @@ enum server_msg
 	SEND_LUA_LIST_DATA								= 5;	//推送单个一维表文件数据
 	SEND_FIELD_LINK_DATA							= 6;	//推送关联信息
 	SEND_PROCESS_STATUS_INFO						= 7;	//推送当前的进程的状态
+	SEND_FIELD_INFO_BY_LINK							= 8;	//服务器返回字段的关联信息的所有值
 }
 
 //客户端请求登陆
@@ -226,8 +227,23 @@ message send_process_listening_status_info
 	repeated  process_statue_info infos = 1;
 }
 
-//客户端根据字段的关联请求对应表的字段
+//客户端根据字段的关联请求对应表的字段信息
 message client_request_field_link_info
 {
-	
+	bytes 							table_name 			= 1;			//表名
+	bytes 							field_name 			= 2;			//字段名
+}
+
+message link_field_info
+{
+	bytes 							field_value 		= 1;			//字段值
+	bytes 							field_desc 			= 2;			//字段的备注(只有在键值对的时候这个字段才会有备注)
+}
+
+// 服务器返回字段对应的关联信息的字段信息
+message send_field_all_values_info
+{
+	bytes 							table_name 		= 1;			//字段值
+	bytes 							field_name 			= 2;			//字段的备注(只有在键值对的时候这个字段才会有备注)
+	repeated 	link_field_info		infos 				= 3;			//字段信息列表
 }
