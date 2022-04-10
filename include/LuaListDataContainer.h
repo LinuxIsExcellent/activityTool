@@ -9,6 +9,9 @@ public:
     LuaListDataContainer(string sLuaFileName, string sLuaFilePath);
     ~LuaListDataContainer();
 
+    // 根据链接信息的key值获取列表的数据(只能获取最外层的
+    std::vector<LUAKEYVALUE> GetLinkInfoByKey(std::string sKey);
+
     const std::vector<LUAKEYVALUE>& GetListData()
     {
         return m_vValueLists;

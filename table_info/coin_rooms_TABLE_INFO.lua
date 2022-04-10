@@ -197,6 +197,7 @@ coin_rooms_TABLE_INFO =
 		-- 14
 		{
 			field_name = "mode",
+			field_link = "table#item_group#id",
 		},
 		-- 15
 		{

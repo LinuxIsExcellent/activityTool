@@ -38,3 +38,12 @@ void Global5STimer();
 
 // 全局15s定时器
 void Global15STimer();
+
+
+/* 函数说明：根据特定的字符切割字符串
+ 参数：
+ string strtem 		//字符串
+ char a 			//特定的字符
+返回值:vector<string> 	//结果串
+*/
+vector<string> split(string strtem,char a);

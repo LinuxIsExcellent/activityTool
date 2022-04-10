@@ -170,6 +170,7 @@ message client_modify_server_time_quest
 message client_lua_list_data_quest
 {
 	bytes file_name								= 1;	//文件名字
+	bytes link_info								= 2;	//连接跳转信息
 }
 
 message field_type_key_value
@@ -185,6 +186,7 @@ message send_lua_list_data_notify
 	bytes               		 		table_name 			= 1;	//表名
 	repeated field_type_key_value     	filed_types 		= 2;	//每列的数据
 	repeated field_squence 		 		filed_sequences 	= 3;	//表的外围信息
+	bytes 								link_info			= 4;	//连接跳转信息
 }
 
 //客户端请求保存一维表数据
@@ -230,8 +232,7 @@ message send_process_listening_status_info
 //客户端根据字段的关联请求对应表的字段信息
 message client_request_field_link_info
 {
-	bytes 							table_name 			= 1;			//表名
-	bytes 							field_name 			= 2;			//字段名
+	bytes 							link_info 			= 1;			//关联的信息
 }
 
 message link_field_info
@@ -243,7 +244,6 @@ message link_field_info
 // 服务器返回字段对应的关联信息的字段信息
 message send_field_all_values_info
 {
-	bytes 							table_name 		= 1;			//字段值
-	bytes 							field_name 			= 2;			//字段的备注(只有在键值对的时候这个字段才会有备注)
-	repeated 	link_field_info		infos 				= 3;			//字段信息列表
+	bytes 							link_info 			= 1;			//关联的信息
+	repeated 	link_field_info		infos 				= 2;			//字段信息列表
 }

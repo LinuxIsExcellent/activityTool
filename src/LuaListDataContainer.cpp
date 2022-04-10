@@ -11,6 +11,151 @@ LuaListDataContainer::~LuaListDataContainer()
 	// free data
 }
 
+std::vector<LUAKEYVALUE> LuaListDataContainer::GetLinkInfoByKey(std::string sKey)
+{
+    std::vector<LUAKEYVALUE> vLinkFieldInfo;
+    for (int i = 0; i < m_vValueLists.size(); ++i)
+    {
+        LUAKEYVALUE luaKeyValue = m_vValueLists[i];
+        if (luaKeyValue.sKey == sKey)
+        {
+            if(luaKeyValue.fieldType == LUA_TTABLE)
+            {
+                lua_State* L = luaL_newstate();
+                if (L)
+                {
+                    string sTempTable = "temp_table = " + luaKeyValue.sValue;
+                    int ret = luaL_dostring(L, sTempTable.c_str());
+                    std::vector<LUAKEYVALUE> vKeyValue;
+                    std::vector<LUAKEYVALUE> vArrayValue;
+
+                    if (ret == 0)
+                    {
+                        lua_getglobal(L, "temp_table");
+                        if (!lua_istable(L, -1)) return vLinkFieldInfo;
+
+                         //置空栈顶
+                        lua_pushnil(L);
+    
+                        while(lua_next(L, -2))
+                        {
+                            int64_t nValueType = lua_type(L, -1);
+                            int64_t nKeyType = lua_type(L, -2);
+
+                            string sValue = lua_tostring(L, -1);
+                            string sKey = "";
+
+                            if (nKeyType == LUA_TSTRING)
+                            {
+                                sKey = lua_tostring(L, -2);
+                            }
+                            else if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
+                            {
+                                sKey = std::to_string(lua_tointeger(L, -2));
+                            }                            
+                            
+                            LUAKEYVALUE keyValue;
+                            keyValue.sKey = sKey;
+                            keyValue.sValue = sValue;
+                    
+                            if (nValueType == LUA_TNIL || nValueType == LUA_TNUMBER)
+                            {
+                                if (nKeyType == LUA_TSTRING)
+                                {
+                                    vKeyValue.push_back(keyValue);
+                                }
+                                else if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
+                                {
+                                    vArrayValue.push_back(keyValue);
+                                }
+                            }
+    
+                            lua_pop(L, 1);
+                        }
+
+                        if (vKeyValue.size() > 0)
+                        {
+                            // 根据表格的额外信息进行键的排序
+                            std::map<string, LuaExtInfoContainer*>* mTableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
+                            if (mTableInfoMap)
+                            {                                
+                                auto iter = mTableInfoMap->find(m_LuaFileName);
+                                if (iter != mTableInfoMap->end())
+                                {                                    
+                                    std::map<string, int> mFieldSquence;
+                                    std::map<string, string> mFieldDesc;
+                                    FIELDSQUENCE* squence = iter->second->GetFieldSquenceDataByKey(sKey);
+                                    if (squence)
+                                    {
+                                        for (int j = 0; j < squence->vSFieldSquences.size(); ++j)
+                                        {
+                                            mFieldSquence.insert(pair<string, int> (squence->vSFieldSquences[j].sFieldName, j));
+                                            mFieldDesc.insert(pair<string, string> (squence->vSFieldSquences[j].sFieldName, squence->vSFieldSquences[j].sFieldAnnonation));
+                                        }
+                        
+                                        sort(vKeyValue.begin(), vKeyValue.end(), [mFieldSquence](const LuaKeyValue& a, const LuaKeyValue& b)
+                                        {
+                                            auto iterA = mFieldSquence.find(a.sKey);
+                                            auto iterB = mFieldSquence.find(b.sKey);
+                                            int nFactorA = 9999;
+                                            int nFactorB = 9999;
+                                    
+                                            if (iterA != mFieldSquence.end())
+                                            {
+                                                nFactorA = iterA->second;
+                                            }
+                                    
+                                            if (iterB != mFieldSquence.end())
+                                            {
+                                                nFactorB = iterB->second;
+                                            }
+                                    
+                                    
+                                            return nFactorA < nFactorB;
+                                        });
+                                    }
+    
+                                    for (auto data : vKeyValue)
+                                    {
+                                        LUAKEYVALUE keyValue;
+                                        keyValue.sKey = data.sValue;
+
+                                        // 填充备注信息
+                                        if (mFieldDesc.find(data.sKey) != mFieldDesc.end())
+                                        {
+                                            keyValue.sValue = mFieldDesc.find(data.sKey)->second;
+                                        }
+    
+                                        vLinkFieldInfo.push_back(keyValue);
+                                    }
+                                }
+                            }
+                        }
+                        else if (vArrayValue.size() > 0)
+                        {
+                            sort(vArrayValue.begin(), vArrayValue.end(), [](const LUAKEYVALUE& a, const LUAKEYVALUE& b)
+                            {
+                                return a.sKey < b.sKey;
+                            });
+    
+                            for (auto data : vArrayValue)
+                            {
+                                LUAKEYVALUE keyValue;
+                                keyValue.sKey = data.sValue;
+                                vLinkFieldInfo.push_back(keyValue);
+                            }
+                        }
+                    }
+    
+                    lua_close(L);
+                }
+            }
+        }
+    }
+
+    return vLinkFieldInfo;
+}
+
 void LuaListDataContainer::DumpListDataToConfigFile()
 {
     ofstream ofs;

@@ -27,7 +27,7 @@ void LuaConfigManager::FreeData()
     }
 }
 
-string LuaConfigManager::GetLuaListDataByName(string name)
+string LuaConfigManager::GetLuaListDataByName(string name, string sLinkInfo/* = ""*/)
 {
     auto iter = m_mLuaListDataMap.find(name);
     if (iter != m_mLuaListDataMap.end())
@@ -36,6 +36,7 @@ string LuaConfigManager::GetLuaListDataByName(string name)
 
         test_2::send_lua_list_data_notify notify;
         notify.set_table_name(name);
+        notify.set_link_info(sLinkInfo);
 
         for (int i = 0; i < listData.size(); ++i)
         {

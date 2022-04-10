@@ -56,6 +56,25 @@ std::string doubleToString(double price) {
     return res;
 }
 
+vector<string> split(string strtem,char a)
+{
+    vector<string> strvec;
+ 
+    string::size_type pos1, pos2;
+    pos2 = strtem.find(a);
+    pos1 = 0;
+    while (string::npos != pos2)
+    {
+        strvec.push_back(strtem.substr(pos1, pos2 - pos1));
+ 
+        pos1 = pos2 + 1;
+        pos2 = strtem.find(a, pos1);
+    }
+    
+    strvec.push_back(strtem.substr(pos1));
+    return strvec;
+}
+
 // 全局5s定时器
 void Global5STimer()
 {

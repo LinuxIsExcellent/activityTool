@@ -47,7 +47,7 @@ public:
         return &m_mTableInfoMap;
     }
 
-    string GetLuaListDataByName(string name);
+    string GetLuaListDataByName(string name, string sLinkInfo = "");
 
     std::map<string, LuaListDataContainer*>* GetLuaListMap()
     {

@@ -44,13 +44,13 @@ public:
 	void OnClientQuestModifyServerTime(uint64_t nTime);
 
 	// 发送单个一维表文件数据
-	void OnSendLuaListDataToClient(std::string sFile);
+	void OnSendLuaListDataToClient(std::string sFile, std::string sLinkInfo = "");
 
 	// 请求保存单个一维表数据
 	void OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_request& quest);
 
 	//客戶端字段的关联信息获取字段的所有键值
-	void OnClientQuestFieldInfoByLink(std::string sTableName, std::string sTableField);
+	void OnClientQuestFieldInfoByLink(std::string sLinkInfo);
 
 	// 发送能关联的信息
 	void OnSendFieldLinkInfo();
