@@ -70,13 +70,14 @@ void Client::OnRecvMsg(char* buffer, uint nLength)
 			break;
 		}
 
+		nowDataLength = m_nBufferDataSize - 4;
 		// 如果一遍循环之后，数据缓冲区的大小还大于包头的大小
 		if (packetLength >= RECV_BUFFER_SIZE || nowDataLength > packetLength || nowDataLength < 0)
 		{
 			LOG_ERROR("数据解析出错，丢弃包: " + std::to_string(packetLength) + ", " + std::to_string(nowDataLength));
 			memset(m_recvBuffer, 0, RECV_BUFFER_SIZE);
 			m_nBufferDataSize = 0;
-			break;
+			return;
 		}
 	}
 }

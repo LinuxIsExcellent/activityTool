@@ -55,7 +55,7 @@ coin_rooms_TABLE_INFO =
 		},
 		-- 13
 		{
-			field_name = "100",
+			field_name = "95",
 		},
 		-- 14
 		{
@@ -143,7 +143,7 @@ coin_rooms_TABLE_INFO =
 		-- 1
 		{
 			field_name = "id",
-			field_desc = "asdsa",
+			field_desc = "唯一的id",
 			field_link = "table#item_group#id",
 		},
 		-- 2
@@ -742,6 +742,10 @@ coin_rooms_TABLE_INFO =
 			field_name = "30",
 		},
 		-- 119
+		{
+			field_name = "30",
+		},
+		-- 120
 		{
 			field_name = "30",
 		},
