@@ -54,7 +54,14 @@ string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_S
         }
         else if (nValueType == LUA_TBOOLEAN)
         {
-            sValue = std::to_string(lua_toboolean(L, -1));
+            if (lua_toboolean(L, -1) == 0)
+            {
+                sValue = "false";
+            }
+            else
+            {
+                sValue = "true";   
+            }
         }
         else if (nValueType == LUA_TNIL)
         {
@@ -260,7 +267,14 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     			}
     			else if (nValueType == LUA_TBOOLEAN)
     			{
-    				sValue = std::to_string(lua_toboolean(L, -1));
+                    if (lua_toboolean(L, -1) == 0)
+                    {
+                        sValue = "false";
+                    }
+                    else
+                    {
+                        sValue = "true";
+                    }
     			}
     			else if (nValueType == LUA_TNIL)
     			{
@@ -426,14 +440,7 @@ void LuaTableDataContainer::DumpTableDataToConfigFile()
                     }
                     case LUA_TBOOLEAN:
                     {
-                        if(sValue == "0" or sValue == "")
-                        {
-                            ofs << "false";
-                        }
-                        else
-                        {
-                            ofs << "true";
-                        }
+                        ofs << sValue;
                         break;
                     }
                     case LUA_TNIL:

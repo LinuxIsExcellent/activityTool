@@ -11,47 +11,47 @@ coin_rooms_TABLE_INFO =
 		},
 		-- 2
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 3
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 4
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 5
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 6
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 7
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 8
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 9
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 10
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 11
 		{
-			field_name = "5",
+			field_name = "81",
 		},
 		-- 12
 		{
-			field_name = "5",
+			field_name = "84",
 		},
 		-- 13
 		{
@@ -142,13 +142,13 @@ coin_rooms_TABLE_INFO =
 	{
 		-- 1
 		{
-			field_name = "id",
-			field_desc = "唯一的id",
-			field_link = "table#item_group#id",
+			field_name = "name",
 		},
 		-- 2
 		{
-			field_name = "name",
+			field_name = "id",
+			field_desc = "唯一的id",
+			field_link = "table#item_group#id",
 		},
 		-- 3
 		{
@@ -237,28 +237,28 @@ coin_rooms_TABLE_INFO =
 		},
 		-- 24
 		{
-			field_name = "think_time_sec",
+			field_name = "rake",
 		},
 		-- 25
 		{
-			field_name = "rake",
+			field_name = "disable",
 		},
 		-- 26
 		{
-			field_name = "disable",
-		},
-		-- 27
-		{
 			field_name = "order",
 		},
-		-- 28
+		-- 27
 		{
 			field_name = "level",
 			field_link = "table#item_group#jump_pos",
 		},
-		-- 29
+		-- 28
 		{
 			field_name = "pochan_packge",
+		},
+		-- 29
+		{
+			field_name = "think_time_sec",
 		},
 		-- 30
 		{
@@ -291,7 +291,7 @@ coin_rooms_TABLE_INFO =
 		},
 		-- 6
 		{
-			field_name = "30",
+			field_name = "54",
 		},
 		-- 7
 		{
@@ -746,6 +746,22 @@ coin_rooms_TABLE_INFO =
 			field_name = "30",
 		},
 		-- 120
+		{
+			field_name = "30",
+		},
+		-- 121
+		{
+			field_name = "30",
+		},
+		-- 122
+		{
+			field_name = "30",
+		},
+		-- 123
+		{
+			field_name = "30",
+		},
+		-- 124
 		{
 			field_name = "30",
 		},

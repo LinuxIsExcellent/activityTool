@@ -1599,6 +1599,10 @@ item_group_TABLE_INFO =
 		{
 			field_name = "30",
 		},
+		-- 384
+		{
+			field_name = "30",
+		},
 	},
 	["field_sequence"] =
 	{

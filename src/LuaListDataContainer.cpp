@@ -199,14 +199,7 @@ void LuaListDataContainer::DumpListDataToConfigFile()
             }
             case LUA_TBOOLEAN:
             {
-                if(sValue == "0" or sValue == "")
-                {
-                    ofs << "false";
-                }
-                else
-                {
-                    ofs << "true";
-                }
+                ofs << sValue;
                 break;
             }
             case LUA_TNIL:
@@ -316,7 +309,14 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         }
         else if (nValueType == LUA_TBOOLEAN)
         {
-            keyValue.sValue = std::to_string(lua_toboolean(L, -1));
+            if (lua_toboolean(L, -1) == 0)
+            {
+                keyValue.sValue = "false";
+            }
+            else
+            {
+                keyValue.sValue = "true";   
+            }
         }
 
         keyValue.fieldType = nValueType;
