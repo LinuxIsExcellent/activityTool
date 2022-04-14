@@ -137,14 +137,6 @@ coin_rooms_TABLE_INFO =
 		{
 			field_name = "100",
 		},
-		-- 34
-		{
-			field_name = "100",
-		},
-		-- 35
-		{
-			field_name = "100",
-		},
 	},
 	["###field_sequence###"] =
 	{

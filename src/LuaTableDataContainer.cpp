@@ -11,6 +11,19 @@ LuaTableDataContainer::~LuaTableDataContainer()
 	// free data
 }
 
+// 计算文件的MD5码
+string LuaTableDataContainer::CalculateFileMd5()
+{
+    ifstream ifs(m_LuaFilePath.c_str());
+    MD5* md5 = new MD5(ifs);
+    if (md5)
+    {
+        return md5->toString();
+    }
+
+    return "";
+}
+
 // 把lua栈中的栈顶元素解析成lua格式的字符串
 string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_State *L, std::string sTableKey)
 {
@@ -198,7 +211,7 @@ string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_S
 }
 
 // 读取lua配置到一个容器中
-bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
+bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L, bool reload /*= false*/)
 {
     if (!L) return false;
 
@@ -223,6 +236,10 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     	cout << "is not a table, "<< sGlobalLuaTableName << endl;
     	return false;
     }
+
+    m_vFeildStrs.clear();
+    m_mFeildTypes.clear();
+    m_table_data.dataList.clear();
 
     m_table_data.sTableName = m_LuaFileName;
 
@@ -325,6 +342,8 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     m_table_data.nRow = nRow;
     m_table_data.nColumn = nColumn;
 
+    sMd5 = CalculateFileMd5();
+
     return true;
 }
 
@@ -375,7 +394,7 @@ void LuaTableDataContainer::DumpTableDataToConfigFile()
 {
     ofstream ofs;
     //1.打开文件，如果没有，会在同级目录下自动创建该文件
-    ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
+    ofs.open(m_LuaFilePath, ios::out);
     
     string sGlobalLuaTableName = "dataconfig_" + m_LuaFileName;
     string sLocalLuaTableName = "local_dataconfig_" + m_LuaFileName;
@@ -541,7 +560,9 @@ bool LuaTableDataContainer::UpdateData(const test_2::client_save_table_data_requ
     m_table_data.nRow = nRow;
     m_table_data.nColumn = nColumn;
 
-    DumpTableDataToConfigFile();   
+    DumpTableDataToConfigFile();
+    
+    sMd5 = CalculateFileMd5();
 
     return true;
 }

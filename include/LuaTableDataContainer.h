@@ -9,8 +9,20 @@ public:
     LuaTableDataContainer(string sLuaFileName, string sLuaFilePath);
     ~LuaTableDataContainer();
 
+    string CalculateFileMd5();
+
+    string GetFileMd5()
+    {
+        return sMd5;
+    }  
+
+    string GetLuaFileName()
+    {
+        return m_LuaFileName;
+    }
+
     // 加载lua配置的数据
-    bool LoadLuaConfigData(lua_State* L);
+    bool LoadLuaConfigData(lua_State* L, bool reload = false);
 
     bool UpdateData(const test_2::client_save_table_data_request& proto);
 
@@ -44,6 +56,7 @@ private:
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
+    string sMd5;    //该文件的md5码
 
     TABLEDATA m_table_data;                             //对应的二维表的数据
     std::vector<std::string>         m_vFeildStrs;      //最外层的字段

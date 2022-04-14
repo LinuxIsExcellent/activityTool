@@ -160,7 +160,7 @@ void LuaListDataContainer::DumpListDataToConfigFile()
 {
     ofstream ofs;
     //1.打开文件，如果没有，会在同级目录下自动创建该文件
-    ofs.open(m_LuaFilePath, ios::out);//采取追加的方式写入文件
+    ofs.open(m_LuaFilePath, ios::out);
     
     timeval p;
     gettimeofday(&p, NULL);
@@ -280,6 +280,8 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
     	return false;
     }
 
+    m_vValueLists.clear();
+
     //置空栈顶
     lua_pushnil(L);
 
@@ -341,7 +343,7 @@ void LuaListDataContainer::SortValueListsByKeySquence()
 
     ifstream ifs;
     //1.打开文件，如果没有，会在同级目录下自动创建该文件
-    ifs.open(m_LuaFilePath, ios::in);//采取追加的方式写入文件
+    ifs.open(m_LuaFilePath, ios::in);
     
     std::map<std::string, unsigned int> mFieldRawSquence;
     int nRow = 1;

@@ -51,7 +51,7 @@ void IOManager::ProcessMonitorHandler()
 
         ifstream ifs;
         //1.打开文件，如果没有，会在同级目录下自动创建该文件
-        ifs.open(sPath + "/" + data.pidFile, ios::in);//采取追加的方式写入文件
+        ifs.open(sPath + "/" + data.pidFile, ios::in);
         string pid;
         ifs >> pid;
 

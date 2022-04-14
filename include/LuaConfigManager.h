@@ -23,6 +23,9 @@ public:
         return m_instance;
     }
 
+    // 检查配置文件是否有改变
+    void CheckConfigFileIsChange(lua_State *L);
+
     // 加载所有的lua配置(二维数组)
     void LoadAllLuaConfigData(lua_State *L);
 

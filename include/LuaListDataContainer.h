@@ -9,6 +9,18 @@ public:
     LuaListDataContainer(string sLuaFileName, string sLuaFilePath);
     ~LuaListDataContainer();
 
+    string CalculateFileMd5();
+
+    string GetFileMd5()
+    {
+        return sMd5;
+    }  
+
+    string GetLuaFileName()
+    {
+        return m_LuaFileName;
+    }
+
     // 根据链接信息的key值获取列表的数据(只能获取最外层的
     std::vector<LUAKEYVALUE> GetLinkInfoByKey(std::string sKey);
 
@@ -32,6 +44,7 @@ private:
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
+    string sMd5;    //该文件的md5码
 
     std::vector<LUAKEYVALUE> m_vValueLists;     //数据集合
 };

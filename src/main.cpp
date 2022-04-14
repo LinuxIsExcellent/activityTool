@@ -80,13 +80,17 @@ void Global5STimer()
 {
     // LOG_INFO("global 5s timer");
 
-    IOManager::GetInstance()->ProcessMonitorHandler();
+    if (L)
+    {
+        IOManager::GetInstance()->ProcessMonitorHandler();
+    }
 }
 
 // 全局15s定时器
 void Global15STimer()
 {
     // LOG_INFO("global 15s timer");
+    LuaConfigManager::GetInstance()->CheckConfigFileIsChange(L);
 }
 
 void daemon_run()
@@ -125,7 +129,7 @@ void DumpPidToFile()
     int nCurrentPid = getpid();
     ofstream ofs;
     //1.打开文件，如果没有，会在同级目录下自动创建该文件
-    ofs.open("./observer.pid", ios::out);//采取追加的方式写入文件
+    ofs.open("./observer.pid", ios::out);
 
     ofs << nCurrentPid;
     ofs.close();
