@@ -22,7 +22,8 @@ config_file_path =
 -- 键值对一维展开的配置文件
 config_list_file_path =
 {
-	"pay_activity_config.lua",
+	--"pay_activity_config.lua",
+    "lottery_config.lua",
 }
 
 -- 中间件文件路径,根据在客户端操作表格自动生成的表的信息（字段顺序，字段标注，活动的字段组合...）

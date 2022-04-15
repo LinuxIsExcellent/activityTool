@@ -309,8 +309,7 @@ void IOManager::Loop()
 
     if (loop == false)
     {
-        // shutdown(m_listenFd, SHUT_RDWR);
-        close(m_listenFd);
+        shutdown(m_listenFd, SHUT_RDWR);
         shutdown(m_epollFd, SHUT_RDWR);
         shutdown(s_pipefd[0], SHUT_RDWR);
         shutdown(s_pipefd[1], SHUT_RDWR);

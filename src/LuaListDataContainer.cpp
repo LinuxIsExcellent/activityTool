@@ -288,23 +288,25 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
 
     while(lua_next(L, -2))
     {
+        int nValueType = lua_type(L, -1);
+
         LUAKEYVALUE keyValue;
         keyValue.sKey = lua_tostring(L, -2);
 
         string sValue;
-        if (lua_type(L, -1) == LUA_TTABLE)
+        if (nValueType == LUA_TTABLE)
         {
             keyValue.sValue = LuaTableDataContainer::ParseLuaTableToString(m_LuaFileName, L, keyValue.sKey);
         }
-        else if (lua_type(L, -1) == LUA_TSTRING)
+        else if (nValueType == LUA_TSTRING)
         {
             keyValue.sValue = lua_tostring(L, -1);
         }
-        else if (lua_type(L, -1) == LUA_TNIL)
+        else if (nValueType == LUA_TNIL)
         {
             keyValue.sValue = std::to_string(lua_tointeger(L, -1));
         }
-        else if (lua_type(L, -1) == LUA_TNUMBER)
+        else if (nValueType == LUA_TNUMBER)
         {
             // double num = lua_tonumber(L, -1);
             // std::string str_num = doubleToString(num);
@@ -312,12 +314,12 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
 
             keyValue.sValue = lua_tostring(L, -1);
         }
-        else if (lua_type(L, -1) == LUA_TBOOLEAN)
+        else if (nValueType == LUA_TBOOLEAN)
         {
             keyValue.sValue = std::to_string(lua_toboolean(L, -1));
         }
 
-        keyValue.fieldType = lua_type(L, -1);
+        keyValue.fieldType = nValueType;
 
     	lua_pop(L, 1);
 
