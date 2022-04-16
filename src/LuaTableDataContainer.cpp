@@ -37,7 +37,7 @@ string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_S
         {
             std::string sSubTableKey = "";
             // 先判断是数组还是key—value
-            if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
+            if (nKeyType == LUA_TNUMBER)
             {
                 sSubTableKey = sTableKey + "%ARRAY";
             }
@@ -65,14 +65,14 @@ string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_S
         }
         else if (nValueType == LUA_TNIL)
         {
-            sValue = std::to_string(lua_tointeger(L, -1));
+            sValue = "nil";
         }
         else if (nValueType == LUA_TNUMBER)
         {
             sValue = lua_tostring(L, -1);
         }
 
-        if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
+        if (nKeyType == LUA_TNUMBER)
         {
             int64_t nKey = lua_tointeger(L, -2);
 
@@ -278,7 +278,7 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L)
     			}
     			else if (nValueType == LUA_TNIL)
     			{
-    				sValue = std::to_string(lua_tointeger(L, -1));
+    				sValue = "nil";
     			}
     			else if (nValueType == LUA_TNUMBER)
     			{
@@ -440,10 +440,21 @@ void LuaTableDataContainer::DumpTableDataToConfigFile()
                     }
                     case LUA_TBOOLEAN:
                     {
-                        ofs << sValue;
+                        if (sValue == "")
+                        {
+                            ofs << "false";
+                        }
+                        else
+                        {
+                            ofs << sValue;
+                        }
                         break;
                     }
                     case LUA_TNIL:
+                    {
+                        ofs << "nil";
+                        break;
+                    }
                     case LUA_TNUMBER:
                     {
                         if (sValue == "")
@@ -470,6 +481,7 @@ void LuaTableDataContainer::DumpTableDataToConfigFile()
                     }
                     default:
                     {
+                        ofs << "nil";
                         break;
                     }
                 }

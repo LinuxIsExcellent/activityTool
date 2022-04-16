@@ -300,6 +300,7 @@ void Client::OnClientQuestSaveTableInfo(const test_2::client_save_table_info_req
 	std::map<string, LuaExtInfoContainer*>* tableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
 	if (tableInfoMap)
 	{
+		LOG_INFO("sTableName = " + sTableName);
 		auto iter = tableInfoMap->find(sTableName);
 		if (iter != tableInfoMap->end())
 		{

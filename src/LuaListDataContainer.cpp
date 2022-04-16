@@ -49,7 +49,7 @@ std::vector<LUAKEYVALUE> LuaListDataContainer::GetLinkInfoByKey(std::string sKey
                             {
                                 sKey = lua_tostring(L, -2);
                             }
-                            else if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
+                            else if (nKeyType == LUA_TNUMBER)
                             {
                                 sKey = std::to_string(lua_tointeger(L, -2));
                             }                            
@@ -58,13 +58,13 @@ std::vector<LUAKEYVALUE> LuaListDataContainer::GetLinkInfoByKey(std::string sKey
                             keyValue.sKey = sKey;
                             keyValue.sValue = sValue;
                     
-                            if (nValueType == LUA_TNIL || nValueType == LUA_TNUMBER)
+                            if (nValueType == LUA_TNUMBER)
                             {
                                 if (nKeyType == LUA_TSTRING)
                                 {
                                     vKeyValue.push_back(keyValue);
                                 }
-                                else if (nKeyType == LUA_TNUMBER || nKeyType == LUA_TNIL)
+                                else if (nKeyType == LUA_TNUMBER)
                                 {
                                     vArrayValue.push_back(keyValue);
                                 }
@@ -203,6 +203,10 @@ void LuaListDataContainer::DumpListDataToConfigFile()
                 break;
             }
             case LUA_TNIL:
+            {
+                ofs << "nil";
+                break;
+            }
             case LUA_TNUMBER:
             {
                 if (sValue == "")
@@ -297,7 +301,7 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
         }
         else if (nValueType == LUA_TNIL)
         {
-            keyValue.sValue = std::to_string(lua_tointeger(L, -1));
+            keyValue.sValue = "nil";
         }
         else if (nValueType == LUA_TNUMBER)
         {
