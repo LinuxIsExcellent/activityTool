@@ -45,7 +45,7 @@ public:
 private:
 
     // 把一个lua表通过外围信息表格式化写入到ofstream中
-    void DumpLuaTableToStream(ofstream& ofs, string sKey, string sValue, LuaExtInfoContainer* extInfo, lua_State* L);
+    string DumpLuaTableToStream(string sTableKey, string sValue, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel);
 
     // 根据最外层的key在文件内的顺序给数据集合排序
     void SortValueListsByKeySquence();

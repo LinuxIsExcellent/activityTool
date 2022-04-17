@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include<bits/stdc++.h>
 #include <iostream>
 #include <stringbuffer.h>
 #include <fstream>

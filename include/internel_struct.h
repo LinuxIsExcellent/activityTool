@@ -42,6 +42,7 @@ typedef struct fieldSquence
 typedef struct LuaKeyValue
 {
     string sKey;        //键
+    int64_t keyType;        //键的类型
     string sValue;        //值
     int64_t fieldType;        //值的lua类型
 }LUAKEYVALUE;
@@ -56,7 +57,7 @@ typedef struct listenProcessInfo
     std::string processName;
 }LISTENPROCESSINFO;
 
-// 数据的一个数据
+// 数据的一个键值对
 typedef struct LuaArrayValue
 {
     int64_t nKey;        //键
