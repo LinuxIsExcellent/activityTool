@@ -48,8 +48,6 @@ void LuaConfigManager::CheckConfigFileIsChange()
         string tempFileName = sFileTableName + "_TABLE_INFO.lua";
         string sTempFileAbsolutePath = sTempConfigDirPath + "/" + tempFileName;
 
-        LOG_INFO("sFileTableName = " + sFileTableName);
-        LOG_INFO("m_mTableInfoMap.size() = " + std::to_string(m_mTableInfoMap.size()));
         if (m_mTableInfoMap.find(sFileTableName) != m_mTableInfoMap.end())
         {
             LuaExtInfoContainer* list = m_mTableInfoMap.find(sFileTableName)->second;
