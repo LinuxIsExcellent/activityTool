@@ -125,6 +125,11 @@ void IOManager::InitIOManager()
     addsig(SIGTERM);
     addsig(SIGINT);
     addsig(SIGALRM);
+    addsig(SIGUSR1);
+    addsig(SIGUSR2);
+
+    LOG_INFO("SIGUSR1 = " + std::to_string(SIGUSR1));
+    LOG_INFO("SIGUSR2 = " + std::to_string(SIGUSR2));
     alarm(1);
 }
 
@@ -249,7 +254,7 @@ void IOManager::Loop()
                             case SIGALRM:
                             {
                                 timeout = true;
-                                break;
+                                continue;
                             }
                             case SIGCHLD:
                             case SIGHUP:
@@ -260,6 +265,19 @@ void IOManager::Loop()
                             case SIGINT:
                             {
                                 loop = false;
+                                continue;
+                            }
+                            // 立即比对修改的lua文件
+                            case SIGUSR1:
+                            {
+                                LOG_INFO("SIGUSR1");
+                                continue;
+                            }
+                            // 重新加在需要监听的lua文件列表
+                            case SIGUSR2:
+                            {
+                                LOG_INFO("SIGUSR2");
+                                continue;
                             }
                         }
                     }

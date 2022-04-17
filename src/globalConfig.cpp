@@ -1,5 +1,17 @@
 #include "globalConfig.h"
 
+string GlobalConfig::CalculateFileMd5()
+{
+    // ifstream ifs(m_LuaFilePath.c_str());
+    // MD5* md5 = new MD5(ifs);
+    // if (md5)
+    // {
+    //     return md5->toString();
+    // }
+
+    return "";
+}
+
 void GlobalConfig::LoadConfig(lua_State* L, string fileName)
 {
     if (!L) return;
@@ -26,26 +38,23 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     m_sShellPath = lua_tostring(L, -1);
 
     // Lua文件列表
-    lua_getglobal(L, "config_file_path");
-    if (!lua_istable(L, -1))
-    {
-        LOG_ERROR("没有任何需要监听的lua文件列表");
-        return;
-    }
-
     m_LuaTableFileList.clear();
-    lua_pushnil(L);
-    while(lua_next(L, -2))
+    lua_getglobal(L, "config_file_path");
+    if (lua_istable(L, -1))
     {
-        string strFile = lua_tostring(L, -1);
-
-        m_LuaTableFileList.push_back(strFile);
-        lua_pop(L, 1);
+        lua_pushnil(L);
+        while(lua_next(L, -2))
+        {
+            string strFile = lua_tostring(L, -1);
+    
+            m_LuaTableFileList.push_back(strFile);
+            lua_pop(L, 1);
+        }
     }
 
     // 可执行的shell脚本列表
-    lua_getglobal(L, "shell_config");
     m_vShellConfig.clear();
+    lua_getglobal(L, "shell_config");
     if (lua_istable(L, -1))
     {
         lua_pushnil(L);
@@ -62,10 +71,10 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     }
 
     // Lua文件列表
+    m_LuaMapFileList.clear();
     lua_getglobal(L, "config_list_file_path");
     if (lua_istable(L, -1))
     {
-        m_LuaMapFileList.clear();
         lua_pushnil(L);
         while(lua_next(L, -2))
         {
@@ -77,10 +86,10 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     }
 
     // 需要监听的服务器的进程id的文件列表
+    m_vListeningProcess.clear();
     lua_getglobal(L, "listening_process_config");
     if (lua_istable(L, -1))
     {
-        m_vListeningProcess.clear();
         lua_pushnil(L);
         while(lua_next(L, -2))
         {
@@ -106,4 +115,6 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
             m_vListeningProcess.push_back(info);
         }
     }
+
+    m_sMd5 = CalculateFileMd5();
 }

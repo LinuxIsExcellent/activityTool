@@ -9,6 +9,18 @@ public:
     LuaExtInfoContainer(string sLuaFileName, string sLuaFilePath);
     ~LuaExtInfoContainer();
 
+    string CalculateFileMd5();
+
+    string GetFileMd5()
+    {
+        return m_sMd5;
+    }  
+
+    string GetLuaFileName()
+    {
+        return m_LuaFileName;
+    }
+
     // 把字段的后面的数字切割出来
     void SplitSequenceKeyToNumVector(const std::string str, std::vector<string>& v, const char* delimiter = "_");
 
@@ -39,6 +51,7 @@ private:
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
+    string m_sMd5;    //该文件的md5码
     
     std::map<std::string, FIELDSQUENCE> m_mFieldSquences;     //字段顺序队列
 };

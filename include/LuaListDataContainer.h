@@ -13,7 +13,7 @@ public:
 
     string GetFileMd5()
     {
-        return sMd5;
+        return m_sMd5;
     }  
 
     string GetLuaFileName()
@@ -44,7 +44,7 @@ private:
 private:
     string m_LuaFileName;   //lua文件的名字
     string m_LuaFilePath;   //lua文件的路径
-    string sMd5;    //该文件的md5码
+    string m_sMd5;    //该文件的md5码
 
     std::vector<LUAKEYVALUE> m_vValueLists;     //数据集合
 };

@@ -11,6 +11,19 @@ LuaExtInfoContainer::~LuaExtInfoContainer()
 	// free data
 }
 
+// 计算文件的MD5码
+string LuaExtInfoContainer::CalculateFileMd5()
+{
+    // ifstream ifs(m_LuaFilePath.c_str());
+    // MD5* md5 = new MD5(ifs);
+    // if (md5)
+    // {
+    //     return md5->toString();
+    // }
+
+    return "";
+}
+
  void LuaExtInfoContainer::SplitSequenceKeyToNumVector(const std::string str, std::vector<string>& v, const char* delimiter /*= "_"*/)
 {
 	if (delimiter == nullptr || str.empty())
@@ -180,6 +193,8 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
     	lua_pop(L, 1);
     }
 
+    m_sMd5 = CalculateFileMd5();
+    
     return true;
 }
 
@@ -209,6 +224,8 @@ void LuaExtInfoContainer::UpdateData(const test_2::client_save_table_info_reques
 	}
     
 	DumpTableInfoToConfigFile();
+
+	m_sMd5 = CalculateFileMd5();
 
 	// 重新给二维表的最外层数据排序
 	std::map<string, LuaTableDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetTableDataMap();

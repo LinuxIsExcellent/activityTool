@@ -32,12 +32,30 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
     for (auto iter = m_mDataMap.begin(); iter != m_mDataMap.end(); ++iter)
     {
         LuaTableDataContainer* table = iter->second;
-        LOG_INFO("检测是否需要重新加载Lua配置:" + table->GetLuaFileName());
-        
         if (table->CalculateFileMd5() != table->GetFileMd5())
         {
             table->LoadLuaConfigData(L);
-            LOG_INFO("重新加载lua数据成功 : " + table->GetLuaFileName());
+            LOG_INFO("重新加载二维表数据成功 : " + table->GetLuaFileName());
+        }
+    }
+
+    for (auto iter = m_mLuaListDataMap.begin(); iter != m_mLuaListDataMap.end(); ++iter)
+    {
+        LuaListDataContainer* list = iter->second;
+        if (list->CalculateFileMd5() != list->GetFileMd5())
+        {
+            list->LoadLuaConfigData(L);
+            LOG_INFO("重新加载一维表数据成功 : " + list->GetLuaFileName());
+        }
+    }
+
+    for (auto iter = m_mTableInfoMap.begin(); iter != m_mTableInfoMap.end(); ++iter)
+    {
+        LuaExtInfoContainer* list = iter->second;
+        if (list->CalculateFileMd5() != list->GetFileMd5())
+        {
+            list->LoadTableInfoData(L);
+            LOG_INFO("重新加载额外信息数据成功 : " + list->GetLuaFileName());
         }
     }
 }

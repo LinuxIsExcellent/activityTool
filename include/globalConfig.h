@@ -20,6 +20,8 @@ public:
 
     void LoadConfig(lua_State* L, string fileName);
 
+    string CalculateFileMd5();
+
     inline string getListeningIp()
     {
         return m_ListeningIp;
@@ -75,17 +77,16 @@ private:
     string m_ListeningIp;   //监听的ip
     int m_ListeningPort;   //监听的端口
 
+    string m_sMd5;
     string m_ConfigPath;   //配置文件路径
     string m_TempConfigPath;   //中间件文件路径
     string m_ListeningProcessPath; //监听的进程id文件产生的路径
-    // char* m_ConfigPath;  //可监听的进程id文件的名字
-
-    std::vector<string> m_LuaTableFileList;    //所有二维表文件列表
-
-    std::vector<string> m_LuaMapFileList;    //监听的所有lua文件列表
-
     string m_sShellPath;        //shell脚本路径
-    std::vector<VALUEPAIR>      m_vShellConfig;     //可以执行的shell脚本
 
+    // 可热更部分
+    std::vector<string> m_LuaTableFileList;    //所有二维表文件列表
+    std::vector<string> m_LuaMapFileList;    //监听的所有lua文件列表
+    std::vector<VALUEPAIR>      m_vShellConfig;     //可以执行的shell脚本
     std::vector<LISTENPROCESSINFO>      m_vListeningProcess;     //需要监听的程序列表
+    // 可热更部分
 };

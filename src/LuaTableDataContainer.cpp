@@ -14,12 +14,12 @@ LuaTableDataContainer::~LuaTableDataContainer()
 // 计算文件的MD5码
 string LuaTableDataContainer::CalculateFileMd5()
 {
-    ifstream ifs(m_LuaFilePath.c_str());
-    MD5* md5 = new MD5(ifs);
-    if (md5)
-    {
-        return md5->toString();
-    }
+    // ifstream ifs(m_LuaFilePath.c_str());
+    // MD5* md5 = new MD5(ifs);
+    // if (md5)
+    // {
+    //     return md5->toString();
+    // }
 
     return "";
 }
@@ -342,7 +342,7 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L, bool reload /*= fals
     m_table_data.nRow = nRow;
     m_table_data.nColumn = nColumn;
 
-    sMd5 = CalculateFileMd5();
+    m_sMd5 = CalculateFileMd5();
 
     return true;
 }
@@ -562,7 +562,7 @@ bool LuaTableDataContainer::UpdateData(const test_2::client_save_table_data_requ
 
     DumpTableDataToConfigFile();
     
-    sMd5 = CalculateFileMd5();
+    m_sMd5 = CalculateFileMd5();
 
     return true;
 }

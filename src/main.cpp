@@ -89,7 +89,7 @@ void Global5STimer()
 // 全局15s定时器
 void Global15STimer()
 {
-    // LOG_INFO("global 15s timer");
+    LOG_INFO("global 15s timer");
     LuaConfigManager::GetInstance()->CheckConfigFileIsChange(L);
 }
 

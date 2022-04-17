@@ -11,6 +11,19 @@ LuaListDataContainer::~LuaListDataContainer()
 	// free data
 }
 
+// 计算文件的MD5码
+string LuaListDataContainer::CalculateFileMd5()
+{
+    // ifstream ifs(m_LuaFilePath.c_str());
+    // MD5* md5 = new MD5(ifs);
+    // if (md5)
+    // {
+    //     return md5->toString();
+    // }
+
+    return "";
+}
+
 std::vector<LUAKEYVALUE> LuaListDataContainer::GetLinkInfoByKey(std::string sKey)
 {
     std::vector<LUAKEYVALUE> vLinkFieldInfo;
@@ -334,6 +347,8 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
 
     SortValueListsByKeySquence();
 
+    m_sMd5 = CalculateFileMd5();
+
     return true;
 }
 
@@ -410,5 +425,7 @@ bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& 
     }
 
     DumpListDataToConfigFile();
+    m_sMd5 = CalculateFileMd5();
+    
     return true;
 }
