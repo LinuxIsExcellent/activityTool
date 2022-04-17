@@ -12,12 +12,13 @@ string GlobalConfig::CalculateFileMd5()
     return "";
 }
 
-void GlobalConfig::ReLoadConfig(lua_State* L, string fileName)
+void GlobalConfig::ReLoadConfig(string fileName)
 {
     if (CalculateFileMd5() == m_sMd5)
     {
         return;
     }
+    lua_State *L = luaL_newstate();
     if (!L) return;
 
     LOG_INFO("全局配置文件热加载开始");
@@ -27,6 +28,8 @@ void GlobalConfig::ReLoadConfig(lua_State* L, string fileName)
     {
         string error = lua_tostring(L,-1);
         LOG_ERROR("load lua file error : " + error);
+        lua_close(L);
+        L = NULL;
         return;
     }
 
@@ -109,11 +112,15 @@ void GlobalConfig::ReLoadConfig(lua_State* L, string fileName)
         }
     }
 
+    lua_close(L);
+    L = NULL;
+
     m_sMd5 = CalculateFileMd5();
 }
 
-void GlobalConfig::LoadConfig(lua_State* L, string fileName)
+void GlobalConfig::LoadConfig(string fileName)
 {
+    lua_State *L = luaL_newstate();
     if (!L) return;
 
     int ret = luaL_dofile(L, fileName.c_str());
@@ -121,6 +128,8 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     {
         string error = lua_tostring(L,-1);
         LOG_ERROR("load lua file error : " + error);
+        lua_close(L);
+        L = NULL;
         return;
     }
 
@@ -224,4 +233,7 @@ void GlobalConfig::LoadConfig(lua_State* L, string fileName)
     }
 
     m_sMd5 = CalculateFileMd5();
+
+    lua_close(L);
+    L = NULL;
 }

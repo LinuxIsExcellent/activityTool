@@ -24,16 +24,16 @@ public:
     }
 
     // 检查配置文件是否有改变
-    void CheckConfigFileIsChange(lua_State *L);
+    void CheckConfigFileIsChange();
 
     // 加载所有的lua配置(二维数组)
-    void LoadAllLuaConfigData(lua_State *L);
+    void LoadAllLuaConfigData();
 
     // 加载所有的键值对一维表lua配置
-    void LoadLuaListConfigData(lua_State *L);
+    void LoadLuaListConfigData();
 
     // 加载所有文件的中间配置
-    void LoadAllLuaTempConfigData(lua_State *L);
+    void LoadAllLuaTempConfigData();
 
     // 释放资源
     void FreeData();

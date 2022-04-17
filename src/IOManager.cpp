@@ -269,22 +269,14 @@ void IOManager::Loop()
                             case SIGUSR1:
                             {
                                 LOG_INFO("收到信号请求立即重新加载全局配置");
-                                lua_State* L = luaL_newstate();
-                                if (L)
-                                {
-                                    GlobalConfig::GetInstance()->ReLoadConfig(L, "../config/global_config.lua");
-                                }
+                                GlobalConfig::GetInstance()->ReLoadConfig("../config/global_config.lua");
                                 continue;
                             }
                             // 重新加在需要监听的lua文件列表
                             case SIGUSR2:
                             {
                                 LOG_INFO("收到信号请求立即重新加载所有lua配置");
-                                lua_State* L = luaL_newstate();
-                                if (L)
-                                {
-                                    LuaConfigManager::GetInstance()->CheckConfigFileIsChange(L);
-                                }
+                                LuaConfigManager::GetInstance()->CheckConfigFileIsChange();
                                 continue;
                             }
                         }

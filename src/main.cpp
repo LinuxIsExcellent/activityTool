@@ -5,8 +5,6 @@ GlobalConfig* GlobalConfig::m_instance = NULL;
 
 // Lua配置管理器
 LuaConfigManager* LuaConfigManager::m_instance = NULL;
-// 全局唯一虚拟机
-static lua_State *L = NULL;
 // 全局I/O管理器
 IOManager* IOManager::m_instance = NULL;
 
@@ -79,11 +77,7 @@ vector<string> split(string strtem,char a)
 void Global5STimer()
 {
     // LOG_INFO("global 5s timer");
-
-    if (L)
-    {
-        IOManager::GetInstance()->ProcessMonitorHandler();
-    }
+    IOManager::GetInstance()->ProcessMonitorHandler();
 }
 
 // lua文件重新加载检测
@@ -92,14 +86,14 @@ void LuaConfigReloadTimer()
     // LOG_INFO("global 15s timer");
 
     // 检测监听的lua配置文件是否有更改
-    LuaConfigManager::GetInstance()->CheckConfigFileIsChange(L);
+    LuaConfigManager::GetInstance()->CheckConfigFileIsChange();
 }
 
 // 全局配置重新加载检测
 void GlobalConfigReloadTimer()
 {
     // 检测全局配置表是否有修改
-    GlobalConfig::GetInstance()->ReLoadConfig(L, "../config/global_config.lua");
+    GlobalConfig::GetInstance()->ReLoadConfig("../config/global_config.lua");
 }
 
 void daemon_run()
@@ -151,23 +145,18 @@ int main()
     DumpPidToFile();
 
     // 一些初始化的工作
-    L = luaL_newstate();
-    if(L == NULL)
-    {
-        return 0;
-    }
 
     //加载全局配置表
-    GlobalConfig::GetInstance()->LoadConfig(L, "../config/global_config.lua");
+    GlobalConfig::GetInstance()->LoadConfig("../config/global_config.lua");
 
     //加载中间所有配置的中间文件
-    LuaConfigManager::GetInstance()->LoadAllLuaTempConfigData(L);
+    LuaConfigManager::GetInstance()->LoadAllLuaTempConfigData();
 
     //加载所有lua配置数据
-    LuaConfigManager::GetInstance()->LoadAllLuaConfigData(L);
+    LuaConfigManager::GetInstance()->LoadAllLuaConfigData();
 
     // 加载所有的lua键值对一维表数据
-    LuaConfigManager::GetInstance()->LoadLuaListConfigData(L);
+    LuaConfigManager::GetInstance()->LoadLuaListConfigData();
 
     // 初始化IO管理器
     IOManager::GetInstance()->InitIOManager();
@@ -203,11 +192,6 @@ int main()
 
     // IO循环结束，释放全局资源
     LuaConfigManager::GetInstance()->FreeData();
-
-    // 释放lua虚拟机
-    // lua_pushnil(L);
-    // lua_close(L);
-    L = NULL;
 
     return 0;
 }

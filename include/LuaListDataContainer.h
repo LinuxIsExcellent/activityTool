@@ -35,7 +35,7 @@ public:
     bool UpdateData(const test_2::save_lua_list_data_request& proto);
 
     // 加载lua配置的数据
-    bool LoadLuaConfigData(lua_State* L);
+    bool LoadLuaConfigData();
 
     // 把数据写入到lua文件中
     void DumpListDataToConfigFile();

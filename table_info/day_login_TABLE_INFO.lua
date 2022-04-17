@@ -19,7 +19,7 @@ day_login_TABLE_INFO =
 		},
 		-- 4
 		{
-			field_name = "100",
+			field_name = "274",
 		},
 		-- 5
 		{
@@ -45,6 +45,10 @@ day_login_TABLE_INFO =
 		{
 			field_name = "100",
 		},
+		-- 11
+		{
+			field_name = "100",
+		},
 	},
 	["###field_sequence###"] =
 	{
@@ -67,7 +71,7 @@ day_login_TABLE_INFO =
 		-- 5
 		{
 			field_name = "reg_day_low",
-			field_link = "list#pay_activity_config#page_names",
+			field_link = "table#item_group#id",
 		},
 		-- 6
 		{
@@ -102,66 +106,6 @@ day_login_TABLE_INFO =
 			field_name = "30",
 		},
 		-- 3
-		{
-			field_name = "30",
-		},
-		-- 4
-		{
-			field_name = "30",
-		},
-		-- 5
-		{
-			field_name = "30",
-		},
-		-- 6
-		{
-			field_name = "30",
-		},
-		-- 7
-		{
-			field_name = "30",
-		},
-		-- 8
-		{
-			field_name = "30",
-		},
-		-- 9
-		{
-			field_name = "30",
-		},
-		-- 10
-		{
-			field_name = "30",
-		},
-		-- 11
-		{
-			field_name = "30",
-		},
-		-- 12
-		{
-			field_name = "30",
-		},
-		-- 13
-		{
-			field_name = "30",
-		},
-		-- 14
-		{
-			field_name = "30",
-		},
-		-- 15
-		{
-			field_name = "30",
-		},
-		-- 16
-		{
-			field_name = "30",
-		},
-		-- 17
-		{
-			field_name = "30",
-		},
-		-- 18
 		{
 			field_name = "30",
 		},
@@ -289,6 +233,21 @@ day_login_TABLE_INFO =
 		-- 4
 		{
 			field_name = "tips_th",
+		},
+	},
+	["week_num_list"] =
+	{
+		-- 1
+		{
+			field_name = "item_id",
+		},
+		-- 2
+		{
+			field_name = "count",
+		},
+		-- 3
+		{
+			field_name = "item",
 		},
 	},
 }

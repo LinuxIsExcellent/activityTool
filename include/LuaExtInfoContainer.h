@@ -25,7 +25,7 @@ public:
     void SplitSequenceKeyToNumVector(const std::string str, std::vector<string>& v, const char* delimiter = "_");
 
     // 加载lua表的信息数据
-    bool LoadTableInfoData(lua_State* L);
+    bool LoadTableInfoData();
 
     // 通过键值获得字段顺序数据
     FIELDSQUENCE* GetFieldSquenceDataByKey(std::string sKey)

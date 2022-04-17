@@ -18,9 +18,9 @@ public:
         return m_instance;
     }
 
-    void LoadConfig(lua_State* L, string fileName);
+    void LoadConfig(string fileName);
 
-    void ReLoadConfig(lua_State* L, string fileName);
+    void ReLoadConfig(string fileName);
 
     string CalculateFileMd5();
 

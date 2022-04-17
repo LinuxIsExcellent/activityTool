@@ -22,7 +22,7 @@ public:
     }
 
     // 加载lua配置的数据
-    bool LoadLuaConfigData(lua_State* L, bool reload = false);
+    bool LoadLuaConfigData();
 
     bool UpdateData(const test_2::client_save_table_data_request& proto);
 

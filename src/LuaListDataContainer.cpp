@@ -459,8 +459,9 @@ void LuaListDataContainer::DumpListDataToConfigFile()
 }
 
 // 读取lua配置到一个容器中
-bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
+bool LuaListDataContainer::LoadLuaConfigData()
 {
+    lua_State *L = luaL_newstate();
     if (!L) return false;
 
     int ret = luaL_dofile(L, m_LuaFilePath.c_str());
@@ -468,6 +469,8 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
     {
         string error = lua_tostring(L,-1);
         LOG_ERROR(error);
+        lua_close(L);
+        L = NULL;
         return false;
     }
     else
@@ -482,6 +485,8 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
     {
         LOG_ERROR("file data is not a table : " + m_LuaFilePath);
     	cout << "is not a table, "<< sGlobalLuaTableName << endl;
+        lua_close(L);
+        L = NULL;
     	return false;
     }
 
@@ -536,6 +541,9 @@ bool LuaListDataContainer::LoadLuaConfigData(lua_State* L)
 
         m_vValueLists.push_back(keyValue);
     }
+
+    lua_close(L);
+    L = NULL;
 
     SortValueListsByKeySquence();
 
@@ -616,8 +624,8 @@ bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& 
         m_vValueLists.push_back(value);
     }
 
-    // DumpListDataToConfigFile();
-    DumpListDataFormatToConfigFile();
+    DumpListDataToConfigFile();
+    // DumpListDataFormatToConfigFile();
     m_sMd5 = CalculateFileMd5();
 
     return true;

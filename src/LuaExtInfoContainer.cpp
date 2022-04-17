@@ -108,9 +108,9 @@ void LuaExtInfoContainer::DumpTableInfoToConfigFile()
     ofs.close();
 }
 
-bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
+bool LuaExtInfoContainer::LoadTableInfoData()
 {
-    
+    lua_State *L = luaL_newstate();
     if (!L) return false;
 
     int ret = luaL_dofile(L, m_LuaFilePath.c_str());
@@ -118,6 +118,8 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
     {
         string error = lua_tostring(L,-1);
         // LOG_ERROR(error);
+        lua_close(L);
+        L = NULL;
         return false;
     }
     else
@@ -131,6 +133,8 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
     if (!lua_istable(L, -1))
     {
         LOG_ERROR("file data is not a table : " + m_LuaFilePath);
+        lua_close(L);
+        L = NULL;
     	return false;
     }
 
@@ -196,6 +200,8 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
 
     m_sMd5 = CalculateFileMd5();
 
+    lua_close(L);
+    L = NULL;
     return true;
 }
 

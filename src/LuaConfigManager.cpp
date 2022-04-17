@@ -27,7 +27,7 @@ void LuaConfigManager::FreeData()
     }
 }
 
-void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
+void LuaConfigManager::CheckConfigFileIsChange()
 {
     std::vector<string> luaTableFileList = GlobalConfig::GetInstance()->GetListenLuaFileList();
     string sLuaTableConfigDirPath = GlobalConfig::GetInstance()->getConfigPath();
@@ -48,6 +48,8 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
         string tempFileName = sFileTableName + "_TABLE_INFO.lua";
         string sTempFileAbsolutePath = sTempConfigDirPath + "/" + tempFileName;
 
+        LOG_INFO("sFileTableName = " + sFileTableName);
+        LOG_INFO("m_mTableInfoMap.size() = " + std::to_string(m_mTableInfoMap.size()));
         if (m_mTableInfoMap.find(sFileTableName) != m_mTableInfoMap.end())
         {
             LuaExtInfoContainer* list = m_mTableInfoMap.find(sFileTableName)->second;
@@ -55,7 +57,7 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             {
                 if (list->CalculateFileMd5() != list->GetFileMd5())
                 {
-                    if (list->LoadTableInfoData(L))
+                    if (list->LoadTableInfoData())
                     {
                         LOG_INFO("重新加载额外信息数据成功 : " + list->GetLuaFileName());
                     }
@@ -67,11 +69,12 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             LuaExtInfoContainer* container = new LuaExtInfoContainer(sFileTableName, sTempFileAbsolutePath);
             if (container)
             {
-                if (container->LoadTableInfoData(L))
+                if (container->LoadTableInfoData())
                 {
                     LOG_INFO("新增额外信息数据成功 : " + sFileTableName);
                 }
 
+                LOG_INFO("add ext info " + sFileTableName);
                 m_mTableInfoMap.insert(pair<string, LuaExtInfoContainer*> (sFileTableName, container));
             }
         }
@@ -83,7 +86,7 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             {
                 if (table->CalculateFileMd5() != table->GetFileMd5())
                 {
-                    if (table->LoadLuaConfigData(L))
+                    if (table->LoadLuaConfigData())
                     {
                         LOG_INFO("重新加载二维表数据成功 : " + table->GetLuaFileName());
                     }
@@ -95,7 +98,7 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             LuaTableDataContainer* luaData = new LuaTableDataContainer(sFileTableName, sLuaFileAbsolutePath);
             if (luaData)
             {
-                if (luaData->LoadLuaConfigData(L))
+                if (luaData->LoadLuaConfigData())
                 {
                     LOG_INFO("新增lua数据二维表成功 : " + sFileTableName);
                     m_mDataMap.insert(pair<string, LuaTableDataContainer*> (sFileTableName, luaData));
@@ -129,7 +132,7 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             {
                 if (list->CalculateFileMd5() != list->GetFileMd5())
                 {
-                    if (list->LoadTableInfoData(L))
+                    if (list->LoadTableInfoData())
                     {
                         LOG_INFO("重新加载额外信息数据成功 : " + list->GetLuaFileName());
                     }
@@ -141,7 +144,7 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             LuaExtInfoContainer* container = new LuaExtInfoContainer(sFileTableName, sTempFileAbsolutePath);
             if (container)
             {
-                if (container->LoadTableInfoData(L))
+                if (container->LoadTableInfoData())
                 {
                     LOG_INFO("新增额外信息数据成功 : " + sFileTableName);
                 }
@@ -157,7 +160,7 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             {
                 if (list->CalculateFileMd5() != list->GetFileMd5())
                 {
-                    if (list->LoadLuaConfigData(L))
+                    if (list->LoadLuaConfigData())
                     {
                         LOG_INFO("重新加载一维表数据成功 : " + list->GetLuaFileName());
                     }
@@ -169,7 +172,7 @@ void LuaConfigManager::CheckConfigFileIsChange(lua_State *L)
             LuaListDataContainer* luaData = new LuaListDataContainer(sFileTableName, sLuaFileAbsolutePath);
             if (luaData)
             {
-                if (luaData->LoadLuaConfigData(L))
+                if (luaData->LoadLuaConfigData())
                 {
                     LOG_INFO("新增lua一维表数据成功 : " + sFileTableName);
                     m_mLuaListDataMap.insert(pair<string, LuaListDataContainer*> (sFileTableName, luaData));
@@ -331,10 +334,8 @@ string LuaConfigManager::GetLuaTableDataByName(string name, string sLinkInfo)
 }
 
 
-void LuaConfigManager::LoadLuaListConfigData(lua_State *L)
+void LuaConfigManager::LoadLuaListConfigData()
 {
-    if (!L) return;
-
     std::vector<string> fileList = GlobalConfig::GetInstance()->GetListenLuaListFileList();
     string sConfigDirPath = GlobalConfig::GetInstance()->getConfigPath();
     if (fileList.size() <= 0) return ;
@@ -353,7 +354,7 @@ void LuaConfigManager::LoadLuaListConfigData(lua_State *L)
         LuaListDataContainer* luaData = new LuaListDataContainer(sFileTableName, sLuaFileAbsolutePath);
         if (luaData)
         {
-            if (luaData->LoadLuaConfigData(L))
+            if (luaData->LoadLuaConfigData())
             {
                 LOG_INFO("加载lua数据成功 : " + sFileTableName);
                 m_mLuaListDataMap.insert(pair<string, LuaListDataContainer*> (sFileTableName, luaData));
@@ -362,10 +363,8 @@ void LuaConfigManager::LoadLuaListConfigData(lua_State *L)
     }
 }
 
-void LuaConfigManager::LoadAllLuaConfigData(lua_State *L)
+void LuaConfigManager::LoadAllLuaConfigData()
 {
-    if (!L) return;
-
     std::vector<string> fileList = GlobalConfig::GetInstance()->GetListenLuaFileList();
     string sConfigDirPath = GlobalConfig::GetInstance()->getConfigPath();
     if (fileList.size() <= 0) return ;
@@ -384,7 +383,7 @@ void LuaConfigManager::LoadAllLuaConfigData(lua_State *L)
         LuaTableDataContainer* luaData = new LuaTableDataContainer(sFileTableName, sLuaFileAbsolutePath);
         if (luaData)
         {
-            if (luaData->LoadLuaConfigData(L))
+            if (luaData->LoadLuaConfigData())
             {
                 LOG_INFO("加载lua数据成功 : " + sFileTableName);
                 m_mDataMap.insert(pair<string, LuaTableDataContainer*> (sFileTableName, luaData));
@@ -393,10 +392,8 @@ void LuaConfigManager::LoadAllLuaConfigData(lua_State *L)
     }
 }
 
-void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
+void LuaConfigManager::LoadAllLuaTempConfigData()
 {
-    if (!L) return;
-
     std::vector<string> fileList = GlobalConfig::GetInstance()->GetListenLuaFileList();
     std::vector<string> LuaListFileInfoList = GlobalConfig::GetInstance()->GetListenLuaListFileList();
 
@@ -417,7 +414,7 @@ void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
         LuaExtInfoContainer* container = new LuaExtInfoContainer(sFileTableName, sLuaFileAbsolutePath);
         if (container)
         {
-            if (container->LoadTableInfoData(L))
+            if (container->LoadTableInfoData())
             {
                 LOG_INFO("加载lua二维表信息成功 : " + sFileTableName);
             }
@@ -441,7 +438,7 @@ void LuaConfigManager::LoadAllLuaTempConfigData(lua_State *L)
         LuaExtInfoContainer* container = new LuaExtInfoContainer(sFileTableName, sLuaFileAbsolutePath);
         if (container)
         {
-            if (container->LoadTableInfoData(L))
+            if (container->LoadTableInfoData())
             {
                 LOG_INFO("加载lua一维表信息成功 : " + sFileTableName);
             }

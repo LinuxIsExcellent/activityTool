@@ -211,8 +211,9 @@ string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_S
 }
 
 // 读取lua配置到一个容器中
-bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L, bool reload /*= false*/)
+bool LuaTableDataContainer::LoadLuaConfigData()
 {
+    lua_State *L = luaL_newstate();
     if (!L) return false;
 
     int ret = luaL_dofile(L, m_LuaFilePath.c_str());
@@ -220,6 +221,8 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L, bool reload /*= fals
     {
         string error = lua_tostring(L,-1);
         LOG_ERROR(error);
+        lua_close(L);
+        L = NULL;
         return false;
     }
     else
@@ -234,6 +237,9 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L, bool reload /*= fals
     {
         LOG_ERROR("file data is not a table : " + m_LuaFilePath);
     	cout << "is not a table, "<< sGlobalLuaTableName << endl;
+
+        lua_close(L);
+        L = NULL;
     	return false;
     }
 
@@ -335,6 +341,9 @@ bool LuaTableDataContainer::LoadLuaConfigData(lua_State* L, bool reload /*= fals
     {
         return a.id < b.id;
     });
+
+    lua_close(L);
+    L = NULL;
 
     // 把最外层的字段先排序
     SortFieldSquence();
