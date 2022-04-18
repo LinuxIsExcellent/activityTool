@@ -24,6 +24,7 @@ config_file_path =
 	"item_group.lua",
     "coin_rooms.lua",
     "paid_group.lua",
+    "vedio_award.lua",
 }
 
 -- 键值对一维展开的配置文件(可热加载部分)

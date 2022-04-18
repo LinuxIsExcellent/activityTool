@@ -179,13 +179,13 @@ int main(int argc,char* argv[])
     util_timer* timerGlobalConfig = new util_timer();
     timerGlobalConfig->expire = cur_time;
     timerGlobalConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
-    timerGlobalConfig->cb_func = GlobalConfigReloadTimer;
+    timerGlobalConfig->cb_func = GlobalConfigReloadTimer;    
 
     IOManager::GetInstance()->AddTimer(timerGlobalConfig);
 
     util_timer* timerLuaConfig = new util_timer();
     timerLuaConfig->expire = cur_time;
-    timerLuaConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
+    timerLuaConfig->nLoopSec = GlobalConfig::GetInstance()->getGlobalConfigReloadInterval();
     timerLuaConfig->cb_func = LuaConfigReloadTimer;
 
     IOManager::GetInstance()->AddTimer(timerLuaConfig);
