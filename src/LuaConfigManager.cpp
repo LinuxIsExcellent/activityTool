@@ -72,7 +72,6 @@ void LuaConfigManager::CheckConfigFileIsChange()
                     LOG_INFO("新增额外信息数据成功 : " + sFileTableName);
                 }
 
-                LOG_INFO("add ext info " + sFileTableName);
                 m_mTableInfoMap.insert(pair<string, LuaExtInfoContainer*> (sFileTableName, container));
             }
         }
