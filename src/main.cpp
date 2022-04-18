@@ -138,9 +138,12 @@ void DumpPidToFile()
     ofs.close();
 }
 
-int main()
-{
-    //daemon_run();
+int main(int argc,char* argv[])
+{    
+    if(argc > 1)
+    {
+        daemon_run();
+    }    
     
     DumpPidToFile();
 
@@ -173,19 +176,19 @@ int main()
 
     IOManager::GetInstance()->AddTimer(timer_5s);
 
-    // util_timer* timerGlobalConfig = new util_timer();
-    // timerGlobalConfig->expire = cur_time;
-    // timerGlobalConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
-    // timerGlobalConfig->cb_func = GlobalConfigReloadTimer;
+    util_timer* timerGlobalConfig = new util_timer();
+    timerGlobalConfig->expire = cur_time;
+    timerGlobalConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
+    timerGlobalConfig->cb_func = GlobalConfigReloadTimer;
 
-    // IOManager::GetInstance()->AddTimer(timerGlobalConfig);
+    IOManager::GetInstance()->AddTimer(timerGlobalConfig);
 
-    // util_timer* timerLuaConfig = new util_timer();
-    // timerLuaConfig->expire = cur_time;
-    // timerLuaConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
-    // timerLuaConfig->cb_func = LuaConfigReloadTimer;
+    util_timer* timerLuaConfig = new util_timer();
+    timerLuaConfig->expire = cur_time;
+    timerLuaConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
+    timerLuaConfig->cb_func = LuaConfigReloadTimer;
 
-    // IOManager::GetInstance()->AddTimer(timerLuaConfig);
+    IOManager::GetInstance()->AddTimer(timerLuaConfig);
 
     // 开始IO循环
     IOManager::GetInstance()->Loop();

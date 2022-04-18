@@ -308,7 +308,6 @@ void IOManager::Loop()
                     }
                     else
                     {
-                        LOG_INFO("recv size = " + std::to_string(ret));
                         std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
                         if (it != m_mClients.end() )
                         {
