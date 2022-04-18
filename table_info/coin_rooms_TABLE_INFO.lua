@@ -7,7 +7,7 @@ coin_rooms_TABLE_INFO =
 	{
 		-- 1
 		{
-			field_name = "100",
+			field_name = "81",
 		},
 		-- 2
 		{
@@ -137,6 +137,14 @@ coin_rooms_TABLE_INFO =
 		{
 			field_name = "100",
 		},
+		-- 34
+		{
+			field_name = "100",
+		},
+		-- 35
+		{
+			field_name = "100",
+		},
 	},
 	["###field_sequence###"] =
 	{
@@ -237,43 +245,257 @@ coin_rooms_TABLE_INFO =
 		},
 		-- 24
 		{
-			field_name = "rake",
+			field_name = "switch_time",
 		},
 		-- 25
 		{
-			field_name = "disable",
+			field_name = "rake",
 		},
 		-- 26
 		{
-			field_name = "order",
+			field_name = "disable",
 		},
 		-- 27
 		{
-			field_name = "level",
+			field_name = "order",
 			field_link = "table#item_group#jump_pos",
 		},
 		-- 28
 		{
-			field_name = "pochan_packge",
+			field_name = "pot_times",
 		},
 		-- 29
 		{
-			field_name = "think_time_sec",
+			field_name = "pot_round_total",
 		},
 		-- 30
 		{
-			field_name = "jackpot_id",
-			field_desc = "对应的jackpot配置",
-			field_link = "table#coin_rooms_jackpot#id",
+			field_name = "custom_id",
+		},
+		-- 31
+		{
+			field_name = "level",
+		},
+		-- 32
+		{
+			field_name = "pochan_packge",
+		},
+		-- 33
+		{
+			field_name = "ios_pochan_packge",
+		},
+		-- 34
+		{
+			field_name = "gold_packge",
+		},
+		-- 35
+		{
+			field_name = "settle_mult",
 		},
 	},
 	["###row_height###"] =
 	{
 		-- 1
 		{
-			field_name = "30",
+			field_name = "100",
 		},
 		-- 2
+		{
+			field_name = "30",
+		},
+		-- 3
+		{
+			field_name = "30",
+		},
+		-- 4
+		{
+			field_name = "30",
+		},
+		-- 5
+		{
+			field_name = "30",
+		},
+		-- 6
+		{
+			field_name = "30",
+		},
+		-- 7
+		{
+			field_name = "30",
+		},
+		-- 8
+		{
+			field_name = "30",
+		},
+		-- 9
+		{
+			field_name = "30",
+		},
+		-- 10
+		{
+			field_name = "30",
+		},
+		-- 11
+		{
+			field_name = "30",
+		},
+		-- 12
+		{
+			field_name = "30",
+		},
+		-- 13
+		{
+			field_name = "30",
+		},
+		-- 14
+		{
+			field_name = "30",
+		},
+		-- 15
+		{
+			field_name = "30",
+		},
+		-- 16
+		{
+			field_name = "30",
+		},
+		-- 17
+		{
+			field_name = "30",
+		},
+		-- 18
+		{
+			field_name = "30",
+		},
+		-- 19
+		{
+			field_name = "30",
+		},
+		-- 20
+		{
+			field_name = "30",
+		},
+		-- 21
+		{
+			field_name = "30",
+		},
+		-- 22
+		{
+			field_name = "30",
+		},
+		-- 23
+		{
+			field_name = "30",
+		},
+		-- 24
+		{
+			field_name = "30",
+		},
+		-- 25
+		{
+			field_name = "30",
+		},
+		-- 26
+		{
+			field_name = "30",
+		},
+		-- 27
+		{
+			field_name = "30",
+		},
+		-- 28
+		{
+			field_name = "30",
+		},
+		-- 29
+		{
+			field_name = "30",
+		},
+		-- 30
+		{
+			field_name = "30",
+		},
+		-- 31
+		{
+			field_name = "30",
+		},
+		-- 32
+		{
+			field_name = "30",
+		},
+		-- 33
+		{
+			field_name = "30",
+		},
+		-- 34
+		{
+			field_name = "30",
+		},
+		-- 35
+		{
+			field_name = "30",
+		},
+		-- 36
+		{
+			field_name = "30",
+		},
+		-- 37
+		{
+			field_name = "30",
+		},
+		-- 38
+		{
+			field_name = "30",
+		},
+		-- 39
+		{
+			field_name = "30",
+		},
+		-- 40
+		{
+			field_name = "30",
+		},
+		-- 41
+		{
+			field_name = "30",
+		},
+		-- 42
+		{
+			field_name = "30",
+		},
+		-- 43
+		{
+			field_name = "30",
+		},
+		-- 44
+		{
+			field_name = "30",
+		},
+		-- 45
+		{
+			field_name = "30",
+		},
+		-- 46
+		{
+			field_name = "30",
+		},
+		-- 47
+		{
+			field_name = "30",
+		},
+		-- 48
+		{
+			field_name = "30",
+		},
+		-- 49
+		{
+			field_name = "30",
+		},
+		-- 50
+		{
+			field_name = "30",
+		},
+		-- 51
 		{
 			field_name = "30",
 		},

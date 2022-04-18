@@ -42,6 +42,8 @@ void Client::OnRecvMsg(char* buffer, uint nLength)
 		return;
 	}
 
+	if (m_nBufferDataSize < 4) return;
+
 	while(1)
 	{
 		int packetLength = *(int*)m_recvBuffer;
@@ -55,8 +57,9 @@ void Client::OnRecvMsg(char* buffer, uint nLength)
 	
 			// 使用了的缓冲区大小
 			uint nUseSize = packetLength + 4;
+
 			// 把缓冲区的剩余数据移到最前面
-			memcpy(m_recvBuffer, m_recvBuffer + nUseSize, RECV_BUFFER_SIZE - nUseSize);
+			memmove(m_recvBuffer, (m_recvBuffer + nUseSize), RECV_BUFFER_SIZE - nUseSize);
 			// 重新设置缓冲区的字节大小
 			m_nBufferDataSize = m_nBufferDataSize - nUseSize;
 
@@ -75,8 +78,10 @@ void Client::OnRecvMsg(char* buffer, uint nLength)
 		if (packetLength >= RECV_BUFFER_SIZE || nowDataLength > packetLength || nowDataLength < 0)
 		{
 			LOG_ERROR("数据解析出错，丢弃包: " + std::to_string(packetLength) + ", " + std::to_string(nowDataLength));
-			memset(m_recvBuffer, 0, RECV_BUFFER_SIZE);
+			memset(m_recvBuffer, '\0', RECV_BUFFER_SIZE);
 			m_nBufferDataSize = 0;
+			
+			OnDisconnect();
 			return;
 		}
 	}
@@ -90,16 +95,21 @@ void Client::SendData(uint16_t nSystem, uint16_t nCmd, string& data)
 
 	//LOG_INFO("发送数据包: data length = " + std::to_string(data.length()));
 
-	uint nDataLength = sizeof(nSystem) + sizeof(nCmd) + 3 + data.length();
+	const char* str = data.c_str();
+	uint nDataLength = strlen(str);
+	uint nPacketLength = sizeof(nSystem) + sizeof(nCmd) + 3 + nDataLength;
 	Packet packet;
-	packet << nDataLength << nSystem << nCmd << data.c_str();
 
-	//LOG_INFO("发送数据包: nSystem = " + std::to_string(nSystem) + ", nCmd = " + std::to_string(nCmd) + ", nDataLength = " + std::to_string(nDataLength));
+	packet << nPacketLength << nSystem << nCmd << str;
+
+
+	// LOG_INFO("发送数据包: nSystem = " + std::to_string(nSystem) + ", nCmd = " + std::to_string(nCmd) + ", nPacketLength = " + std::to_string(nPacketLength));
 	// 如果该文件描述符是非阻塞模式的话，send函数会根据内核缓冲区的可用空间把数据拷贝到内核，并且直接返回，返回值为已经拷贝了的字节数
 	// 所以最好设置成阻塞模式，这样能保证需要发送的数据全部拷贝到内核缓冲区，并且通过tcp发送到客户端
 	// 可以使用非阻塞模式的socket，但是这样需要在应用层进行比较多的处理，显而易见的解决方案是：如果只拷贝一部分到内核缓冲区，需要继续循环调用send函数
 	int nSent = 0;
 
+	// LOG_INFO("数据包的大小" + std::to_string(packet.getLength()));
 	// send(m_fd, packet.getDataBegin() + nSent, packet.getLength() - nSent, 0);
 	while(nSent < packet.getLength())
 	{
@@ -109,8 +119,7 @@ void Client::SendData(uint16_t nSystem, uint16_t nCmd, string& data)
             nSent += ret;
         }
 	}
-
-	//LOG_INFO("total nSent = " + std::to_string(nSent));
+	// LOG_INFO("total nSent = " + std::to_string(nSent));
 }
 
 void Client::OnNetMsgProcess(Packet &packet)
@@ -300,7 +309,6 @@ void Client::OnClientQuestSaveTableInfo(const test_2::client_save_table_info_req
 	std::map<string, LuaExtInfoContainer*>* tableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
 	if (tableInfoMap)
 	{
-		LOG_INFO("sTableName = " + sTableName);
 		auto iter = tableInfoMap->find(sTableName);
 		if (iter != tableInfoMap->end())
 		{
@@ -486,8 +494,6 @@ void Client::OnClientQuestFieldInfoByLink(std::string sLinkInfo)
 				{
 					info->set_field_value(data.sKey);
 					info->set_field_desc(data.sValue);
-					LOG_INFO("data.sKey = " +data.sKey);
-					LOG_INFO("data.sValue = " +data.sValue);
 				}
 			}
 

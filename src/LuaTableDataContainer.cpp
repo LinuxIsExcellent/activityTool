@@ -14,12 +14,12 @@ LuaTableDataContainer::~LuaTableDataContainer()
 // 计算文件的MD5码
 string LuaTableDataContainer::CalculateFileMd5()
 {
-    // ifstream ifs(m_LuaFilePath.c_str());
-    // MD5* md5 = new MD5(ifs);
-    // if (md5)
-    // {
-    //     return md5->toString();
-    // }
+    ifstream ifs(m_LuaFilePath.c_str());
+    MD5* md5 = new MD5(ifs);
+    if (md5)
+    {
+        return md5->toString();
+    }
 
     return "";
 }
@@ -399,13 +399,19 @@ void LuaTableDataContainer::DumpTableDataToConfigFile()
     string sGlobalLuaTableName = "dataconfig_" + m_LuaFileName;
     string sLocalLuaTableName = "local_dataconfig_" + m_LuaFileName;
     //2.写入文件标题
-    char title[64];
-    sprintf(title, "asddas %s", "asd");
+    timeval p;
+    gettimeofday(&p, NULL);
 
-    LOG_INFO("请求保存一维表数据");
-    LOG_INFO("title" + std::string(title));
+    struct tm* ptm = localtime (&(p.tv_sec));
+    char time_string[40];
 
-    // ofs << std::string(title) << endl;
+    strftime(time_string, sizeof(time_string), "%Y-%m-%d %H:%M:%S", ptm);
+
+    char title[256];
+    sprintf(title, AUTO_GEN_FILE_DESC, time_string);
+    
+    ofs << title << endl;
+    
     //3.写入配置数据
     ofs << sGlobalLuaTableName << " = " << "{}" << endl;
     ofs << endl;

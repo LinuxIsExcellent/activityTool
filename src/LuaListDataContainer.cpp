@@ -1,5 +1,6 @@
 #include "LuaListDataContainer.h"
 
+// extern lua_State* L;
 
 LuaListDataContainer::LuaListDataContainer(string sLuaFileName, string sLuaFilePath) : m_LuaFileName(sLuaFileName), m_LuaFilePath(sLuaFilePath)
 {
@@ -14,12 +15,12 @@ LuaListDataContainer::~LuaListDataContainer()
 // 计算文件的MD5码
 string LuaListDataContainer::CalculateFileMd5()
 {
-    // ifstream ifs(m_LuaFilePath.c_str());
-    // MD5* md5 = new MD5(ifs);
-    // if (md5)
-    // {
-    //     return md5->toString();
-    // }
+    ifstream ifs(m_LuaFilePath.c_str());
+    MD5* md5 = new MD5(ifs);
+    if (md5)
+    {
+        return md5->toString();
+    }
 
     return "";
 }
@@ -167,6 +168,197 @@ std::vector<LUAKEYVALUE> LuaListDataContainer::GetLinkInfoByKey(std::string sKey
     }
 
     return vLinkFieldInfo;
+}
+
+void LuaListDataContainer::DumpLuaTableToStream(ofstream& ofs, string sKey, string sValue, LuaExtInfoContainer* extInfo, lua_State* L)
+{
+    if (extInfo)
+    {
+        // FIELDSQUENCE* fieldSquence = extInfo->GetFieldSquenceDataByKey(sKey);
+        // if(fieldSquence)
+        // {
+        //     for (int j = 0; j < fieldSquence->vSFieldSquences.size(); ++j)
+        //     {
+        //         string sFieldName = fieldSquence->vSFieldSquences[j].sFieldName;
+        //         if (sFieldName == sKey)
+        //         {
+        //             string sAnnonation = fieldSquence->vSFieldSquences[j].sFieldAnnonation;
+        //             if (sAnnonation != "")
+        //             {
+        //                 ofs << TAB << "-- " << sAnnonation << endl;
+        //             }
+        //             break;
+        //         }
+        //     }
+        // }
+    }
+
+
+    string sTempTableName = "temp_table = " + sValue;
+    int ret = luaL_dostring(L, sTempTableName.c_str());
+    if (ret)
+    {
+        LOG_ERROR("temp_table is a error lua format, key = " + sKey + " value = " + sValue);
+        return;
+    }
+
+    lua_getglobal(L, "temp_table");
+
+    if (!lua_istable(L, -1))
+    {
+        LOG_ERROR("temp_table is not a lua table, key = " + sKey + " value = " + sValue);        
+        return;
+    }
+
+    //置空栈顶
+    lua_pushnil(L);
+
+    while(lua_next(L, -2))
+    {
+        int nKeyType = lua_type(L, -2);
+        int nValueType = lua_type(L, -1);
+
+        if (nKeyType == LUA_TNUMBER)
+        {
+            LOG_INFO("");
+            lua_tonumber(L, -2);
+        }
+        else
+        {
+            lua_tostring(L, -2);
+        }
+
+        lua_pop(L, 1);
+    }
+}
+
+void LuaListDataContainer::DumpListDataFormatToConfigFile()
+{
+    ofstream ofs;
+    //1.打开文件，如果没有，会在同级目录下自动创建该文件
+    // ofs.open(m_LuaFilePath, ios::out);
+    ofs.open("/root/workspace/dev_ph/script/config/temp_lottery_config.lua", ios::out);
+
+    timeval p;
+    gettimeofday(&p, NULL);
+
+    struct tm* ptm = localtime (&(p.tv_sec));
+    char time_string[40];
+
+    strftime(time_string, sizeof(time_string), "%Y-%m-%d %H:%M:%S", ptm);
+
+    char title[256];
+    sprintf(title, AUTO_GEN_FILE_DESC, time_string);
+    
+    ofs << title << endl;
+
+    string sGlobalLuaTableName = m_LuaFileName;
+
+    //2.写入一维表数据
+    ofs << sGlobalLuaTableName << " = " << "{" << endl;
+
+    LuaExtInfoContainer* extInfo = NULL;
+    std::map<string, LuaExtInfoContainer*>* mTableInfoMap = LuaConfigManager::GetInstance()->GetTableInfoMap();
+    if (mTableInfoMap)
+    {
+        auto iter = mTableInfoMap->find(m_LuaFileName);
+        if (iter != mTableInfoMap->end())
+        {
+            extInfo = iter->second;
+        }
+    }
+
+    lua_State *L = luaL_newstate();
+
+    for (int i = 0; i < m_vValueLists.size(); ++i)
+    {
+        LUAKEYVALUE luaKeyValue = m_vValueLists[i];
+
+        if (extInfo)
+        {
+            FIELDSQUENCE* fieldSquence = extInfo->GetFieldSquenceDataByKey("###field_sequence###");
+            if(fieldSquence)
+            {
+                for (int j = 0; j < fieldSquence->vSFieldSquences.size(); ++j)
+                {
+                    string sFieldName = fieldSquence->vSFieldSquences[j].sFieldName;
+                    if (sFieldName == luaKeyValue.sKey)
+                    {
+                        string sAnnonation = fieldSquence->vSFieldSquences[j].sFieldAnnonation;
+                        if (sAnnonation != "")
+                        {
+                            ofs << TAB << "-- " << sAnnonation << endl;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        ofs << TAB << luaKeyValue.sKey << " = ";
+
+        std::string sKey = luaKeyValue.sKey;
+        std::string sValue = luaKeyValue.sValue;
+        switch(luaKeyValue.fieldType)
+        {
+            case LUA_TSTRING:
+            {
+                sValue = subreplace(sValue, "\n", "\\n");
+                sValue = subreplace(sValue, "\"", "\\\"");
+                ofs << "\"" << sValue << "\"";
+                break;
+            }
+            case LUA_TBOOLEAN:
+            {
+                ofs << sValue;
+                break;
+            }
+            case LUA_TNIL:
+            {
+                ofs << "nil";
+                break;
+            }
+            case LUA_TNUMBER:
+            {
+                if (sValue == "")
+                {
+                    ofs << "0";
+                }
+                else
+                {
+                    ofs << sValue;
+                }
+                break;
+            }
+            case LUA_TTABLE:
+            {
+                if (sValue == "")
+                {
+                    ofs << "nil";
+                }
+                else
+                {
+                    // ofs << sValue;
+                    DumpLuaTableToStream(ofs, sKey, sValue, extInfo, L);
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+        
+        ofs << "," << endl;
+        ofs << endl;
+    }
+
+    ofs << "}";
+    //5.关闭流
+    ofs.close();
+
+    lua_close(L);
 }
 
 void LuaListDataContainer::DumpListDataToConfigFile()
@@ -424,8 +616,9 @@ bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& 
         m_vValueLists.push_back(value);
     }
 
-    DumpListDataToConfigFile();
+    // DumpListDataToConfigFile();
+    DumpListDataFormatToConfigFile();
     m_sMd5 = CalculateFileMd5();
-    
+
     return true;
 }

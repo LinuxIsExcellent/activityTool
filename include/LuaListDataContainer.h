@@ -1,6 +1,8 @@
 #pragma once
 #include "include.h"
 
+
+class LuaExtInfoContainer;
 // Lua文件数据类
 // 只支持键值对的lua表格式
 class LuaListDataContainer
@@ -37,7 +39,13 @@ public:
 
     // 把数据写入到lua文件中
     void DumpListDataToConfigFile();
+
+    // 根据外围信息表格式化展开lua表
+    void DumpListDataFormatToConfigFile();
 private:
+
+    // 把一个lua表通过外围信息表格式化写入到ofstream中
+    void DumpLuaTableToStream(ofstream& ofs, string sKey, string sValue, LuaExtInfoContainer* extInfo, lua_State* L);
 
     // 根据最外层的key在文件内的顺序给数据集合排序
     void SortValueListsByKeySquence();

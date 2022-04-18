@@ -14,12 +14,12 @@ LuaExtInfoContainer::~LuaExtInfoContainer()
 // 计算文件的MD5码
 string LuaExtInfoContainer::CalculateFileMd5()
 {
-    // ifstream ifs(m_LuaFilePath.c_str());
-    // MD5* md5 = new MD5(ifs);
-    // if (md5)
-    // {
-    //     return md5->toString();
-    // }
+    ifstream ifs(m_LuaFilePath.c_str());
+    MD5* md5 = new MD5(ifs);
+    if (md5)
+    {
+        return md5->toString();
+    }
 
     return "";
 }
@@ -117,7 +117,7 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
     if (ret)
     {
         string error = lua_tostring(L,-1);
-        LOG_ERROR(error);
+        // LOG_ERROR(error);
         return false;
     }
     else
@@ -136,6 +136,7 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
 
     //置空栈顶
     lua_pushnil(L);
+    m_mFieldSquences.clear();
 
     while(lua_next(L, -2))
     {
@@ -194,7 +195,7 @@ bool LuaExtInfoContainer::LoadTableInfoData(lua_State* L)
     }
 
     m_sMd5 = CalculateFileMd5();
-    
+
     return true;
 }
 

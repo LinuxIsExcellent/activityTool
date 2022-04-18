@@ -3,26 +3,33 @@ server_ip = "localhost"
 -- 服务器端口
 server_port = 23543
 
+-- global_config里面可热加载部分多长时间检测文件变化加载一次
+global_config_reload_interval = 5
+
+-- 被监听的二维展开和一维展开的文件多长时间检测文件变化热加载一次
+config_reload_interval = 15
+
 -- 配置文件路径
 config_path = "/root/workspace/dev_ph/script/config"
 
--- 二维表展开的配置文件
+-- 二维表展开的配置文件 (可热加载部分)
 config_file_path =
 {
-	--"day_login.lua",
-	--"time_slot_login.lua",
-	--"item.lua",
-	--"province.lua",
-	--"bonus_rain.lua",
-	--"task.lua",
+	"day_login.lua",
+	"time_slot_login.lua",
+	"item.lua",
+	"province.lua",
+	"bonus_rain.lua",
+	"task.lua",
 	"item_group.lua",
     "coin_rooms.lua",
+    "paid_group.lua",
 }
 
--- 键值对一维展开的配置文件
+-- 键值对一维展开的配置文件(可热加载部分)
 config_list_file_path =
 {
-	--"pay_activity_config.lua",
+	"pay_activity_config.lua",
     "lottery_config.lua",
 }
 
@@ -31,7 +38,8 @@ temp_config_path = "/root/workspace/activityTool/table_info"
 
 -- 监听的进程id文件产生的路径
 listening_process_path = "/root/workspace/dev_ph"
--- 可监听的进程id文件的名字
+
+-- 可监听的进程id文件的名字(可热加载部分)
 listening_process_config =
 {
 	[1] = {"gamesvr.pid", "网关服"},
@@ -50,7 +58,8 @@ listening_process_config =
 
 -- 使用脚本路径
 script_operate_path = "/root/workspace/activityTool/shell_script"
--- 使用脚本
+
+-- 使用脚本(可热加载部分)
 shell_config = 
 {
 	["关闭服务器"] = "stop_server.sh",

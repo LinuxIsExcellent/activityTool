@@ -86,11 +86,20 @@ void Global5STimer()
     }
 }
 
-// 全局15s定时器
-void Global15STimer()
+// lua文件重新加载检测
+void LuaConfigReloadTimer()
 {
-    LOG_INFO("global 15s timer");
+    // LOG_INFO("global 15s timer");
+
+    // 检测监听的lua配置文件是否有更改
     LuaConfigManager::GetInstance()->CheckConfigFileIsChange(L);
+}
+
+// 全局配置重新加载检测
+void GlobalConfigReloadTimer()
+{
+    // 检测全局配置表是否有修改
+    GlobalConfig::GetInstance()->ReLoadConfig(L, "../config/global_config.lua");
 }
 
 void daemon_run()
@@ -175,12 +184,19 @@ int main()
 
     IOManager::GetInstance()->AddTimer(timer_5s);
 
-    util_timer* timer_15s = new util_timer();
-    timer_15s->expire = cur_time;
-    timer_15s->nLoopSec = 15;
-    timer_15s->cb_func = Global15STimer;
+    util_timer* timerGlobalConfig = new util_timer();
+    timerGlobalConfig->expire = cur_time;
+    timerGlobalConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
+    timerGlobalConfig->cb_func = GlobalConfigReloadTimer;
 
-    IOManager::GetInstance()->AddTimer(timer_15s);
+    IOManager::GetInstance()->AddTimer(timerGlobalConfig);
+
+    util_timer* timerLuaConfig = new util_timer();
+    timerLuaConfig->expire = cur_time;
+    timerLuaConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
+    timerLuaConfig->cb_func = LuaConfigReloadTimer;
+
+    IOManager::GetInstance()->AddTimer(timerLuaConfig);
 
     // 开始IO循环
     IOManager::GetInstance()->Loop();
@@ -189,7 +205,8 @@ int main()
     LuaConfigManager::GetInstance()->FreeData();
 
     // 释放lua虚拟机
-    lua_close(L);
+    // lua_pushnil(L);
+    // lua_close(L);
     L = NULL;
 
     return 0;

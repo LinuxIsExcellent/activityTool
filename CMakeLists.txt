@@ -46,7 +46,7 @@ add_library(${target_name} STATIC
 #包含lua文件路径
 target_include_directories(lua PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
  
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-E")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-E,-g")
 
 #添加编译选项
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -llog4cpp -pthread")

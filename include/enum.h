@@ -3,7 +3,7 @@
 #define MIN(a, b) a <= b ? a : b
 #define MAX(a, b) a >= b ? a : b
 #define ISDIGIT(str) (str.find_first_not_of("-.0123456789") == string::npos)
-#define AUTO_GEN_FILE_DESC "-- 此文件由程序在北京时间 %s 自动生成"
+#define AUTO_GEN_FILE_DESC "-- 此文件由程序在服务器时间 %s 自动生成"
 
 /*
  函数说明：对字符串中所有指定的子串进行替换
@@ -36,8 +36,11 @@ std::string doubleToString(double price);
 // 全局5s定时器
 void Global5STimer();
 
-// 全局15s定时器
-void Global15STimer();
+// lua文件重新加载检测定时器
+void LuaConfigReloadTimer();
+
+// 全局配置重新加载检测定时器
+void GlobalConfigReloadTimer();
 
 
 /* 函数说明：根据特定的字符切割字符串

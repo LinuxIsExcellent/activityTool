@@ -20,6 +20,8 @@ public:
 
     void LoadConfig(lua_State* L, string fileName);
 
+    void ReLoadConfig(lua_State* L, string fileName);
+
     string CalculateFileMd5();
 
     inline string getListeningIp()
@@ -45,6 +47,16 @@ public:
     inline string getListeningProcessPath()
     {
         return m_ListeningProcessPath;
+    }
+
+    inline int getGlobalConfigReloadInterval()
+    {
+        return m_globalConfigReloadInterval;
+    }
+
+    inline int getConfigReloadInterval()
+    {
+        return m_configReloadInterval;
     }
 
     inline std::vector<string>& GetListenLuaFileList()
@@ -73,6 +85,7 @@ public:
     }
 private:
     static GlobalConfig* m_instance;
+    string m_LuaConfigPath; //配置文件名字
 
     string m_ListeningIp;   //监听的ip
     int m_ListeningPort;   //监听的端口
@@ -82,6 +95,9 @@ private:
     string m_TempConfigPath;   //中间件文件路径
     string m_ListeningProcessPath; //监听的进程id文件产生的路径
     string m_sShellPath;        //shell脚本路径
+
+    int m_globalConfigReloadInterval;  //global_config里面可热加载部分多长时间检测文件变化加载一次
+    int m_configReloadInterval;  //被监听的二维展开和一维展开的文件多长时间检测文件变化热加载一次
 
     // 可热更部分
     std::vector<string> m_LuaTableFileList;    //所有二维表文件列表

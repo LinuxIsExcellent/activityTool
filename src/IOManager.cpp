@@ -128,8 +128,6 @@ void IOManager::InitIOManager()
     addsig(SIGUSR1);
     addsig(SIGUSR2);
 
-    LOG_INFO("SIGUSR1 = " + std::to_string(SIGUSR1));
-    LOG_INFO("SIGUSR2 = " + std::to_string(SIGUSR2));
     alarm(1);
 }
 
@@ -270,13 +268,23 @@ void IOManager::Loop()
                             // 立即比对修改的lua文件
                             case SIGUSR1:
                             {
-                                LOG_INFO("SIGUSR1");
+                                LOG_INFO("收到信号请求立即重新加载全局配置");
+                                lua_State* L = luaL_newstate();
+                                if (L)
+                                {
+                                    GlobalConfig::GetInstance()->ReLoadConfig(L, "../config/global_config.lua");
+                                }
                                 continue;
                             }
                             // 重新加在需要监听的lua文件列表
                             case SIGUSR2:
                             {
-                                LOG_INFO("SIGUSR2");
+                                LOG_INFO("收到信号请求立即重新加载所有lua配置");
+                                lua_State* L = luaL_newstate();
+                                if (L)
+                                {
+                                    LuaConfigManager::GetInstance()->CheckConfigFileIsChange(L);
+                                }
                                 continue;
                             }
                         }
@@ -308,6 +316,7 @@ void IOManager::Loop()
                     }
                     else
                     {
+                        LOG_INFO("recv size = " + std::to_string(ret));
                         std::map<int, Client*>::iterator it = m_mClients.find(sockfd);
                         if (it != m_mClients.end() )
                         {
