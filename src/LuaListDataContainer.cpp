@@ -305,7 +305,8 @@ string LuaListDataContainer::DumpLuaTableToStream(string sTableKey, string sValu
         lua_pop(L, 1);
     }
 
-    return ss.str();  
+    return "";
+    // return ss.str();  
 }
 
 void LuaListDataContainer::DumpListDataFormatToConfigFile()
