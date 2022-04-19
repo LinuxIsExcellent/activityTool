@@ -39,6 +39,7 @@ item_group_TABLE_INFO =
 		-- 1
 		{
 			field_name = "id",
+			field_link = "table#item#id",
 		},
 		-- 2
 		{
@@ -1596,10 +1597,6 @@ item_group_TABLE_INFO =
 			field_name = "30",
 		},
 		-- 383
-		{
-			field_name = "30",
-		},
-		-- 384
 		{
 			field_name = "30",
 		},

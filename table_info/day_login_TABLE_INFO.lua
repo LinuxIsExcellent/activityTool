@@ -45,10 +45,6 @@ day_login_TABLE_INFO =
 		{
 			field_name = "100",
 		},
-		-- 11
-		{
-			field_name = "100",
-		},
 	},
 	["###field_sequence###"] =
 	{
@@ -108,6 +104,66 @@ day_login_TABLE_INFO =
 		-- 3
 		{
 			field_name = "30",
+		},
+		-- 4
+		{
+			field_name = "37",
+		},
+		-- 5
+		{
+			field_name = "37",
+		},
+		-- 6
+		{
+			field_name = "37",
+		},
+		-- 7
+		{
+			field_name = "37",
+		},
+		-- 8
+		{
+			field_name = "37",
+		},
+		-- 9
+		{
+			field_name = "37",
+		},
+		-- 10
+		{
+			field_name = "37",
+		},
+		-- 11
+		{
+			field_name = "37",
+		},
+		-- 12
+		{
+			field_name = "37",
+		},
+		-- 13
+		{
+			field_name = "37",
+		},
+		-- 14
+		{
+			field_name = "37",
+		},
+		-- 15
+		{
+			field_name = "37",
+		},
+		-- 16
+		{
+			field_name = "37",
+		},
+		-- 17
+		{
+			field_name = "37",
+		},
+		-- 18
+		{
+			field_name = "37",
 		},
 	},
 	["field_sequence"] =

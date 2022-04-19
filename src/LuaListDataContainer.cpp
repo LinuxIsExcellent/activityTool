@@ -703,8 +703,8 @@ bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& 
         m_vValueLists.push_back(value);
     }
 
-    // DumpListDataToConfigFile();
-    DumpListDataFormatToConfigFile();
+    DumpListDataToConfigFile();
+    // DumpListDataFormatToConfigFile();
     m_sMd5 = CalculateFileMd5();
 
     return true;

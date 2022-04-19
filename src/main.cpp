@@ -83,7 +83,10 @@ void Global5STimer()
 // lua文件重新加载检测
 void LuaConfigReloadTimer()
 {
-    // LOG_INFO("global 15s timer");
+    // LOG_INFO("LuaConfigReloadTimer");
+
+    // 检测全局配置表是否有修改
+    GlobalConfig::GetInstance()->ReLoadConfig("../config/global_config.lua");
 
     // 检测监听的lua配置文件是否有更改
     LuaConfigManager::GetInstance()->CheckConfigFileIsChange();
@@ -92,8 +95,7 @@ void LuaConfigReloadTimer()
 // 全局配置重新加载检测
 void GlobalConfigReloadTimer()
 {
-    // 检测全局配置表是否有修改
-    GlobalConfig::GetInstance()->ReLoadConfig("../config/global_config.lua");
+    
 }
 
 void daemon_run()
@@ -176,16 +178,19 @@ int main(int argc,char* argv[])
 
     IOManager::GetInstance()->AddTimer(timer_5s);
 
-    util_timer* timerGlobalConfig = new util_timer();
-    timerGlobalConfig->expire = cur_time;
-    timerGlobalConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
-    timerGlobalConfig->cb_func = GlobalConfigReloadTimer;    
+    // 添加同一个时间间隔的定时器,还是会有bug lst_timer.h
+    // util_timer* timerGlobalConfig = new util_timer();
+    // timerGlobalConfig->expire = cur_time;
+    // // timerGlobalConfig->nLoopSec = GlobalConfig::GetInstance()->getConfigReloadInterval();
+    // timerGlobalConfig->nLoopSec = 5;
+    // timerGlobalConfig->cb_func = GlobalConfigReloadTimer;    
 
-    IOManager::GetInstance()->AddTimer(timerGlobalConfig);
+    // IOManager::GetInstance()->AddTimer(timerGlobalConfig);
 
     util_timer* timerLuaConfig = new util_timer();
     timerLuaConfig->expire = cur_time;
-    timerLuaConfig->nLoopSec = GlobalConfig::GetInstance()->getGlobalConfigReloadInterval();
+    // timerLuaConfig->nLoopSec = GlobalConfig::GetInstance()->getGlobalConfigReloadInterval();
+    timerLuaConfig->nLoopSec = 15;
     timerLuaConfig->cb_func = LuaConfigReloadTimer;
 
     IOManager::GetInstance()->AddTimer(timerLuaConfig);

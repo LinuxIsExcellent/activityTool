@@ -148,10 +148,10 @@ void GlobalConfig::LoadConfig(string fileName)
     lua_getglobal(L, "script_operate_path");
     m_sShellPath = lua_tostring(L, -1);
 
-    lua_getglobal(L, "global_config_reload_interval");
-    m_globalConfigReloadInterval = lua_tonumber(L, -1);
-    lua_getglobal(L, "config_reload_interval");
-    m_configReloadInterval = lua_tonumber(L, -1);
+    // lua_getglobal(L, "global_config_reload_interval");
+    // m_globalConfigReloadInterval = lua_tonumber(L, -1);
+    // lua_getglobal(L, "config_reload_interval");
+    // m_configReloadInterval = lua_tonumber(L, -1);
 
     // Lua文件列表
     m_LuaTableFileList.clear();

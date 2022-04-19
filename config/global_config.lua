@@ -3,12 +3,6 @@ server_ip = "localhost"
 -- 服务器端口
 server_port = 23543
 
--- global_config里面可热加载部分多长时间检测文件变化加载一次
-global_config_reload_interval = 5
-
--- 被监听的二维展开和一维展开的文件多长时间检测文件变化热加载一次
-config_reload_interval = 15
-
 -- 配置文件路径
 config_path = "/root/workspace/dev_ph/script/config"
 
