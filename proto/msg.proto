@@ -113,7 +113,7 @@ message field_info
 //如果levels为{[n],[m]},则代表的是第n个字段为table的表的第m个字段为table的表的顺序(就证明这个表就是多层结构了)
 message field_squence
 {
-	string 	 index 								= 1;	//索引
+	bytes 	 index 								= 1;	//索引
 	repeated field_info infos					= 2;	//字段顺序
 }
 
