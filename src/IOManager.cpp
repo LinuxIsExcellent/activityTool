@@ -196,7 +196,11 @@ void IOManager::Exit()
 // 增加定时器
 void IOManager::AddTimer(util_timer* timer)
 {
-    timer_lst.add_timer(timer);
+    if (timer->cb_func)
+    {
+        LOG_INFO("add timer");
+        timer_lst.add_timer(timer);
+    }
 }
 
 void IOManager::Loop()

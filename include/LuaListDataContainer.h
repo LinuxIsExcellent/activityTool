@@ -44,8 +44,11 @@ public:
     void DumpListDataFormatToConfigFile();
 private:
 
-    // 把一个lua表通过外围信息表格式化写入到ofstream中
-    string DumpLuaTableToStream(string sTableKey, string sValue, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel);
+    // 把Lua堆栈里面的lua表解析成格式化的字符串
+    string DumpLuaTableToStream(string sExtTableKey, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel);
+
+    // 把一个lua表格式的字符串通过外围信息表格式化写入到ofstream中
+    string DumpLuaTableStrValueToStream(string sTableKey, string sExtTableKey, string sValue, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel);
 
     // 根据最外层的key在文件内的顺序给数据集合排序
     void SortValueListsByKeySquence();

@@ -52,7 +52,7 @@ string LuaTableDataContainer::ParseLuaTableToString(std::string tableName, lua_S
             // 先判断是数组还是key—value
             if (nKeyType == LUA_TNUMBER)
             {
-                sSubTableKey = sTableKey + "%ARRAY";
+                sSubTableKey = sTableKey + "&ARRAY";
             }
             else
             {

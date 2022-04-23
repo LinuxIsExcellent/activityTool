@@ -5,7 +5,7 @@
 class util_timer
 {
     public:
-        util_timer():prev(NULL),next(NULL),expire(0),nLoopSec(0),nLoopMax(0),nLoopcount(0){}
+        util_timer():prev(NULL),next(NULL),expire(0),nLoopSec(0),nLoopMax(0),nLoopcount(0),cb_func(NULL){}
     public:
         time_t expire;  /*定时器截止时间*/
         unsigned int nLoopSec;  /*循环间隔如果大于0， 则证明这个定时器是一个多次循环的定时器*/
@@ -141,6 +141,7 @@ class sort_timer_lst
                 {
                     break;
                 }
+
                 //调用回调函数
                 first_time->cb_func();
                 

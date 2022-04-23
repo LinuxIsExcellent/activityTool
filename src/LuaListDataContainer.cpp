@@ -170,50 +170,37 @@ std::vector<LUAKEYVALUE> LuaListDataContainer::GetLinkInfoByKey(std::string sKey
     return vLinkFieldInfo;
 }
 
-string LuaListDataContainer::DumpLuaTableToStream(string sTableKey, string sValue, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel)
+string LuaListDataContainer::DumpLuaTableToStream(string sExtTableKey, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel)
 {
-    string sTempTableName = "temp_table = " + sValue;
-    int ret = luaL_dostring(L, sTempTableName.c_str());
-    if (ret)
+    if (!lua_type(L, -1) == LUA_TTABLE)
     {
-        LOG_ERROR("temp_table is a error lua format, key = " + sTableKey + " value = " + sValue);
-        return "";
+        return "nil";
     }
 
-    lua_getglobal(L, "temp_table");
-
-    if (!lua_istable(L, -1))
-    {
-        LOG_ERROR("temp_table is not a lua table, key = " + sTableKey + " value = " + sValue);        
-        return "";
-    }
-
-    //置空栈顶
     lua_pushnil(L);
 
-    std::vector<LuaKeyValue> vKeyValue;
+    std::vector<LuaKeyValue> vKeyValues;
+    std::vector<LuaKeyValue> vArrayValue;
     while(lua_next(L, -2))
     {
         int nKeyType = lua_type(L, -2);
         int nValueType = lua_type(L, -1);
-        string sKey = "";
+        LUAKEYVALUE keyValue;
 
+        string sSubTableKey = "";
         if (nKeyType == LUA_TNUMBER)
         {            
-            sKey = std::to_string(lua_tonumber(L, -2));
+            keyValue.sKey = std::to_string(lua_tointeger(L, -2));
+            sSubTableKey = sExtTableKey + "&ARRAY";
         }
         else
         {
-            sKey = lua_tostring(L, -2);
+            keyValue.sKey = lua_tostring(L, -2);
+            sSubTableKey = sExtTableKey + "#" + keyValue.sKey;
         }
 
-        LUAKEYVALUE keyValue;
-        keyValue.sKey = sKey;
         keyValue.keyType = nKeyType;
         keyValue.fieldType = nValueType;
-        keyValue.sValue = nValueType;
-
-        stringstream ss;
 
         switch(nValueType)
         {
@@ -223,45 +210,34 @@ string LuaListDataContainer::DumpLuaTableToStream(string sTableKey, string sValu
                 sValue = subreplace(sValue, "\n", "\\n");
                 sValue = subreplace(sValue, "\"", "\\\"");
 
-                ss << "\"" << sValue << "\"";
+                keyValue.sValue = "\"" + sValue + "\"";
                 break;
             }
             case LUA_TBOOLEAN:
             {
                 if (lua_toboolean(L, -1) == 0)
                 {
-                    ss << "false";
+                    keyValue.sValue = "false";
                 }
                 else
                 {
-                    ss << "true";   
+                    keyValue.sValue = "true";
                 }
                 break;
             }
             case LUA_TNIL:
             {
-                ss << "nil";
+                keyValue.sValue = "nil";
                 break;
             }
             case LUA_TNUMBER:
             {
-                string sValue = std::to_string(lua_tonumber(L, -1));
-                ss << sValue;
+                keyValue.sValue = lua_tostring(L, -1);
                 break;
             }
             case LUA_TTABLE:
             {
-                // if (sValue == "")
-                // {
-                //     ofs << "nil";
-                // }
-                // else
-                // {
-                //     ofs << "{" << endl;
-                //     string sTableValue = DumpLuaTableToStream(sKey, sValue, extInfo, L, nLevel + 1);
-                //     ofs << sTableValue;
-                //     ofs << TAB << "}";
-                // }
+                keyValue.sValue = DumpLuaTableToStream(sSubTableKey, extInfo, L, nLevel + 1);
                 break;
             }
             default:
@@ -270,51 +246,181 @@ string LuaListDataContainer::DumpLuaTableToStream(string sTableKey, string sValu
             }
         }
 
-        if (extInfo && nKeyType != LUA_TNUMBER)
-        {
-            FIELDSQUENCE* fieldSquence = extInfo->GetFieldSquenceDataByKey(sTableKey);
-            if(fieldSquence)
-            {
-                for (int j = 0; j < fieldSquence->vSFieldSquences.size(); ++j)
-                {
-                    string sFieldName = fieldSquence->vSFieldSquences[j].sFieldName;
-                    if (sFieldName == sKey)
-                    {
-                        string sAnnonation = fieldSquence->vSFieldSquences[j].sFieldAnnonation;
-                        if (sAnnonation != "")
-                        {
-                            for (int i = 0; i < nLevel; ++i)
-                            {
-                                ss << TAB;
-                            }
-                            ss << "-- " << sAnnonation << endl;
-                        }
-
-                        break;
-                    }
-                }
-            }
+        if (nKeyType == LUA_TNUMBER)
+        {            
+            vArrayValue.push_back(keyValue);
         }
-
-        for (int i = 0; i < nLevel; ++i)
+        else
         {
-            ss << TAB;
+            vKeyValues.push_back(keyValue);
         }
-        ss << sKey << " = " << endl;
 
         lua_pop(L, 1);
     }
 
-    return "";
-    // return ss.str();  
+    sort(vArrayValue.begin(), vArrayValue.end(), [](const LUAKEYVALUE& a, const LUAKEYVALUE& b)
+    {
+        int nAFactor = atoi(a.sKey.c_str());
+        int nBFactor = atoi(b.sKey.c_str());
+        return nAFactor < nBFactor;
+    });
+
+    // 根据额外信息设定的字段顺序去给字段排序
+    std::map<string, int> mFieldSquence;
+    std::map<string, string> mFieldDesc;
+    if (extInfo)
+    {
+        FIELDSQUENCE* fieldSquence = extInfo->GetFieldSquenceDataByKey(sExtTableKey);
+        if(fieldSquence)
+        {
+            for (int j = 0; j < fieldSquence->vSFieldSquences.size(); ++j)
+            {
+                string sFieldName = fieldSquence->vSFieldSquences[j].sFieldName;
+                mFieldSquence.insert(pair <std::string, int> (sFieldName, j));
+                if (fieldSquence->vSFieldSquences[j].sFieldAnnonation != "")
+                {
+                    mFieldDesc.insert(pair <std::string, std::string> (sFieldName, fieldSquence->vSFieldSquences[j].sFieldAnnonation));
+                }
+            }
+
+            sort(vKeyValues.begin(), vKeyValues.end(), [mFieldSquence](const LUAKEYVALUE& a, const LUAKEYVALUE& b)
+            {
+                auto iterA = mFieldSquence.find(a.sKey);
+                auto iterB = mFieldSquence.find(b.sKey);
+                int nFactorA = 9999;
+                int nFactorB = 9999;
+                                    
+                if (iterA != mFieldSquence.end())
+                {
+                    nFactorA = iterA->second;
+                }
+                                    
+                if (iterB != mFieldSquence.end())
+                {
+                    nFactorB = iterB->second;
+                }
+                                    
+                                    
+                return nFactorA < nFactorB;
+            });
+        }
+    }
+
+    stringstream ss;
+    ss << endl;
+    for (int j = 0; j < nLevel - 1; ++j)
+    {
+        ss << TAB;
+    }
+    ss << "{";
+
+    if (vKeyValues.size() > 0)
+    {
+        ss << endl;
+    }
+    // 先写键值对部分
+    for (int i = 0; i < vKeyValues.size(); ++i)
+    {
+        LUAKEYVALUE keyValue = vKeyValues[i];
+        // 描述，如果有的话
+        if (mFieldDesc.find(keyValue.sKey) != mFieldDesc.end())
+        {
+            for (int j = 0; j < nLevel; ++j)
+            {
+                ss << TAB;
+            }
+            ss << "-- " << mFieldDesc.find(keyValue.sKey)->second << endl;
+        }
+
+        for (int j = 0; j < nLevel; ++j)
+        {
+            ss << TAB;
+        }
+        ss << keyValue.sKey << " = " << keyValue.sValue << ",";
+        if (i < vKeyValues.size() - 1)
+        {
+            ss << endl;
+        }
+    }
+
+    int nFlag = 1;
+    bool isCompleteArray = true;
+    for (int i = 0; i < vArrayValue.size(); ++i)
+    {
+        if (nFlag != atoi(vArrayValue[i].sKey.c_str())){
+            isCompleteArray = false;
+            break;
+        }
+
+        nFlag++;
+    }
+
+    // 再写数组部分
+    for (int i = 0; i < vArrayValue.size(); ++i)
+    {
+        LUAKEYVALUE keyValue = vArrayValue[i];
+
+        ss << endl;
+        for (int j = 0; j < nLevel; ++j)
+        {
+            ss << TAB;
+        }
+        ss << "-- " << keyValue.sKey;
+
+        if (!isCompleteArray)
+        {
+            ss << endl;
+            for (int j = 0; j < nLevel; ++j)
+            {
+                ss << TAB;
+            }
+            ss << "[" << keyValue.sKey << "]" << " = " << keyValue.sValue << ",";
+        }
+        else
+        {
+            if (keyValue.fieldType != LUA_TTABLE)
+            {
+                ss << endl;
+            }
+            for (int j = 0; j < nLevel; ++j)
+            {
+                ss << TAB;
+            }
+            ss << keyValue.sValue << ",";   
+        }
+    }
+
+    ss << endl;
+    for (int j = 0; j < nLevel - 1; ++j)
+    {
+        ss << TAB;
+    }
+    ss << "}";
+
+    string out = ss.str();
+    return ss.str();
+}
+
+string LuaListDataContainer::DumpLuaTableStrValueToStream(string sTableKey, string sExtTableKey, string sTableValue, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel)
+{
+    string sTempTableName = "temp_table = " + sTableValue;
+    int ret = luaL_dostring(L, sTempTableName.c_str());
+    if (ret)
+    {
+        LOG_ERROR("temp_table is a error lua format, key = " + sTableKey + " value = " + sTableValue);
+        return "";
+    }
+
+    lua_getglobal(L, "temp_table");
+
+    return DumpLuaTableToStream(sExtTableKey, extInfo, L, nLevel);
 }
 
 void LuaListDataContainer::DumpListDataFormatToConfigFile()
 {
     ofstream ofs;
     //1.打开文件，如果没有，会在同级目录下自动创建该文件
-    // ofs.open(m_LuaFilePath, ios::out);
-    ofs.open("/root/workspace/dev_ph/script/config/tmp_pay_activity_config.lua", ios::out);
+    ofs.open(m_LuaFilePath, ios::out);
 
     timeval p;
     gettimeofday(&p, NULL);
@@ -416,10 +522,8 @@ void LuaListDataContainer::DumpListDataFormatToConfigFile()
                 }
                 else
                 {
-                    ofs << "{" << endl;
-                    string sTableValue = DumpLuaTableToStream(sKey, sValue, extInfo, L, 2);
+                    string sTableValue = DumpLuaTableStrValueToStream(sKey, sKey, sValue, extInfo, L, 2);
                     ofs << sTableValue;
-                    ofs << TAB << "}";
                 }
                 break;
             }
@@ -703,8 +807,8 @@ bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& 
         m_vValueLists.push_back(value);
     }
 
-    DumpListDataToConfigFile();
-    // DumpListDataFormatToConfigFile();
+    // DumpListDataToConfigFile();
+    DumpListDataFormatToConfigFile();
     m_sMd5 = CalculateFileMd5();
 
     return true;
