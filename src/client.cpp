@@ -506,13 +506,16 @@ void Client::OnClientQuestFieldInfoByLink(std::string sLinkInfo)
 
 void Client::OnClientQuestSaveLuaListInfo(const test_2::save_lua_list_data_request& quest)
 {
+	LOG_INFO("请求保存一维表文件: " + quest.table_name());
 	std::map<string, LuaListDataContainer*>* tableDataMap = LuaConfigManager::GetInstance()->GetLuaListMap();
 	if(tableDataMap)
 	{
 		std::string sFileName = quest.table_name();
 		auto iter = tableDataMap->find(sFileName);
+		LOG_INFO("找到一维表文件的map: " + sFileName);
 		if (iter != tableDataMap->end())
 		{
+			LOG_INFO("找到一维表文件的对象: " + sFileName);
 			iter->second->UpdateData(quest);
 		}
 

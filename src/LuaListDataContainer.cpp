@@ -172,6 +172,8 @@ std::vector<LUAKEYVALUE> LuaListDataContainer::GetLinkInfoByKey(std::string sKey
 
 string LuaListDataContainer::DumpLuaTableToStream(string sExtTableKey, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel)
 {
+
+    LOG_INFO("格式化一维表文件dump一个表: " + sExtTableKey + ", table name = " + m_LuaFileName);
     if (!lua_type(L, -1) == LUA_TTABLE)
     {
         return "nil";
@@ -403,6 +405,7 @@ string LuaListDataContainer::DumpLuaTableToStream(string sExtTableKey, LuaExtInf
 
 string LuaListDataContainer::DumpLuaTableStrValueToStream(string sTableKey, string sExtTableKey, string sTableValue, LuaExtInfoContainer* extInfo, lua_State* L, int nLevel)
 {
+    LOG_INFO("格式化一维表文件第一步: " + m_LuaFileName);
     string sTempTableName = "temp_table = " + sTableValue;
     int ret = luaL_dostring(L, sTempTableName.c_str());
     if (ret)
@@ -418,6 +421,7 @@ string LuaListDataContainer::DumpLuaTableStrValueToStream(string sTableKey, stri
 
 void LuaListDataContainer::DumpListDataFormatToConfigFile()
 {
+    LOG_INFO("开始格式化一维表文件: " + m_LuaFileName);
     ofstream ofs;
     //1.打开文件，如果没有，会在同级目录下自动创建该文件
     ofs.open(m_LuaFilePath, ios::out);
@@ -542,6 +546,8 @@ void LuaListDataContainer::DumpListDataFormatToConfigFile()
     ofs.close();
 
     lua_close(L);
+
+    LOG_INFO("格式化一维表文件成功: " + m_LuaFileName);
 }
 
 void LuaListDataContainer::DumpListDataToConfigFile()
@@ -807,6 +813,7 @@ bool LuaListDataContainer::UpdateData(const test_2::save_lua_list_data_request& 
         m_vValueLists.push_back(value);
     }
 
+    LOG_INFO("请求格式化一维表文件: " + m_LuaFileName);
     // DumpListDataToConfigFile();
     DumpListDataFormatToConfigFile();
     m_sMd5 = CalculateFileMd5();
