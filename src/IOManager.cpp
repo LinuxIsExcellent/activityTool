@@ -172,6 +172,7 @@ void IOManager::OnClientDisconnect(int sockfd)
         Client* client = it->second;
         client->OnDisconnect();
         delete client;
+        client = NULL;
 
         shutdown(sockfd, SHUT_RDWR);
         m_mClients.erase(it);
@@ -198,7 +199,6 @@ void IOManager::AddTimer(util_timer* timer)
 {
     if (timer->cb_func)
     {
-        LOG_INFO("add timer");
         timer_lst.add_timer(timer);
     }
 }
