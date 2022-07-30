@@ -49,7 +49,17 @@ target_include_directories(lua PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-E,-g")
 
 #添加编译选项
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -llog4cpp -pthread")
+#-O 1~3 编译优化1~3个等级
+#-g 1~3 包含的调试信息的等级，默认的是等级2
+#-ggdb尽可能的包含gdb可以使用的信息
+#-Wall 输出所有的警告
+#-w 关闭所有警告
+
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -O0 -g3 -std=c++11 -llog4cpp -pthread")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -Wall -O3 -g3 -std=c++11 -llog4cpp -pthread")
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -w -O0 -g3 -std=c++11 -llog4cpp -pthread")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -w -O3 -g3 -std=c++11 -llog4cpp -pthread")
 
 #设置protobuf的文件路径
 set(Protobuf_PREFIX_PATH
